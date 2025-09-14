@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">AltosDroid</string>
+    <string name="title_pad">Pad</string>
+    <string name="title_flight">Flight</string>
+    <string name="title_recover">Recover</string>
+    <string name="title_map">Map</string>
+</resources>
