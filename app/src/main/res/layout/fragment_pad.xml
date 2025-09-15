@@ -46,15 +46,15 @@
                 android:id="@+id/battery_voltage_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/battery_voltage_label" />
+                android:textAppearance="@style/LabelText"
+                android:text="@string/battery_voltage_label"/>
 
             <TextView
                 android:id="@+id/battery_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                />
+                android:textAppearance="@style/ValueText"
+                android:text="4.2"/>
         </TableRow>
 
         <TableRow
@@ -88,14 +88,15 @@
                 android:id="@+id/receiver_voltage_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/receiver_voltage_label" />
 
             <TextView
                 android:id="@+id/receiver_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="4.1"/>
         </TableRow>
 
         <TableRow
@@ -127,14 +128,15 @@
                 android:id="@+id/logging_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/logging_label" />
 
             <TextView
                 android:id="@+id/logging_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="enabled"/>
         </TableRow>
 
         <TableRow
@@ -166,6 +168,7 @@
                 android:id="@+id/gps_locked_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/gps_locked_label" />
 
             <TextView
@@ -173,8 +176,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/gps_locked_label"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="locked"/>
         </TableRow>
 
         <TableRow
@@ -206,6 +209,7 @@
                 android:id="@+id/gps_ready_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/gps_ready_label" />
 
             <TextView
@@ -213,8 +217,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/gps_ready_label"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="ready"/>
         </TableRow>
 
         <TableRow
@@ -248,14 +252,15 @@
                 android:id="@+id/apogee_voltage_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/apogee_voltage_label" />
 
             <TextView
                 android:id="@+id/apogee_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="4.0"/>
         </TableRow>
 
         <TableRow
@@ -289,14 +294,15 @@
                 android:id="@+id/main_voltage_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/main_voltage_label" />
 
             <TextView
                 android:id="@+id/main_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="4.0"/>
         </TableRow>
 
         <TableRow
@@ -330,14 +336,15 @@
                 android:id="@+id/ignite_a_voltage_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/ignite_a_voltage_label" />
 
             <TextView
                 android:id="@+id/ignite_a_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="locked"/>
         </TableRow>
 
         <TableRow
@@ -371,14 +378,15 @@
                 android:id="@+id/ignite_b_voltage_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/ignite_b_voltage_label" />
 
             <TextView
                 android:id="@+id/ignite_b_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="locked"/>
         </TableRow>
 
         <TableRow
@@ -412,14 +420,15 @@
                 android:id="@+id/ignite_c_voltage_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/ignite_c_voltage_label" />
 
             <TextView
                 android:id="@+id/ignite_c_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="4.0"/>
         </TableRow>
 
         <TableRow
@@ -453,14 +462,15 @@
                 android:id="@+id/ignite_d_voltage_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/ignite_d_voltage_label" />
 
             <TextView
                 android:id="@+id/ignite_d_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="4.0"/>
         </TableRow>
 
         <TableRow
@@ -478,14 +488,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/tilt_label" />
 
             <TextView
                 android:id="@+id/tilt_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="20°"/>
         </TableRow>
 
         <TableRow
@@ -498,14 +509,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/receiver_latitude_label" />
 
             <TextView
                 android:id="@+id/receiver_lat_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="45.0"/>
         </TableRow>
 
         <TableRow
@@ -518,14 +530,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/receiver_longitude_label" />
 
             <TextView
                 android:id="@+id/receiver_lon_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="-122.0"/>
         </TableRow>
 
         <TableRow
@@ -538,14 +551,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/receiver_altitude_label" />
 
             <TextView
                 android:id="@+id/receiver_alt_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="1000m"/>
         </TableRow>
     </TableLayout>
 

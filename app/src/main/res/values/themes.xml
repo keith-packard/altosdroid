@@ -11,5 +11,11 @@
 		<item name="android:windowLightStatusBar">true</item>
 
     </style>
+	<style name="LabelText" parent="TextAppearance.AppCompat">
+		<item name="android:textSize">32sp</item>
+	</style>
+	<style name="ValueText" parent="LabelText">
+		<item name="android:textStyle">bold</item>
+	</style>
 
 </resources>
