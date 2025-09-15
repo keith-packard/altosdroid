@@ -10,7 +10,7 @@ public class FlightViewModel extends ViewModel {
 
     public FlightViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is home fragment");
+        mText.setValue("This is flight fragment");
     }
 
     public LiveData<String> getText() {

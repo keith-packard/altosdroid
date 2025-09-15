@@ -10,22 +10,22 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.altusmetrum.altosdroid.databinding.FragmentHomeBinding;
+import org.altusmetrum.altosdroid.databinding.FragmentFlightBinding;
 
 public class FlightFragment extends Fragment {
 
-    private FragmentHomeBinding binding;
+    private FragmentFlightBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         FlightViewModel flightViewModel =
                 new ViewModelProvider(this).get(FlightViewModel.class);
 
-        binding = FragmentHomeBinding.inflate(inflater, container, false);
+        binding = FragmentFlightBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textHome;
-        flightViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+ //       final TextView textView = binding.textFlight;
+   //     flightViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 

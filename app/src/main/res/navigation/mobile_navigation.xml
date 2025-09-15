@@ -18,14 +18,14 @@
         tools:layout="@layout/fragment_flight" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_recover"
         android:name="org.altusmetrum.altosdroid.ui.recover.RecoverFragment"
-        android:label="@string/title_dashboard"
+        android:label="@string/title_recover"
         tools:layout="@layout/fragment_recover" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
+        android:id="@+id/navigation_map"
         android:name="org.altusmetrum.altosdroid.ui.map.MapFragment"
-        android:label="@string/title_notifications"
+        android:label="@string/title_map"
         tools:layout="@layout/fragment_map" />
 </navigation>

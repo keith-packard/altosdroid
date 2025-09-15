@@ -10,7 +10,7 @@ public class RecoverViewModel extends ViewModel {
 
     public RecoverViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is dashboard fragment");
+        mText.setValue("This is recover fragment");
     }
 
     public LiveData<String> getText() {

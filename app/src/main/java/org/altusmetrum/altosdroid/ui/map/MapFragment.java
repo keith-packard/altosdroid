@@ -10,21 +10,21 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.altusmetrum.altosdroid.databinding.FragmentNotificationsBinding;
+import org.altusmetrum.altosdroid.databinding.FragmentMapBinding;
 
 public class MapFragment extends Fragment {
 
-    private FragmentNotificationsBinding binding;
+    private FragmentMapBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         MapViewModel mapViewModel =
                 new ViewModelProvider(this).get(MapViewModel.class);
 
-        binding = FragmentNotificationsBinding.inflate(inflater, container, false);
+        binding = FragmentMapBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textNotifications;
+        final TextView textView = binding.textMap;
         mapViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }

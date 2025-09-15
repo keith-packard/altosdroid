@@ -10,22 +10,22 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.altusmetrum.altosdroid.databinding.FragmentDashboardBinding;
+import org.altusmetrum.altosdroid.databinding.FragmentRecoverBinding;
 
 public class RecoverFragment extends Fragment {
 
-    private FragmentDashboardBinding binding;
+    private FragmentRecoverBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         RecoverViewModel recoverViewModel =
                 new ViewModelProvider(this).get(RecoverViewModel.class);
 
-        binding = FragmentDashboardBinding.inflate(inflater, container, false);
+        binding = FragmentRecoverBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textDashboard;
-        recoverViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+//        final TextView textView = binding.textRecover;
+//        recoverViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 
