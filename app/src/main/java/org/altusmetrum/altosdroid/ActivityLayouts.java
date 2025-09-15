@@ -15,7 +15,7 @@ public class ActivityLayouts {
 
     public static void applyEdgeToEdge(ComponentActivity activity, int viewId) {
 
-        WindowCompat.setDecorFitsSystemWindows(activity.getWindow(), true);
+        WindowCompat.setDecorFitsSystemWindows(activity.getWindow(), false);
 
         View view = activity.findViewById(viewId);
 

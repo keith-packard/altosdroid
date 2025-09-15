@@ -1,6 +1,15 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.AltosDroid" parent="Theme.MaterialComponents.Light">
+    <style name="Theme.AltosDroid" parent="Theme.MaterialComponents.DayNight">
+
+		<item name="android:colorBackground">#ffffff</item>
+		<item name="colorOnBackground">#ff0000</item>
+
+		<item name="colorPrimary">#ff8000</item>
+		<item name="colorPrimaryVariant">#808000</item>
+		<item name="colorOnPrimary">#0000ff</item>
+		<item name="android:windowLightStatusBar">true</item>
 
     </style>
+
 </resources>
