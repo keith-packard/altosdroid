@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "AltosDroid"
 include ':app'
+include ':altoslib_14'
