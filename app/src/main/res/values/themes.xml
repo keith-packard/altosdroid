@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
     <style name="Theme.AltosDroid" parent="Theme.MaterialComponents.DayNight">
 
@@ -16,6 +16,9 @@
 	</style>
 	<style name="ValueText" parent="LabelText">
 		<item name="android:textStyle">bold</item>
+	</style>
+	<style name="PosText" parent="ValueText">
+		<item name="android:textSize">28sp</item>
 	</style>
 
 </resources>

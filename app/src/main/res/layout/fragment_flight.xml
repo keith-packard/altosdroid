@@ -8,7 +8,6 @@
     tools:context=".ui.flight.FlightFragment">
 
     <TableLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -30,14 +29,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/speed_label" />
 
             <TextView
                 android:id="@+id/speed_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="200m/s"/>
         </TableRow>
 
         <TableRow
@@ -52,15 +52,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/height_label" />
 
             <TextView
                 android:id="@+id/height_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="1001m" />
         </TableRow>
 
         <TableRow
@@ -75,15 +75,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/altitude_label" />
 
             <TextView
                 android:id="@+id/altitude_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="1234m" />
         </TableRow>
 
         <TableRow
@@ -101,14 +101,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/tilt_label" />
 
             <TextView
                 android:id="@+id/tilt_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="14°" />
         </TableRow>
 
         <TableRow
@@ -124,13 +125,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/max_speed_label" />
 
             <TextView
                 android:id="@+id/max_speed_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="" />
+                android:textAppearance="@style/ValueText"
+                android:text="600m/s" />
         </TableRow>
 
         <TableRow
@@ -146,13 +149,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/max_height_label" />
 
             <TextView
                 android:id="@+id/max_height_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="" />
+                android:textAppearance="@style/ValueText"
+                android:text="1010m" />
         </TableRow>
 
         <TableRow
@@ -168,13 +173,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/max_altitude_label" />
 
             <TextView
                 android:id="@+id/max_altitude_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="" />
+                android:textAppearance="@style/ValueText"
+                android:text="1243m" />
         </TableRow>
 
         <TableRow
@@ -189,13 +196,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/elevation_label" />
 
             <TextView
                 android:id="@+id/elevation_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="" />
+                android:textAppearance="@style/ValueText"
+                android:text="70°" />
         </TableRow>
 
         <TableRow
@@ -210,15 +219,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/range_label" />
 
             <TextView
                 android:id="@+id/range_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="2456m" />
         </TableRow>
 
         <TableRow
@@ -233,15 +242,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/bearing_label" />
 
             <TextView
                 android:id="@+id/bearing_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="67°" />
         </TableRow>
 
         <TableRow
@@ -255,10 +264,9 @@
                 android:id="@+id/compass_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
                 android:layout_column="3"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="" />
         </TableRow>
 
         <TableRow
@@ -273,15 +281,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/gnd_distance_label" />
 
             <TextView
                 android:id="@+id/distance_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="1400m" />
         </TableRow>
 
 
@@ -297,15 +305,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/latitude_label" />
 
             <TextView
                 android:id="@+id/lat_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/PosText"
+                android:text="45.456" />
         </TableRow>
 
         <TableRow
@@ -320,15 +328,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="2"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/longitude_label" />
 
             <TextView
                 android:id="@+id/lon_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/PosText"
+                android:text="65.4323" />
         </TableRow>
 
         <TableRow
@@ -360,16 +368,15 @@
                 android:id="@+id/apogee_voltage_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/apogee_greenled"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/apogee_voltage_label" />
 
             <TextView
                 android:id="@+id/apogee_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="3.9"/>
         </TableRow>
 
         <TableRow
@@ -386,7 +393,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
-                android:paddingRight="5dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
                 android:contentDescription="@string/main_voltage_label"
                 android:src="@drawable/grayled" />
 
@@ -396,23 +404,23 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
                 android:contentDescription="@string/main_voltage_label"
-                android:paddingRight="5dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
                 android:src="@drawable/grayled" />
 
             <TextView
                 android:id="@+id/main_voltage_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/main_greenled"
+                android:textAppearance="@style/LabelText"
                 android:text="@string/main_voltage_label" />
 
             <TextView
                 android:id="@+id/main_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:text=""
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="@style/ValueText"
+                android:text="3.8"/>
         </TableRow>
     </TableLayout>
 

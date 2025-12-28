@@ -39,7 +39,8 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
                 android:contentDescription="@string/battery_voltage_label"
-                android:paddingRight="5dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
                 android:src="@drawable/grayled" />
 
             <TextView
@@ -54,7 +55,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/ValueText"
-                android:text="4.2"/>
+                android:text="4.2" />
         </TableRow>
 
         <TableRow
@@ -71,7 +72,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
-                android:paddingRight="5dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
                 android:contentDescription="@string/receiver_voltage_label"
                 android:src="@drawable/grayled" />
 
@@ -80,7 +82,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
-                android:paddingRight="5dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
                 android:contentDescription="@string/receiver_voltage_label"
                 android:src="@drawable/grayled" />
 
@@ -111,7 +114,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
-                android:paddingRight="5dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
                 android:contentDescription="@string/logging_label"
                 android:src="@drawable/grayled" />
 
@@ -120,7 +124,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
-                android:paddingRight="5dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
                 android:contentDescription="@string/logging_label"
                 android:src="@drawable/grayled" />
 
@@ -151,7 +156,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
-                android:paddingRight="5dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
                 android:contentDescription="@string/gps_locked_label"
                 android:src="@drawable/grayled" />
 
@@ -160,7 +166,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
-                android:paddingRight="5dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
                 android:contentDescription="@string/gps_locked_label"
                 android:src="@drawable/grayled" />
 
@@ -175,7 +182,6 @@
                 android:id="@+id/gps_locked_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/gps_locked_label"
                 android:textAppearance="@style/ValueText"
                 android:text="locked"/>
         </TableRow>
@@ -192,7 +198,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
-                android:paddingRight="5dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
                 android:contentDescription="@string/gps_ready_label"
                 android:src="@drawable/grayled" />
 
@@ -201,7 +208,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
-                android:paddingRight="5dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
                 android:contentDescription="@string/gps_ready_label"
                 android:src="@drawable/grayled" />
 
@@ -216,7 +224,6 @@
                 android:id="@+id/gps_ready_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/gps_ready_label"
                 android:textAppearance="@style/ValueText"
                 android:text="ready"/>
         </TableRow>
@@ -235,7 +242,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
-                android:paddingRight="5dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
                 android:contentDescription="@string/apogee_voltage_label"
                 android:src="@drawable/grayled" />
 
@@ -244,7 +252,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
-                android:paddingRight="5dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
                 android:contentDescription="@string/apogee_voltage_label"
                 android:src="@drawable/grayled" />
 
@@ -277,7 +286,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
-                android:paddingRight="5dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
                 android:contentDescription="@string/main_voltage_label"
                 android:src="@drawable/grayled" />
 
@@ -286,7 +296,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
-                android:paddingRight="5dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
                 android:contentDescription="@string/main_voltage_label"
                 android:src="@drawable/grayled" />
 
@@ -319,7 +330,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
-                android:paddingRight="5dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
                 android:contentDescription="@string/ignite_a_voltage_label"
                 android:src="@drawable/grayled" />
 
@@ -328,7 +340,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
-                android:paddingRight="5dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
                 android:contentDescription="@string/ignite_a_voltage_label"
                 android:src="@drawable/grayled" />
 
@@ -361,7 +374,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
-                android:paddingRight="5dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
                 android:contentDescription="@string/ignite_b_voltage_label"
                 android:src="@drawable/grayled" />
 
@@ -370,7 +384,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
-                android:paddingRight="5dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
                 android:contentDescription="@string/ignite_b_voltage_label"
                 android:src="@drawable/grayled" />
 
@@ -403,7 +418,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
-                android:paddingRight="5dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
                 android:contentDescription="@string/ignite_c_voltage_label"
                 android:src="@drawable/grayled" />
 
@@ -412,7 +428,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
-                android:paddingRight="5dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
                 android:contentDescription="@string/ignite_c_voltage_label"
                 android:src="@drawable/grayled" />
 
@@ -445,7 +462,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
-                android:paddingRight="5dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
                 android:contentDescription="@string/ignite_d_voltage_label"
                 android:src="@drawable/grayled" />
 
@@ -454,7 +472,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerInside"
-                android:paddingRight="5dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
                 android:contentDescription="@string/ignite_d_voltage_label"
                 android:src="@drawable/grayled" />
 
