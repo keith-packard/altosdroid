@@ -1,9 +1,9 @@
 /*
- * Copyright © 2015 Keith Packard <keithp@keithp.com>
+ * Copyright © 2025 Keith Packard <keithp@keithp.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
+ * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful, but
@@ -13,25 +13,11 @@
  *
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
- * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
+ * 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
 package org.altusmetrum.altosdroid;
 
-public class DeviceAddress {
-    public String	address;
-    public String	name;
-
-    public DeviceAddress(String address, String name) {
-        this.address = address;
-        this.name = name;
-    }
-
-    public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof DeviceAddress))
-            return false;
-        return this.address.equals(((DeviceAddress) o).address);
-    }
+public interface AltosDroidMapSourceListener {
+	public void map_source_changed(int map_source);
 }

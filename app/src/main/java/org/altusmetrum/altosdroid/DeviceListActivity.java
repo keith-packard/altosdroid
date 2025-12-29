@@ -18,9 +18,12 @@
 
 package org.altusmetrum.altosdroid;
 
+import android.Manifest;
 import android.app.Activity;
 
+import androidx.annotation.RequiresPermission;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,24 +33,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import java.util.Set;
 
 import org.altusmetrum.altosdroid.databinding.DeviceListBinding;
-
-class DeviceItem {
-    public String name;
-    public String address;
-
-    public DeviceItem(String name, String address) {
-        this.name = name;
-        this.address = address;
-    }
-}
 
 public class DeviceListActivity extends AppCompatActivity {
 
@@ -57,45 +50,42 @@ public class DeviceListActivity extends AppCompatActivity {
 
     // Member fields
     private BluetoothAdapter mBtAdapter;
-    private DeviceViewAdapter mPairedDevicesArrayAdapter;
     private DeviceViewAdapter mNewDevicesArrayAdapter;
-
-    private DeviceListBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
 
-        binding = DeviceListBinding.inflate(getLayoutInflater());
+        DeviceListBinding binding = DeviceListBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         ActivityLayouts.applyEdgeToEdge(this, R.id.device_list);
 
-        // Set result CANCELED incase the user backs out
+        // Set result CANCELED in case the user backs out
         setResult(Activity.RESULT_CANCELED);
 
         // Initialize the button to perform device discovery
-        Button scanButton = (Button) findViewById(R.id.button_scan);
-        scanButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                AltosDebug.debug("+++ SCAN BUTTON CLICKED +++");
+        Button scanButton = findViewById(R.id.button_scan);
+        scanButton.setOnClickListener(v -> {
+            AltosDebug.debug("+++ SCAN BUTTON CLICKED +++");
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
                 doDiscovery();
-                v.setVisibility(View.GONE);
             }
+            v.setVisibility(View.GONE);
         });
 
         // Initialize array adapters. One for already paired devices and
         // one for newly discovered devices
-        mPairedDevicesArrayAdapter = new DeviceViewAdapter(this);
+        DeviceViewAdapter mPairedDevicesArrayAdapter = new DeviceViewAdapter(this);
         mNewDevicesArrayAdapter = new DeviceViewAdapter(this);
 
         // Find and set up the RecyclerView for paired devices
-        RecyclerView pairedListView = (RecyclerView) findViewById(R.id.paired_devices);
+        RecyclerView pairedListView = findViewById(R.id.paired_devices);
         pairedListView.setAdapter(mPairedDevicesArrayAdapter);
         pairedListView.setLayoutManager(new LinearLayoutManager(this));
 
         // Find and set up the RecyclerView for newly discovered devices
-        RecyclerView newDevicesListView = (RecyclerView) findViewById(R.id.new_devices);
+        RecyclerView newDevicesListView = findViewById(R.id.new_devices);
         newDevicesListView.setAdapter(mNewDevicesArrayAdapter);
         newDevicesListView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -112,20 +102,23 @@ public class DeviceListActivity extends AppCompatActivity {
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // Get a set of currently paired devices
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
         Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
         AltosDebug.debug("number of paired devices: %d", pairedDevices.size());
 
         // If there are paired devices, add each one to the ArrayAdapter
-        if (pairedDevices.size() > 0) {
+        if (!pairedDevices.isEmpty()) {
             findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
             for (BluetoothDevice device : pairedDevices) {
                 String name = device.getName();
                 if (name != null && name.startsWith("TeleBT"))
-                    mPairedDevicesArrayAdapter.add(new DeviceItem(name, device.getAddress()));
+                    mPairedDevicesArrayAdapter.add(new DeviceAddress(name, device.getAddress()));
             }
         } else {
             String noDevices = getResources().getText(R.string.none_paired).toString();
-            mPairedDevicesArrayAdapter.add(new DeviceItem(noDevices, ""));
+            mPairedDevicesArrayAdapter.add(new DeviceAddress(noDevices, ""));
         }
     }
 
@@ -135,7 +128,9 @@ public class DeviceListActivity extends AppCompatActivity {
 
         // Make sure we're not doing discovery anymore
         if (mBtAdapter != null) {
-            mBtAdapter.cancelDiscovery();
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
+                mBtAdapter.cancelDiscovery();
+            }
         }
 
         // Unregister broadcast listeners
@@ -145,6 +140,7 @@ public class DeviceListActivity extends AppCompatActivity {
     /**
      * Start device discover with the BluetoothAdapter
      */
+    @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
     private void doDiscovery() {
         AltosDebug.debug("doDiscovery()");
 
@@ -155,6 +151,16 @@ public class DeviceListActivity extends AppCompatActivity {
         findViewById(R.id.title_new_devices).setVisibility(View.VISIBLE);
 
         // If we're already discovering, stop it
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         if (mBtAdapter.isDiscovering()) {
             mBtAdapter.cancelDiscovery();
         }
@@ -166,6 +172,7 @@ public class DeviceListActivity extends AppCompatActivity {
     // The BroadcastReceiver that listens for discovered devices and
     // changes the title when discovery is finished
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -178,15 +185,13 @@ public class DeviceListActivity extends AppCompatActivity {
                  */
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 
-                AltosDebug.debug("+++ FOUND DEVICE: %s %s +++", device.getName(), device.getAddress());
-
                 /* If it's already paired, skip it, because it's been listed already
                  */
                 if (device != null && device.getBondState() != BluetoothDevice.BOND_BONDED)
                 {
                     String	name = device.getName();
                     if (name != null && name.startsWith("TeleBT"))
-                        mNewDevicesArrayAdapter.add(new DeviceItem(name, device.getAddress()));
+                        mNewDevicesArrayAdapter.add(new DeviceAddress(name, device.getAddress()));
                 }
 
                 /* When discovery is finished, change the Activity title
@@ -195,7 +200,7 @@ public class DeviceListActivity extends AppCompatActivity {
                 setTitle(R.string.select_device);
                 if (mNewDevicesArrayAdapter.getItemCount() == 0) {
                     String noDevices = getResources().getText(R.string.none_found).toString();
-                    mNewDevicesArrayAdapter.add(new DeviceItem(noDevices, ""));
+                    mNewDevicesArrayAdapter.add(new DeviceAddress(noDevices, ""));
                 }
             }
         }

@@ -31,16 +31,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class DeviceViewAdapter extends RecyclerView.Adapter<DeviceViewHolder>  {
-    private ArrayList<DeviceItem> deviceList;
+    private ArrayList<DeviceAddress> deviceList;
 
     private Context context;
 
     public DeviceViewAdapter(Context context) {
-        this.deviceList = new ArrayList<DeviceItem>();
+        this.deviceList = new ArrayList<DeviceAddress>();
         this.context = context;
     }
 
-    public void add(DeviceItem device) {
+    public void add(DeviceAddress device) {
+        if (this.deviceList.contains(device)) {
+            AltosDebug.debug("Duplicate device %s", device.name);
+            return;
+        }
         this.deviceList.add(device);
         AltosDebug.debug("Add device %s", device.name);
         notifyItemInserted(getItemCount() - 1);
@@ -58,19 +62,19 @@ public class DeviceViewAdapter extends RecyclerView.Adapter<DeviceViewHolder>  {
         AltosDebug.debug("onBindViewHolder");
         long itemId = getItemId(position);
         holder.parentLayout.setTag(itemId);
-        final DeviceItem deviceItem = deviceList.get(position);
-        holder.deviceName.setText(deviceItem.name);
-        holder.deviceAddress.setText(deviceItem.address);
+        final DeviceAddress deviceAddress = deviceList.get(position);
+        holder.deviceName.setText(deviceAddress.name);
+        holder.deviceAddress.setText(deviceAddress.address);
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //DeviceItem deviceItem = deviceList.get(position);
-                String deviceName = deviceItem.name;
-                String deviceAddress = deviceItem.address;
-                AltosDebug.debug("+++ onClick: %s %s +++", deviceName, deviceAddress);
+                //DeviceAddress deviceAddress = deviceList.get(position);
+                String name = deviceAddress.name;
+                String address = deviceAddress.address;
+                AltosDebug.debug("+++ onClick: %s %s +++", name, address);
 
                 /* Ignore clicks on items that are too short */
-                if (deviceAddress.length() < 17) {
+                if (address.length() < 17) {
                     AltosDebug.debug("+++ Ignore short address +++");
                     return;
                 }
@@ -78,12 +82,12 @@ public class DeviceViewAdapter extends RecyclerView.Adapter<DeviceViewHolder>  {
                 // Cancel discovery because it's costly and we're about to connect
                 //mBtAdapter.cancelDiscovery();
 
-                AltosDebug.debug("******* selected item '%s'", deviceName);
+                AltosDebug.debug("******* selected item '%s'", name);
 
                 // Create the result Intent and include the MAC address
                 Intent intent = new Intent();
-                intent.putExtra(DeviceListActivity.EXTRA_DEVICE_ADDRESS, deviceAddress);
-                intent.putExtra(DeviceListActivity.EXTRA_DEVICE_NAME, deviceName);
+                intent.putExtra(DeviceListActivity.EXTRA_DEVICE_ADDRESS, address);
+                intent.putExtra(DeviceListActivity.EXTRA_DEVICE_NAME, name);
 
                 // Set result and finish this Activity
                 ((Activity) context).setResult(Activity.RESULT_OK, intent);

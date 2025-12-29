@@ -1,9 +1,14 @@
 package org.altusmetrum.altosdroid;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.hardware.usb.UsbDevice;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -13,17 +18,20 @@ import android.app.Activity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresPermission;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-import android.app.PendingIntent;
+
 import android.content.Intent;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,11 +40,12 @@ import org.altusmetrum.altosdroid.databinding.ActivityMainBinding;
 
 import org.altusmetrum.altoslib_14.*;
 
+import java.io.File;
+import java.lang.ref.WeakReference;
+
 public class    MainActivity extends AppCompatActivity implements LocationListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
-    private ActivityMainBinding binding;
-
-    	// Actions sent to the telemetry server at startup time
+    // Actions sent to the telemetry server at startup time
 
 	public static final String ACTION_BLUETOOTH = "org.altusmetrum.AltosDroid.BLUETOOTH";
 	public static final String ACTION_USB = "org.altusmetrum.AltosDroid.USB";
@@ -87,11 +96,106 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 
 	public static FragmentManager fm;
 
+	boolean idle_mode = false;
+
 	public Location location = null;
 	public TelemetryState telemetry_state = null;
 	public AltosState state = null;
 
 	private BluetoothAdapter mBluetoothAdapter = null;
+
+	UsbDevice pending_usb_device = null;
+	boolean start_with_usb;
+
+	// Service
+	private boolean mIsBound = false;
+	private Messenger mService;
+	final Messenger mMessenger = new Messenger(new IncomingHandler(this));
+
+	// The Handler that gets information back from the Telemetry Service
+	static class IncomingHandler extends Handler {
+		private final WeakReference<MainActivity> mAltosDroid;
+		IncomingHandler(MainActivity ad) { mAltosDroid = new WeakReference<MainActivity>(ad); }
+
+		@Override
+		public void handleMessage(Message msg) {
+			MainActivity ad = mAltosDroid.get();
+
+			switch (msg.what) {
+			case MSG_STATE:
+				if (msg.obj == null) {
+					AltosDebug.debug("telemetry_state null!");
+					return;
+				}
+				ad.update_state((TelemetryState) msg.obj);
+				break;
+			case MSG_UPDATE_AGE:
+				ad.update_age();
+				break;
+			case MSG_IDLE_MODE:
+				ad.idle_mode = (Boolean) msg.obj;
+				ad.update_state(null);
+				break;
+			case MSG_FILE_FAILED:
+				ad.file_failed((File) msg.obj);
+				break;
+			}
+		}
+	};
+
+	private ServiceConnection mConnection = new ServiceConnection() {
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			AltosDebug.debug("onServiceConnected\n");
+			mService = new Messenger(service);
+			try {
+				Message msg = Message.obtain(null, TelemetryService.MSG_REGISTER_CLIENT);
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				AltosDebug.debug("attempt to register telemetry service client failed\n");
+				// In this case the service has crashed before we could even do anything with it
+			}
+			if (pending_usb_device != null) {
+				try {
+					mService.send(Message.obtain(null, TelemetryService.MSG_OPEN_USB, pending_usb_device));
+					pending_usb_device = null;
+				} catch (RemoteException e) {
+				}
+			}
+		}
+
+		public void onServiceDisconnected(ComponentName className) {
+			AltosDebug.debug("onServiceDisconnected\n");
+			// This is called when the connection with the service has been unexpectedly disconnected - process crashed.
+			mService = null;
+		}
+	};
+
+	void doBindService() {
+		AltosDebug.debug("doBindService\n");
+		bindService(new Intent(this, TelemetryService.class), mConnection, Context.BIND_AUTO_CREATE);
+		mIsBound = true;
+	}
+
+	void doUnbindService() {
+		AltosDebug.debug("doUnbindService\n");
+		if (mIsBound) {
+			// If we have received the service, and hence registered with it, then now is the time to unregister.
+			if (mService != null) {
+				try {
+					Message msg = Message.obtain(null, TelemetryService.MSG_UNREGISTER_CLIENT);
+					msg.replyTo = mMessenger;
+					mService.send(msg);
+				} catch (RemoteException e) {
+					// There is nothing special we need to do if the service has crashed.
+				}
+			}
+			// Detach our existing connection.
+			unbindService(mConnection);
+			mIsBound = false;
+		}
+	}
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +203,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		AltosDebug.init(this);
 		AltosDebug.debug("+++ ON CREATE +++");
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         ActivityLayouts.applyEdgeToEdge(this, R.id.activity_main);
         BottomNavigationView navView = findViewById(R.id.nav_view);
@@ -169,12 +273,12 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		}
 		if (itemId == R.id.disconnect) {
 			// Disconnect the device
-			//disconnectDevice(false);
+			disconnectDevice(false);
 			return true;
 		}
 		if (itemId == R.id.quit) {
 			//AltosDebug.debug("R.id.quit");
-			//disconnectDevice(true);
+			disconnectDevice(true);
 			finish();
 			return true;
 		}
@@ -238,6 +342,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 					String name = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_NAME);
 					String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
 					AltosDebug.debug("connect %s %s", name, address);
+					connectDevice(name, address);
 				}
 				break;
 			default:
@@ -375,6 +480,48 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 			((LocationManager) getSystemService(Context.LOCATION_SERVICE)).removeUpdates(this);
 	}
 
+	private void connectDevice(String name, String address) {
+		try {
+			DeviceAddress deviceAddress = new DeviceAddress(name, address);
+			mService.send(Message.obtain(null, TelemetryService.MSG_CONNECT, deviceAddress));
+		} catch (RemoteException e) {
+			AltosDebug.error("connectDevice(): %s", e);
+		}
+	}
+
+	private void disconnectDevice(boolean remember) {
+		try {
+			mService.send(Message.obtain(null, TelemetryService.MSG_DISCONNECT, (Boolean) remember));
+		} catch (RemoteException e) {
+		}
+	}
+
+	private void idle_mode(Intent data) {
+
+	}
+	boolean fail_shown;
+
+	private void file_failed(File file) {
+		if (!fail_shown) {
+			fail_shown = true;
+			AlertDialog fail = new AlertDialog.Builder(this).create();
+			fail.setTitle("Failed to Create Log File");
+			fail.setMessage(file.getPath());
+			fail.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+				       new DialogInterface.OnClickListener() {
+					       public void onClick(DialogInterface dialog, int which) {
+						       dialog.dismiss();
+					       }
+				       });
+			fail.show();
+		}
+	}
 	void update_ui(TelemetryState telem_state, AltosState state, boolean quiet) {
+	}
+
+	void update_state(TelemetryState new_telemetry_state) {
+	}
+
+	void update_age() {
 	}
 }
