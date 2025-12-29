@@ -56,6 +56,11 @@
                 android:resource="@xml/device_filter"/>
         </activity>
 
+        <activity android:name=".DeviceListActivity"
+            android:label="@string/select_device"
+            android:theme="@android:style/Theme.Dialog"
+            android:configChanges="orientation|keyboardHidden"/>
+
         <service
             android:name=".telemetry.TelemetryService"
             android:foregroundServiceType="connectedDevice" />

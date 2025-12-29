@@ -3,9 +3,8 @@ plugins {
 }
 
 android {
-    namespace 'org.altusmetrum.altosdroid'
+    namespace = 'org.altusmetrum.altosdroid'
     compileSdk 36
-
     defaultConfig {
         applicationId "org.altusmetrum.altosdroid"
         minSdk 24
@@ -23,11 +22,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     buildFeatures {
-        viewBinding true
+        viewBinding = true
     }
 }
 
@@ -42,6 +41,8 @@ dependencies {
     implementation libs.navigation.ui
     implementation libs.androidx.navigation.fragment
     implementation libs.androidx.navigation.ui
+    implementation libs.androidx.recyclerview
+    implementation project(':altoslib_14')
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core

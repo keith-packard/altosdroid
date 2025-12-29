@@ -18,7 +18,13 @@
 		<item name="android:textStyle">bold</item>
 	</style>
 	<style name="PosText" parent="ValueText">
-		<item name="android:textSize">28sp</item>
+		<item name="android:textSize">-4sp</item>
+	</style>
+	<style name="ButtonText" parent="LabelText">
+	</style>
+	<style name="DeviceText" parent="LabelText">
+		<item name="android:textSize">-4sp</item>
+		<item name="android:textStyle">bold</item>
 	</style>
 
 </resources>
