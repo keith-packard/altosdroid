@@ -8,6 +8,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.app.Activity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -95,6 +96,8 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+		AltosDebug.init(this);
+		AltosDebug.debug("+++ ON CREATE +++");
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -133,7 +136,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 	private void noticeIntent(Intent intent) {
 		ensureBluetooth();
 	}
-/*
+
     @Override
 	public void onStart() {
 		super.onStart();
@@ -201,7 +204,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 					 });
 			AlertDialog alert_freq = builder_freq.create();
 			alert_freq.show();
-			*
+			*/
 
 			return true;
 		}
@@ -221,10 +224,25 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 			serverIntent.putExtra(EXTRA_FREQUENCY, telem_frequency);
 			startActivityForResult(serverIntent, REQUEST_IDLE_MODE);
 
-			 *
+			 */
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		AltosDebug.debug("+++ ON ACTIVITY RESULT request %d result %d +++", requestCode, resultCode);
+		switch(requestCode) {
+			case REQUEST_CONNECT_DEVICE:
+				if (resultCode == Activity.RESULT_OK) {
+					String name = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_NAME);
+					String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+					AltosDebug.debug("connect %s %s", name, address);
+				}
+				break;
+			default:
+				super.onActivityResult(requestCode, resultCode, data);
+		}
 	}
 
 	private void enable_location_updates(boolean do_update) {
@@ -356,7 +374,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		if (have_location_permission)
 			((LocationManager) getSystemService(Context.LOCATION_SERVICE)).removeUpdates(this);
 	}
-*/
+
 	void update_ui(TelemetryState telem_state, AltosState state, boolean quiet) {
 	}
 }

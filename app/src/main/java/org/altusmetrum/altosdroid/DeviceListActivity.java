@@ -21,6 +21,7 @@ package org.altusmetrum.altosdroid;
 import android.app.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.bluetooth.BluetoothAdapter;
@@ -77,6 +78,7 @@ public class DeviceListActivity extends AppCompatActivity {
         Button scanButton = (Button) findViewById(R.id.button_scan);
         scanButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
+                AltosDebug.debug("+++ SCAN BUTTON CLICKED +++");
                 doDiscovery();
                 v.setVisibility(View.GONE);
             }
@@ -90,10 +92,13 @@ public class DeviceListActivity extends AppCompatActivity {
         // Find and set up the RecyclerView for paired devices
         RecyclerView pairedListView = (RecyclerView) findViewById(R.id.paired_devices);
         pairedListView.setAdapter(mPairedDevicesArrayAdapter);
+        pairedListView.setLayoutManager(new LinearLayoutManager(this));
 
         // Find and set up the RecyclerView for newly discovered devices
         RecyclerView newDevicesListView = (RecyclerView) findViewById(R.id.new_devices);
         newDevicesListView.setAdapter(mNewDevicesArrayAdapter);
+        newDevicesListView.setLayoutManager(new LinearLayoutManager(this));
+
 
         // Register for broadcasts when a device is discovered
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
@@ -108,6 +113,7 @@ public class DeviceListActivity extends AppCompatActivity {
 
         // Get a set of currently paired devices
         Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
+        AltosDebug.debug("number of paired devices: %d", pairedDevices.size());
 
         // If there are paired devices, add each one to the ArrayAdapter
         if (pairedDevices.size() > 0) {
@@ -140,7 +146,7 @@ public class DeviceListActivity extends AppCompatActivity {
      * Start device discover with the BluetoothAdapter
      */
     private void doDiscovery() {
-        //AltosDebug.debug("doDiscovery()");
+        AltosDebug.debug("doDiscovery()");
 
         // Indicate scanning in the title
         setTitle(R.string.scanning);
@@ -163,6 +169,7 @@ public class DeviceListActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+            AltosDebug.debug("+++ ACTION: %s +++", action);
 
             // When discovery finds a device
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
@@ -170,6 +177,8 @@ public class DeviceListActivity extends AppCompatActivity {
                 /* Get the BluetoothDevice object from the Intent
                  */
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+
+                AltosDebug.debug("+++ FOUND DEVICE: %s %s +++", device.getName(), device.getAddress());
 
                 /* If it's already paired, skip it, because it's been listed already
                  */
