@@ -31,7 +31,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.usb.UsbDevice;
-import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -39,8 +38,8 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
 
 import org.altusmetrum.altoslib_14.*;
 
@@ -73,13 +72,14 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
 	static final int MSG_REBOOT	       = 17;
 	static final int MSG_IGNITER_QUERY     = 18;
 	static final int MSG_IGNITER_FIRE      = 19;
+	static final int MSG_POST_NOTIFICATION = 20;
 
 	// Unique Identification Number for the Notification.
 	// We use it on Notification start, and to cancel it.
 	private final int NOTIFICATION = R.string.telemetry_service_label;
 	//private NotificationManager mNM;
 
-	ArrayList<Messenger> clients = new ArrayList<Messenger>(); // Keeps track of all current registered clients.
+	ArrayList<Messenger> clients = new ArrayList<>(); // Keeps track of all current registered clients.
 	final Handler   handler   = new IncomingHandler(this);
 	final Messenger messenger = new Messenger(handler); // Target we publish for clients to send messages to IncomingHandler.
 
@@ -105,14 +105,14 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
 	// Handler of incoming messages from clients.
 	static class IncomingHandler extends Handler {
 		private final WeakReference<TelemetryService> service;
-		IncomingHandler(TelemetryService s) { service = new WeakReference<TelemetryService>(s); }
+		IncomingHandler(TelemetryService s) { service = new WeakReference<>(s); }
 
 		@Override
-		public void handleMessage(Message msg) {
+		public void handleMessage(@NonNull Message msg) {
 			DeviceAddress address;
 
 			TelemetryService s = service.get();
-			AltosDroidLink bt = null;
+			AltosDroidLink bt;
 			if (s == null)
 				return;
 
@@ -156,10 +156,9 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
 					try {
 						s.altos_link.set_radio_frequency(s.telemetry_state.frequency);
 						s.altos_link.save_frequency();
-					} catch (InterruptedException e) {
-					} catch (TimeoutException e) {
+					} catch (InterruptedException | TimeoutException ignored) {
 					}
-				}
+                }
 				s.send_to_clients();
 				break;
 			case MSG_SETBAUD:
@@ -186,7 +185,7 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
 				AltosDebug.debug("Connected to device");
 				try {
 					s.connected();
-				} catch (InterruptedException ie) {
+				} catch (InterruptedException ignored) {
 				}
 				break;
 			case MSG_CONNECT_FAILED:
@@ -259,6 +258,10 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
 				AltosDebug.debug("igniter fire");
 				s.igniter_fire((String) msg.obj);
 				break;
+			case MSG_POST_NOTIFICATION:
+				AltosDebug.debug("post notification");
+				s.post_notification();
+				break;
 			default:
 				super.handleMessage(msg);
 			}
@@ -312,19 +315,22 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
 		}
 	}
 
-	private String createNotificationChannel(String channelId, String channelName) {
+	private NotificationChannel createNotificationChannel(String channelId, String channelName) {
 		NotificationChannel chan = new NotificationChannel(
-				channelId, channelName, NotificationManager.IMPORTANCE_NONE);
+				channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT);
 		chan.setLightColor(Color.BLUE);
 		chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
 		NotificationManager service = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		service.createNotificationChannel(chan);
-		return channelId;
+		return chan;
 	}
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-		AltosDebug.debug("Received start id %d: %s", startId, intent);
+	private void displayNotification(Context context, Notification notification) {
+		NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		manager.notify(1, notification);
+	}
+
+	private void post_notification() {
 		int		flag;
 
 		if (android.os.Build.VERSION.SDK_INT >= 31) // android.os.Build.VERSION_CODES.S
@@ -336,24 +342,30 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
 				new Intent(this, MainActivity.class), flag);
 
-		String channelId =
-				(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-						? createNotificationChannel("altosdroid_telemetry", "AltosDroid Telemetry Service")
-						: "";
+		String channelId = "altosdroid_telemetry";
+
+		NotificationChannel channel = createNotificationChannel(channelId,
+				"AltosDroid Telemetry Service");
 
 		// Create notification to be displayed while the service runs
-		Notification notification = new NotificationCompat.Builder(this, channelId)
-				.setContentTitle(getText(R.string.telemetry_service_label))
-				.setContentText(getText(R.string.telemetry_service_started))
-				.setContentIntent(contentIntent)
-				.setWhen(System.currentTimeMillis())
-				.setOngoing(true)
-				.setSmallIcon(R.drawable.altosdroid)
-//				.setLargeIcon(R.drawable.am_status_c)
-				.build();
-
+		Notification.Builder builder = new Notification.Builder(this, channel.getId());
+		builder.setSmallIcon(R.drawable.altosdroid);
+		builder.setContentTitle(getText(R.string.telemetry_service_label));
+		builder.setContentText(getText(R.string.telemetry_service_started));
+		builder.setContentIntent(contentIntent);
+		builder.setWhen(System.currentTimeMillis());
+		builder.setOngoing(true);
+		//.setLargeIcon(R.drawable.altosdroid)
+		builder.setBadgeIconType(Notification.BADGE_ICON_SMALL);
+		Notification notification = builder.build();
+		// displayNotification(this, notification);
 		// Move us into the foreground.
 		startForeground(NOTIFICATION, notification);
+	}
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+		AltosDebug.debug("Received start id %d: %s", startId, intent);
 
 		/* Start bluetooth if we don't have a connection already */
 		if (intent != null &&
@@ -568,8 +580,9 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
 	}
 
 	private void start_altos_bluetooth(DeviceAddress address, boolean pause) {
-		if (bluetooth_adapter == null || !bluetooth_adapter.isEnabled() || address.address == null)
+		if (bluetooth_adapter == null || !bluetooth_adapter.isEnabled() || address.address == null) {
 			return;
+		}
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
             return;
         }

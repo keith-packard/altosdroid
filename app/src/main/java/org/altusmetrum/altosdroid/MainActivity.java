@@ -15,8 +15,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.app.Activity;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -75,6 +73,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 	public boolean have_bluetooth_permission = false;
 	public boolean have_bluetooth_connect_permission = false;
 	public boolean have_bluetooth_scan_permission = false;
+	public boolean have_notification_permission = false;
 	public boolean asked_permission = false;
 
 	static final String BLUETOOTH_CONNECT = "android.permission.BLUETOOTH_CONNECT";
@@ -162,6 +161,8 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 				} catch (RemoteException e) {
 				}
 			}
+			if (have_notification_permission)
+				postNotification();
 		}
 
 		public void onServiceDisconnected(ComponentName className) {
@@ -400,6 +401,10 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 					if (permissions[i].equals(BLUETOOTH_SCAN)) {
 						have_bluetooth_scan_permission = true;
 					}
+					if (permissions[i].equals(Manifest.permission.POST_NOTIFICATIONS)) {
+						have_notification_permission = true;
+						postNotification();
+					}
 				}
 			}
 		}
@@ -443,6 +448,11 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 			{
 				have_bluetooth_scan_permission = true;
 			}
+			if (ActivityCompat.checkSelfPermission(this,
+					Manifest.permission.POST_NOTIFICATIONS)
+					== PackageManager.PERMISSION_GRANTED) {
+				have_notification_permission = true;
+			}
 			int count = 0;
 			if (!have_location_permission)
 				count += 1;
@@ -453,6 +463,8 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 			if (!have_bluetooth_connect_permission)
 				count += 1;
 			if (!have_bluetooth_scan_permission)
+				count += 1;
+			if (!have_notification_permission)
 				count += 1;
 			if (count > 0)
 			{
@@ -468,6 +480,8 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 					permissions[i++] = BLUETOOTH_CONNECT;
 				if (!have_bluetooth_scan_permission)
 					permissions[i++] = BLUETOOTH_SCAN;
+				if (!have_notification_permission)
+					permissions[i++] = Manifest.permission.POST_NOTIFICATIONS;
 				ActivityCompat.requestPermissions(this, permissions, MY_PERMISSION_REQUEST);
 			}
 		}
@@ -522,6 +536,15 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		try {
 			mService.send(Message.obtain(null, TelemetryService.MSG_DISCONNECT, (Boolean) remember));
 		} catch (RemoteException e) {
+			AltosDebug.error("disconnectDevice(): %s", e.getMessage());
+		}
+	}
+
+	private void postNotification() {
+		try {
+			mService.send(Message.obtain(null, TelemetryService.MSG_POST_NOTIFICATION));
+		} catch (RemoteException e) {
+			AltosDebug.error("postNotification() : %s", e.getMessage());
 		}
 	}
 
