@@ -42,24 +42,20 @@ public class DeviceViewAdapter extends RecyclerView.Adapter<DeviceViewHolder>  {
 
     public void add(DeviceAddress device) {
         if (this.deviceList.contains(device)) {
-            AltosDebug.debug("Duplicate device %s", device.name);
             return;
         }
         this.deviceList.add(device);
-        AltosDebug.debug("Add device %s", device.name);
         notifyItemInserted(getItemCount() - 1);
     }
 
     @NonNull
     @Override
     public DeviceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        AltosDebug.debug("onCreateViewHolder");
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.device_item, parent, false);
         return new DeviceViewHolder(view);
     }
 
     public void onBindViewHolder(@NonNull DeviceViewHolder holder, int position) {
-        AltosDebug.debug("onBindViewHolder");
         long itemId = getItemId(position);
         holder.parentLayout.setTag(itemId);
         final DeviceAddress deviceAddress = deviceList.get(position);
@@ -71,18 +67,12 @@ public class DeviceViewAdapter extends RecyclerView.Adapter<DeviceViewHolder>  {
                 //DeviceAddress deviceAddress = deviceList.get(position);
                 String name = deviceAddress.name;
                 String address = deviceAddress.address;
-                AltosDebug.debug("+++ onClick: %s %s +++", name, address);
 
                 /* Ignore clicks on items that are too short */
                 if (address.length() < 17) {
                     AltosDebug.debug("+++ Ignore short address +++");
                     return;
                 }
-
-                // Cancel discovery because it's costly and we're about to connect
-                //mBtAdapter.cancelDiscovery();
-
-                AltosDebug.debug("******* selected item '%s'", name);
 
                 // Create the result Intent and include the MAC address
                 Intent intent = new Intent();

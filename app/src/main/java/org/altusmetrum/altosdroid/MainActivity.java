@@ -245,6 +245,13 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 	public void onStart() {
 		super.onStart();
 		noticeIntent(getIntent());
+
+		// Start Telemetry Service
+		String	action = start_with_usb ? ACTION_USB : ACTION_BLUETOOTH;
+
+		startService(new Intent(action, null, this, TelemetryService.class));
+
+		doBindService();
 	}
 
 	@Override
@@ -471,7 +478,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 
 	@Override
 	public void onPause() {
-		// AltosDebug.debug("- ON PAUSE -");
+		AltosDebug.debug("- ON PAUSE -");
 
 		super.onPause();
 
@@ -480,9 +487,32 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 			((LocationManager) getSystemService(Context.LOCATION_SERVICE)).removeUpdates(this);
 	}
 
+	@Override
+	public void onStop() {
+		AltosDebug.debug("-- ON STOP --");
+
+		super.onStop();
+	}
+
+	@Override
+	public void onDestroy() {
+		AltosDebug.debug("--- ON DESTROY ---");
+
+		super.onDestroy();
+
+		//saved_state = null;
+
+		doUnbindService();
+//		if (mAltosVoice != null) {
+//			mAltosVoice.stop();
+//			mAltosVoice = null;
+//		}
+//		stop_timer();
+	}
+
 	private void connectDevice(String name, String address) {
 		try {
-			DeviceAddress deviceAddress = new DeviceAddress(name, address);
+			DeviceAddress deviceAddress = new DeviceAddress(address, name);
 			mService.send(Message.obtain(null, TelemetryService.MSG_CONNECT, deviceAddress));
 		} catch (RemoteException e) {
 			AltosDebug.error("connectDevice(): %s", e);
@@ -517,11 +547,14 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		}
 	}
 	void update_ui(TelemetryState telem_state, AltosState state, boolean quiet) {
+		AltosDebug.debug("update_ui");
 	}
 
 	void update_state(TelemetryState new_telemetry_state) {
+		AltosDebug.debug("update_state");
 	}
 
 	void update_age() {
+		AltosDebug.debug("update_age");
 	}
 }

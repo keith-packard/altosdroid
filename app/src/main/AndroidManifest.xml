@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="org.altusmetrum.altosdroid">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Google Maps -->
     <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
 
@@ -62,7 +60,7 @@
             android:configChanges="orientation|keyboardHidden"/>
 
         <service
-            android:name=".telemetry.TelemetryService"
+            android:name=".TelemetryService"
             android:foregroundServiceType="connectedDevice" />
     </application>
 

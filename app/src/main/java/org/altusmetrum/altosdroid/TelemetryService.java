@@ -19,19 +19,28 @@
 package org.altusmetrum.altosdroid;
 
 import android.Manifest;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.hardware.usb.UsbDevice;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 
 import org.altusmetrum.altoslib_14.*;
 
@@ -258,19 +267,125 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
 
     @Override
     public void onCreate() {
-    }
+
+		AltosDebug.init(this);
+
+		// Initialise preferences
+		AltosDroidPreferences.init(this);
+
+		// Get local Bluetooth adapter
+		bluetooth_adapter = BluetoothAdapter.getDefaultAdapter();
+
+		telemetry_state = new TelemetryState();
+
+		// Create a reference to the NotificationManager so that we can update our notifcation text later
+		//mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+
+		telemetry_state.connect = TelemetryState.CONNECT_DISCONNECTED;
+		telemetry_state.address = null;
+
+		/* Pull the saved state information out of the preferences database
+		 */
+		ArrayList<Integer> serials = AltosPreferences.list_states();
+
+		telemetry_state.latest_serial = AltosPreferences.latest_state();
+
+		telemetry_state.quiet = true;
+
+		AltosDebug.debug("latest serial %d\n", telemetry_state.latest_serial);
+
+		for (int serial : serials) {
+			AltosState saved_state = AltosPreferences.state(serial);
+			if (saved_state != null) {
+				AltosDebug.debug("recovered old state serial %d flight %d",
+						 serial,
+						 saved_state.cal_data().flight);
+				if (saved_state.gps != null)
+					AltosDebug.debug("\tposition %f,%f",
+							 saved_state.gps.lat,
+							 saved_state.gps.lon);
+				telemetry_state.put(serial, saved_state);
+			} else {
+				AltosDebug.debug("Failed to recover state for %d", serial);
+				AltosPreferences.remove_state(serial);
+			}
+		}
+	}
+
+	private String createNotificationChannel(String channelId, String channelName) {
+		NotificationChannel chan = new NotificationChannel(
+				channelId, channelName, NotificationManager.IMPORTANCE_NONE);
+		chan.setLightColor(Color.BLUE);
+		chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+		NotificationManager service = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		service.createNotificationChannel(chan);
+		return channelId;
+	}
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        return START_STICKY;
+		AltosDebug.debug("Received start id %d: %s", startId, intent);
+		int		flag;
+
+		if (android.os.Build.VERSION.SDK_INT >= 31) // android.os.Build.VERSION_CODES.S
+			flag = 33554432; // PendingIntent.FLAG_MUTABLE
+		else
+			flag = 0;
+
+		// The PendingIntent to launch our activity if the user selects this notification
+		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+				new Intent(this, MainActivity.class), flag);
+
+		String channelId =
+				(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+						? createNotificationChannel("altosdroid_telemetry", "AltosDroid Telemetry Service")
+						: "";
+
+		// Create notification to be displayed while the service runs
+		Notification notification = new NotificationCompat.Builder(this, channelId)
+				.setContentTitle(getText(R.string.telemetry_service_label))
+				.setContentText(getText(R.string.telemetry_service_started))
+				.setContentIntent(contentIntent)
+				.setWhen(System.currentTimeMillis())
+				.setOngoing(true)
+				.setSmallIcon(R.drawable.altosdroid)
+//				.setLargeIcon(R.drawable.am_status_c)
+				.build();
+
+		// Move us into the foreground.
+		startForeground(NOTIFICATION, notification);
+
+		/* Start bluetooth if we don't have a connection already */
+		if (intent != null &&
+		    (telemetry_state.connect == TelemetryState.CONNECT_NONE ||
+		     telemetry_state.connect == TelemetryState.CONNECT_DISCONNECTED))
+		{
+			String	action = intent.getAction();
+
+			if (action.equals(MainActivity.ACTION_BLUETOOTH)) {
+				DeviceAddress address = AltosDroidPreferences.active_device();
+				if (address != null && !address.address.startsWith("USB"))
+					start_altos_bluetooth(address, false);
+			}
+		}
+		return START_STICKY;
     }
     @Override
     public void onDestroy() {
+
+		// Stop the bluetooth Comms threads
+		disconnect(true);
+
+		// Demote us from the foreground, and cancel the persistent notification.
+		stopForeground(true);
+
+		// Tell the user we stopped.
+		Toast.makeText(this, R.string.telemetry_service_stopped, Toast.LENGTH_SHORT).show();
     }
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return messenger.getBinder();
     }
-
 
 	/* Handle telemetry packet
 	 */
@@ -624,12 +739,16 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
 
     @Override
     public void update(AltosState state, AltosListenerState listener_state) {
-
+		if (state != null)
+			AltosDebug.debug("update call %s freq %7.3f", state.cal_data().callsign, state.frequency);
+		telemetry_state.put(state.cal_data().serial, state);
+		telemetry_state.receiver_battery = listener_state.battery;
+		send_to_clients();
     }
 
     @Override
     public void error(String reason) {
-
+		stop_idle_monitor();
     }
 
     @Override

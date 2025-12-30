@@ -67,7 +67,6 @@ public class DeviceListActivity extends AppCompatActivity {
         // Initialize the button to perform device discovery
         Button scanButton = findViewById(R.id.button_scan);
         scanButton.setOnClickListener(v -> {
-            AltosDebug.debug("+++ SCAN BUTTON CLICKED +++");
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
                 doDiscovery();
             }
@@ -106,7 +105,6 @@ public class DeviceListActivity extends AppCompatActivity {
             return;
         }
         Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
-        AltosDebug.debug("number of paired devices: %d", pairedDevices.size());
 
         // If there are paired devices, add each one to the ArrayAdapter
         if (!pairedDevices.isEmpty()) {
@@ -114,11 +112,11 @@ public class DeviceListActivity extends AppCompatActivity {
             for (BluetoothDevice device : pairedDevices) {
                 String name = device.getName();
                 if (name != null && name.startsWith("TeleBT"))
-                    mPairedDevicesArrayAdapter.add(new DeviceAddress(name, device.getAddress()));
+                    mPairedDevicesArrayAdapter.add(new DeviceAddress(device.getAddress(), name));
             }
         } else {
             String noDevices = getResources().getText(R.string.none_paired).toString();
-            mPairedDevicesArrayAdapter.add(new DeviceAddress(noDevices, ""));
+            mPairedDevicesArrayAdapter.add(new DeviceAddress("", noDevices));
         }
     }
 
@@ -142,7 +140,6 @@ public class DeviceListActivity extends AppCompatActivity {
      */
     @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
     private void doDiscovery() {
-        AltosDebug.debug("doDiscovery()");
 
         // Indicate scanning in the title
         setTitle(R.string.scanning);
@@ -176,7 +173,6 @@ public class DeviceListActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            AltosDebug.debug("+++ ACTION: %s +++", action);
 
             // When discovery finds a device
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
@@ -191,7 +187,7 @@ public class DeviceListActivity extends AppCompatActivity {
                 {
                     String	name = device.getName();
                     if (name != null && name.startsWith("TeleBT"))
-                        mNewDevicesArrayAdapter.add(new DeviceAddress(name, device.getAddress()));
+                        mNewDevicesArrayAdapter.add(new DeviceAddress(device.getAddress(), name));
                 }
 
                 /* When discovery is finished, change the Activity title
@@ -200,7 +196,7 @@ public class DeviceListActivity extends AppCompatActivity {
                 setTitle(R.string.select_device);
                 if (mNewDevicesArrayAdapter.getItemCount() == 0) {
                     String noDevices = getResources().getText(R.string.none_found).toString();
-                    mNewDevicesArrayAdapter.add(new DeviceAddress(noDevices, ""));
+                    mNewDevicesArrayAdapter.add(new DeviceAddress("", noDevices));
                 }
             }
         }
