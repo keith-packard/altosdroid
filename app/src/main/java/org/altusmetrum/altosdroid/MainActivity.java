@@ -206,7 +206,6 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         ActivityLayouts.applyEdgeToEdge(this, R.id.activity_main);
-        BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
