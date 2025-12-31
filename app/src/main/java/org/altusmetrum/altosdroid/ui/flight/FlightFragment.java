@@ -43,7 +43,7 @@ public class FlightFragment extends AltosFragment {
 
 		apogee_meter = new AltosVoltMeter (AltosLib.ao_igniter_good, binding.apogeeRow, binding.apogeeRedled, binding.apogeeGreenled, binding.apogeeVoltageValue, resources);
 		main_meter = new AltosVoltMeter (AltosLib.ao_igniter_good, binding.mainRow, binding.mainRedled, binding.mainGreenled, binding.mainVoltageValue, resources);
-		
+
 		AltosVoltMeter[] local_igniters = {
 				new AltosVoltMeter(AltosLib.ao_igniter_good, binding.igniteARow, binding.igniteARedled, binding.igniteAGreenled, binding.igniteAVoltageValue, resources),
 				new AltosVoltMeter(AltosLib.ao_igniter_good, binding.igniteBRow, binding.igniteBRedled, binding.igniteBGreenled, binding.igniteBVoltageValue, resources),

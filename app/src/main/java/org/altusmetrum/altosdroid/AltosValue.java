@@ -18,6 +18,10 @@
 
 package org.altusmetrum.altosdroid;
 
+import android.content.res.Resources;
+import android.location.Location;
+
+import org.altusmetrum.altoslib_14.AltosGreatCircle;
 import org.altusmetrum.altoslib_14.AltosLib;
 
 import java.util.Locale;
@@ -49,5 +53,29 @@ public class AltosValue {
             return "";
         }
 		return String.format(Locale.getDefault(), format, value);
+	}
+
+	static public String direction(AltosGreatCircle from_receiver, Location receiver_location, Resources resources) {
+		if (from_receiver == null || receiver_location == null || !receiver_location.hasBearing())
+			return null;
+
+		float	bearing = receiver_location.getBearing();
+		float	heading = (float) from_receiver.bearing - bearing;
+
+		while (heading <= -180.0f)
+			heading += 360.0f;
+		while (heading > 180.0f)
+			heading -= 360.0f;
+
+		int iheading = (int) (heading + 0.5f);
+
+		if (iheading == 0)
+			return resources.getString(R.string.heading_ahead);
+		else if (iheading < -179 || 179 < iheading)
+			return resources.getString(R.string.heading_backwards);
+		else if (iheading < 0)
+			return String.format(Locale.getDefault(), "%s %d°", resources.getString(R.string.heading_left), -iheading);
+		else
+			return String.format(Locale.getDefault(), "%s %d°", resources.getString(R.string.heading_right), iheading);
 	}
 }

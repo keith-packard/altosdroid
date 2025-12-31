@@ -93,6 +93,10 @@
     <string name="unknown_value">«unknown»</string>
     <string name="connecting_to">Connecting to</string>
     <string name="not_connected">Not connected</string>
+    <string name="heading_left">left</string>
+    <string name="heading_right">right</string>
+    <string name="heading_ahead">ahead</string>
+    <string name="heading_backwards">backwards</string>
 
     <!-- Map preload -->
     <string name="preload_site_label">Known Launch Sites</string>
