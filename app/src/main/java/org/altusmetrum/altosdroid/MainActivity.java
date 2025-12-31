@@ -34,6 +34,7 @@ import android.os.RemoteException;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.WindowManager;
 
 import org.altusmetrum.altosdroid.databinding.ActivityMainBinding;
 
@@ -42,6 +43,9 @@ import org.altusmetrum.altoslib_14.*;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
+import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 class FragmentCallbacks extends FragmentManager.FragmentLifecycleCallbacks {
 
@@ -58,6 +62,30 @@ class FragmentCallbacks extends FragmentManager.FragmentLifecycleCallbacks {
 		AltosDebug.debug("onFragmentPaused");
 	}
 }
+
+class SavedState {
+	long	received_time;
+	int	state;
+	boolean	locked;
+	String	callsign;
+	int	serial;
+	int	flight;
+	int	rssi;
+
+	SavedState(AltosState state) {
+		received_time = state.received_time;
+		this.state = state.state();
+		if (state.gps != null)
+			locked = state.gps.locked;
+		else
+			locked = false;
+		callsign = state.cal_data().callsign;
+		serial = state.cal_data().serial;
+		flight = state.cal_data().flight;
+		rssi = state.rssi;
+	}
+}
+
 public class    MainActivity extends AppCompatActivity implements LocationListener,
 		ActivityCompat.OnRequestPermissionsResultCallback, AltosUnitsListener {
 
@@ -113,7 +141,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 
 	public static FragmentManager fm;
 	public AltosFragment active_fragment;
-
+	ActivityMainBinding binding;
 	boolean idle_mode = false;
 
 	public Location location = null;
@@ -123,6 +151,8 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 	double selected_frequency = AltosLib.MISSING;
 	int selected_serial = 0;
 	AltosState state = null;
+	SavedState saved_state = null;
+	Timer timer = null;
 
 	boolean registered_units_listener;
 
@@ -234,7 +264,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		AltosDebug.init(this);
 		AltosDebug.debug("+++ ON CREATE +++");
 
-        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         ActivityLayouts.applyEdgeToEdge(this, R.id.activity_main);
         // Passing each menu ID as a set of Ids because each
@@ -552,8 +582,9 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 //			mAltosVoice.stop();
 //			mAltosVoice = null;
 //		}
-//		stop_timer();
+		stop_timer();
 	}
+
 
 	private void connectDevice(String name, String address) {
 		try {
@@ -607,6 +638,19 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 			fail.show();
 		}
 	}
+
+	boolean same_string(String a, String b) {
+		if (a == null) {
+			if (b == null)
+				return true;
+			return false;
+		} else {
+			if (b == null)
+				return false;
+			return a.equals(b);
+		}
+	}
+
 	void update_ui(TelemetryState telem_state, AltosState state, boolean quiet) {
 		AltosDebug.debug("update_ui");
 		this.state = state;
@@ -614,16 +658,51 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 
 		AltosGreatCircle from_receiver = null;
 
-		if (location != null && state.gps != null && state.gps.locked) {
-			double altitude = 0;
-			if (location.hasAltitude())
-				altitude = location.getAltitude();
-			from_receiver = new AltosGreatCircle(location.getLatitude(),
-										 location.getLongitude(),
-								     altitude,
-								     state.gps.lat,
-								     state.gps.lon,
-								     state.gps.alt);
+		if (state != null) {
+			if (location != null && state.gps != null && state.gps.locked) {
+				double altitude = 0;
+				if (location.hasAltitude())
+					altitude = location.getAltitude();
+				from_receiver = new AltosGreatCircle(location.getLatitude(),
+						location.getLongitude(),
+						altitude,
+						state.gps.lat,
+						state.gps.lon,
+						state.gps.alt);
+			}
+			if (saved_state == null || !same_string(saved_state.callsign, state.cal_data().callsign)) {
+				binding.callsignValue.setText(state.cal_data().callsign);
+			}
+			if (saved_state == null || state.cal_data().serial != saved_state.serial) {
+				if (state.cal_data().serial == AltosLib.MISSING)
+					binding.serialValue.setText("");
+				else
+					binding.serialValue.setText(String.format(Locale.getDefault(), "%d", state.cal_data().serial));
+			}
+			if (saved_state == null || state.cal_data().flight != saved_state.flight) {
+				if (state.cal_data().flight == AltosLib.MISSING)
+					binding.flightValue.setText("");
+				else
+					binding.flightValue.setText(String.format(Locale.getDefault(), "%d", state.cal_data().flight));
+			}
+			/*
+			if (saved_state == null || state.state() != saved_state.state) {
+				if (state.state() == AltosLib.ao_flight_stateless) {
+					binding.stateValue.setVisibility(View.GONE);
+				} else {
+					binding.stateValue.setText(state.state_name());
+					mStateLayout.setVisibility(View.VISIBLE);
+				}
+			}
+			*/
+
+			if (saved_state == null || state.rssi != saved_state.rssi) {
+				if (state.rssi == AltosLib.MISSING)
+					binding.rssiValue.setText("");
+				else
+					binding.rssiValue.setText(String.format(Locale.getDefault(), "%d", state.rssi));
+			}
+			saved_state = new SavedState(state);
 		}
 		if (active_fragment != null) {
             active_fragment.show(telem_state, state, from_receiver, location);
@@ -688,9 +767,71 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		AltosState	state = telemetry_state.get(shown_serial);
 
 		update_ui(telemetry_state, state, telemetry_state.quiet);
+
+		start_timer();
 	}
 
+	void set_screen_on(int age) {
+		if (age < 60)
+			getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		else
+			getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+	}
+	int state_age(long received_time) {
+		return (int) ((System.currentTimeMillis() - received_time + 500) / 1000);
+	}
+
+	static String age_string(int age) {
+		String	text;
+		if (age < 60)
+			text = String.format(Locale.getDefault(), "%ds", age);
+		else if (age < 60 * 60)
+			text = String.format(Locale.getDefault(), "%dm", age / 60);
+		else if (age < 60 * 60 * 24)
+			text = String.format(Locale.getDefault(), "%dh", age / (60 * 60));
+		else
+			text = String.format(Locale.getDefault(), "%dd", age / (24 * 60 * 60));
+		return text;
+	}
 	void update_age() {
 		AltosDebug.debug("update_age");
+		if (saved_state != null) {
+			int age = state_age(saved_state.received_time);
+
+			int style = R.style.AgeOk;
+
+			if (age >= 30)
+				style = R.style.AgeError;
+			else if (age >= 10)
+				style = R.style.AgeWarn;
+
+			binding.ageValue.setTextAppearance(style);
+
+			set_screen_on(age);
+
+			binding.ageValue.setText(age_string(age));
+		}
+	}
+
+	void timer_tick() {
+		try {
+			mMessenger.send(Message.obtain(null, MSG_UPDATE_AGE));
+		} catch (RemoteException e) {
+		}
+	}
+
+	void start_timer() {
+		if (timer == null) {
+			timer = new Timer();
+			timer.schedule(new TimerTask(){ public void run() {timer_tick();}}, 1000L, 1000L);
+		}
+	}
+
+	void stop_timer() {
+		if (timer != null) {
+			timer.cancel();
+			timer.purge();
+			timer = null;
+		}
 	}
 }

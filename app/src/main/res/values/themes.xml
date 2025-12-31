@@ -23,5 +23,13 @@
 	</style>
 	<style name="DeviceText" parent="ValueText">
 	</style>
-
+	<style name="AgeOk" parent="ValueText">
+		<item name="android:textColor">@color/age_ok</item>
+	</style>
+	<style name="AgeWarn" parent="ValueText">
+		<item name="android:textColor">@color/age_warn</item>
+	</style>
+	<style name="AgeError" parent="ValueText">
+		<item name="android:textColor">@color/age_error</item>
+	</style>
 </resources>
