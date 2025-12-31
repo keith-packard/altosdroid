@@ -18,25 +18,36 @@
 
 package org.altusmetrum.altosdroid;
 
-import android.location.Location;
-import android.widget.TextView;
-
-import androidx.fragment.app.Fragment;
-
-import org.altusmetrum.altoslib_14.AltosGreatCircle;
 import org.altusmetrum.altoslib_14.AltosLib;
-import org.altusmetrum.altoslib_14.AltosState;
-import org.altusmetrum.altoslib_14.AltosUnits;
 
-public abstract class AltosFragment extends Fragment {
-    abstract public void show(TelemetryState telem_state, AltosState state, AltosGreatCircle from_receiver, Location receiver_location);
-    public void set_value(TextView text_view,
-                          AltosUnits units,
-                          int width,
-                          double value) {
-		if (value == AltosLib.MISSING)
-			text_view.setText("");
-		else
-			text_view.setText(units.show(width, value));
+import java.util.Locale;
+
+public class AltosValue {
+    public static String pos(double p, String pos, String neg) {
+		String	h = pos;
+		if (p == AltosLib.MISSING) {
+            return "";
+        }
+		if (p < 0) {
+			h = neg;
+			p = -p;
+		}
+		int deg = (int) Math.floor(p);
+		double min = (p - Math.floor(p)) * 60.0;
+		return String.format(Locale.getDefault(), "%d° %7.4f\" %s", deg, min, h);
+	}
+
+	public static String number(String format, double value) {
+		if (value == AltosLib.MISSING) {
+            return "";
+        }
+		return String.format(Locale.getDefault(), format, value);
+	}
+
+	public static String integer(String format, int value) {
+		if (value == AltosLib.MISSING) {
+            return "";
+        }
+		return String.format(Locale.getDefault(), format, value);
 	}
 }

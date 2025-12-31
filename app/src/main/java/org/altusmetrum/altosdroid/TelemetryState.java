@@ -27,21 +27,21 @@ public class TelemetryState {
     public static final int CONNECT_CONNECTING   = 2;
     public static final int CONNECT_CONNECTED    = 3;
 
-    int		connect;
-    DeviceAddress	address;
-    AltosConfigData	config;
-    int		crc_errors;
-    double		receiver_battery;
-    double		frequency;
-    int		telemetry_rate;
+    public int		connect;
+    public DeviceAddress	address;
+    public AltosConfigData	config;
+    public int		crc_errors;
+    public double		receiver_battery;
+    public double		frequency;
+    public int		telemetry_rate;
 
-    boolean		idle_mode;
-    boolean		quiet;
+    public boolean		idle_mode;
+    public boolean		quiet;
 
-    private HashMap<Integer,AltosState>	states;
+    public HashMap<Integer,AltosState>	states;
 
-    int		latest_serial;
-    long		latest_received_time;
+    public int		latest_serial;
+    public long		latest_received_time;
 
     public void put(int serial, AltosState state) {
         long received_time = state.received_time;

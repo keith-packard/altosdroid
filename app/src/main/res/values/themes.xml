@@ -12,19 +12,16 @@
 
     </style>
 	<style name="LabelText" parent="TextAppearance.AppCompat">
-		<item name="android:textSize">32sp</item>
+		<item name="android:textSize">18sp</item>
 	</style>
 	<style name="ValueText" parent="LabelText">
 		<item name="android:textStyle">bold</item>
 	</style>
 	<style name="PosText" parent="ValueText">
-		<item name="android:textSize">24sp</item>
 	</style>
 	<style name="ButtonText" parent="LabelText">
 	</style>
-	<style name="DeviceText" parent="LabelText">
-		<item name="android:textSize">24sp</item>
-		<item name="android:textStyle">bold</item>
+	<style name="DeviceText" parent="ValueText">
 	</style>
 
 </resources>

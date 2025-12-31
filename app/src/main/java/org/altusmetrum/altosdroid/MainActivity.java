@@ -611,8 +611,23 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		AltosDebug.debug("update_ui");
 		this.state = state;
 		this.telemetry_state = telem_state;
-		if (active_fragment != null)
-			active_fragment.show(telem_state, state, null, null);
+
+		AltosGreatCircle from_receiver = null;
+
+		if (location != null && state.gps != null && state.gps.locked) {
+			double altitude = 0;
+			if (location.hasAltitude())
+				altitude = location.getAltitude();
+			from_receiver = new AltosGreatCircle(location.getLatitude(),
+										 location.getLongitude(),
+								     altitude,
+								     state.gps.lat,
+								     state.gps.lon,
+								     state.gps.alt);
+		}
+		if (active_fragment != null) {
+            active_fragment.show(telem_state, state, from_receiver, location);
+        }
 	}
 
 	void update_state(TelemetryState new_telemetry_state) {
