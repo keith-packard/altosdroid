@@ -2,6 +2,7 @@ package org.altusmetrum.altosdroid.ui.pad;
 
 import static java.lang.Math.min;
 
+import android.content.res.Resources;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,6 +18,8 @@ import androidx.lifecycle.ViewModelProvider;
 import org.altusmetrum.altosdroid.AltosDebug;
 import org.altusmetrum.altosdroid.AltosFragment;
 import org.altusmetrum.altosdroid.AltosValue;
+import org.altusmetrum.altosdroid.AltosVoltMeter;
+import org.altusmetrum.altosdroid.GoNoGoLights;
 import org.altusmetrum.altosdroid.GoNoGoLights;
 import org.altusmetrum.altosdroid.R;
 import org.altusmetrum.altosdroid.TelemetryState;
@@ -32,31 +35,14 @@ public class PadFragment extends AltosFragment {
 
     private FragmentPadBinding binding;
 
-    private GoNoGoLights battery_lights;
-    private GoNoGoLights receiver_voltage_lights;
-    private GoNoGoLights apogee_lights;
-    private GoNoGoLights main_lights;
+    private AltosVoltMeter battery_meter;
+    private AltosVoltMeter receiver_meter;
+    private AltosVoltMeter  apogee_meter;
+    private AltosVoltMeter  main_meter;
     private GoNoGoLights data_logging_lights;
     private GoNoGoLights gps_locked_lights;
     private GoNoGoLights gps_ready_lights;
-    private GoNoGoLights[] ignite_lights = new GoNoGoLights[4];
-
-    static class Igniter {
-        TableRow row;
-        ImageView green;
-        ImageView red;
-        TextView value;
-        GoNoGoLights lights;
-
-        Igniter(TableRow row, ImageView green, ImageView red, TextView value) {
-            this.row = row;
-            this.green = green;
-            this.red = red;
-            this.value = value;
-        }
-    };
-
-    Igniter[] igniters;
+    private AltosVoltMeter [] ignite_meters;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -66,26 +52,24 @@ public class PadFragment extends AltosFragment {
         binding = FragmentPadBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        Igniter[] local_igniters = {
-                new Igniter(binding.igniteARow, binding.igniteAGreenled, binding.igniteARedled, binding.igniteAVoltageValue),
-                new Igniter(binding.igniteBRow, binding.igniteBGreenled, binding.igniteBRedled, binding.igniteBVoltageValue),
-                new Igniter(binding.igniteCRow, binding.igniteCGreenled, binding.igniteCRedled, binding.igniteCVoltageValue),
-                new Igniter(binding.igniteDRow, binding.igniteDGreenled, binding.igniteDRedled, binding.igniteDVoltageValue),
+        Resources resources = getResources();
+
+        battery_meter = new AltosVoltMeter (AltosLib.ao_battery_good, binding.batteryRow, binding.batteryRedled, binding.batteryGreenled, binding.batteryVoltageValue, resources);
+        receiver_meter = new AltosVoltMeter (AltosLib.ao_battery_good, binding.receiverRow, binding.receiverRedled, binding.receiverGreenled, binding.receiverVoltageValue,resources);
+        apogee_meter = new AltosVoltMeter (AltosLib.ao_igniter_good, binding.apogeeRow, binding.apogeeRedled, binding.apogeeGreenled, binding.apogeeVoltageValue, resources);
+        main_meter = new AltosVoltMeter (AltosLib.ao_igniter_good, binding.mainRow, binding.mainRedled, binding.mainGreenled, binding.mainVoltageValue, resources);
+        data_logging_lights = new GoNoGoLights(binding.loggingRedled, binding.loggingGreenled, resources);
+        gps_locked_lights = new GoNoGoLights (binding.gpsLockedRedled, binding.gpsLockedGreenled, resources);
+        gps_ready_lights = new GoNoGoLights (binding.gpsReadyRedled, binding.gpsReadyGreenled, resources);
+
+        AltosVoltMeter[] local_igniters = {
+                new AltosVoltMeter(AltosLib.ao_igniter_good, binding.igniteARow, binding.igniteARedled, binding.igniteAGreenled, binding.igniteAVoltageValue, resources),
+                new AltosVoltMeter(AltosLib.ao_igniter_good, binding.igniteBRow, binding.igniteBRedled, binding.igniteBGreenled, binding.igniteBVoltageValue, resources),
+                new AltosVoltMeter(AltosLib.ao_igniter_good, binding.igniteCRow, binding.igniteCRedled, binding.igniteCGreenled, binding.igniteCVoltageValue, resources),
+                new AltosVoltMeter(AltosLib.ao_igniter_good, binding.igniteDRow, binding.igniteDRedled, binding.igniteDGreenled, binding.igniteDVoltageValue, resources),
         };
 
-        igniters = local_igniters;
-
-        battery_lights = new GoNoGoLights(binding.batteryRedled, binding.batteryGreenled, getResources());
-        receiver_voltage_lights = new GoNoGoLights(binding.receiverRedled, binding.receiverGreenled, getResources());
-        apogee_lights = new GoNoGoLights(binding.apogeeRedled, binding.apogeeGreenled, getResources());
-        main_lights = new GoNoGoLights(binding.mainRedled, binding.mainGreenled, getResources());
-        data_logging_lights = new GoNoGoLights(binding.loggingRedled, binding.loggingGreenled, getResources());
-        gps_locked_lights = new GoNoGoLights(binding.gpsLockedRedled, binding.gpsLockedGreenled, getResources());
-        gps_ready_lights = new GoNoGoLights(binding.gpsReadyRedled, binding.gpsReadyGreenled, getResources());
-
-        for (int i = 0; i < igniters.length; i++) {
-            igniters[i].lights = new GoNoGoLights(igniters[i].red, igniters[i].green, getResources());
-        }
+        ignite_meters = local_igniters;
 
         return root;
     }
@@ -101,36 +85,17 @@ public class PadFragment extends AltosFragment {
         AltosDebug.debug("Pad: update_ui()");
         if (state != null) {
             // battery voltage
-            binding.batteryVoltageValue.setText(String.format("%1.2f V", state.battery_voltage));
-            battery_lights.set(state.battery_voltage >= AltosLib.ao_battery_good, state.battery_voltage == AltosLib.MISSING);
+            battery_meter.set(state.battery_voltage);
             // apogee voltage
-            if (state.apogee_voltage != AltosLib.MISSING) {
-                binding.apogeeVoltageValue.setText(String.format("%1.2f V", state.apogee_voltage));
-                apogee_lights.set(state.apogee_voltage >= AltosLib.ao_igniter_good, state.apogee_voltage == AltosLib.MISSING);
-                binding.apogeeRow.setVisibility(View.VISIBLE);
-            } else {
-                binding.apogeeRow.setVisibility(View.GONE);
-            }
+            apogee_meter.set(state.apogee_voltage);
             // main voltage
-            if (state.main_voltage != AltosLib.MISSING) {
-                binding.mainVoltageValue.setText(String.format("%1.2f V", state.main_voltage));
-                main_lights.set(state.main_voltage >= AltosLib.ao_igniter_good, state.main_voltage == AltosLib.MISSING);
-                binding.mainRow.setVisibility(View.VISIBLE);
-            } else {
-                binding.mainRow.setVisibility(View.GONE);
-            }
+            main_meter.set(state.main_voltage);
             // igniter voltages
             int num_igniter = state.igniter_voltage == null ? 0 : state.igniter_voltage.length;
 
-            for (int i = 0; i < igniters.length; i++) {
+            for (int i = 0; i < ignite_meters.length; i++) {
                 double voltage = i < num_igniter ? state.igniter_voltage[i] : AltosLib.MISSING;
-                if (voltage != AltosLib.MISSING) {
-                    igniters[i].value.setText(String.format("%1.2f V", voltage));
-                    igniters[i].lights.set(voltage >= AltosLib.ao_igniter_good, voltage == AltosLib.MISSING);
-                    igniters[i].row.setVisibility(View.VISIBLE);
-                } else {
-                    igniters[i].row.setVisibility(View.GONE);
-                }
+                ignite_meters[i].set(voltage);
             }
             // recording status
             if (state.cal_data().flight != 0) {
@@ -170,13 +135,7 @@ public class PadFragment extends AltosFragment {
 
         // report receiver battery voltage
         if (telem_state != null) {
-            if (telem_state.receiver_battery != AltosLib.MISSING) {
-                binding.receiverVoltageValue.setText(String.format("%1.2f V", telem_state.receiver_battery));
-                binding.receiverRow.setVisibility(View.VISIBLE);
-            } else {
-                binding.receiverRow.setVisibility(View.GONE);
-            }
-            receiver_voltage_lights.set(telem_state.receiver_battery >= AltosLib.ao_battery_good, telem_state.receiver_battery == AltosLib.MISSING);
+            receiver_meter.set(telem_state.receiver_battery);
         }
 
         // report our location if available

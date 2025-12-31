@@ -732,7 +732,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 			}
 		}
 
-		if (!telemetry_state.containsKey(selected_serial)) {
+		if (1 ==1 || !telemetry_state.containsKey(selected_serial)) {
 			selected_serial = telemetry_state.latest_serial;
 			AltosDebug.debug("selected serial set to %d", selected_serial);
 		}
@@ -766,10 +766,8 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		if (telemetry_state.frequency != AltosLib.MISSING)
 			telem_frequency = telemetry_state.frequency;
 
-		update_title(telemetry_state);
-
 		AltosState	state = telemetry_state.get(shown_serial);
-
+		update_title(telemetry_state, state);
 		update_ui(telemetry_state, state, telemetry_state.quiet);
 
 		start_timer();
@@ -843,30 +841,40 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		super.setTitle(title);
 		getSupportActionBar().setTitle(title);
 	}
-	void update_title(TelemetryState telemetry_state) {
+	void update_title(TelemetryState telemetry_state, AltosState state) {
+		String state_name = null;
+		if (state != null && state.state() != AltosLib.ao_flight_stateless) {
+			state_name = state.state_name();
+		}
+		String title;
 		switch (telemetry_state.connect) {
 		case TelemetryState.CONNECT_CONNECTED:
 			if (telemetry_state.config != null) {
-				String str = String.format(Locale.getDefault(), "S/N %d %6.3f MHz%s", telemetry_state.config.serial,
+				title= String.format(Locale.getDefault(), "S/N %d %6.3f MHz%s", telemetry_state.config.serial,
 							   telemetry_state.frequency, telemetry_state.idle_mode ? " (idle)" : "");
 				if (telemetry_state.telemetry_rate != AltosLib.ao_telemetry_rate_38400)
-					str = str.concat(String.format(Locale.getDefault(), " %d bps",
+					title = title.concat(String.format(Locale.getDefault(), " %d bps",
 								       AltosLib.ao_telemetry_rate_values[telemetry_state.telemetry_rate]));
-				setTitle(str);
 			} else {
-				setTitle(R.string.title_connected_to);
+				title = getString(R.string.title_connected_to);
 			}
 			break;
 		case TelemetryState.CONNECT_CONNECTING:
+			String address_name;
 			if (telemetry_state.address != null)
-				setTitle(String.format(Locale.getDefault(), "Connecting to %s...", telemetry_state.address.name));
+				address_name = telemetry_state.address.name;
 			else
-				setTitle("Connecting to something...");
+				address_name = getString(R.string.unknown_value);
+			title = String.format(Locale.getDefault(), "%s %s", getString(R.string.connecting_to), address_name);
 			break;
 		case TelemetryState.CONNECT_DISCONNECTED:
 		case TelemetryState.CONNECT_NONE:
-			setTitle(R.string.title_not_connected);
+		default:
+			title = getString(R.string.title_not_connected);
 			break;
 		}
+		if (state_name != null)
+			title = title.concat(String.format(Locale.getDefault(), " (%s)", state_name));
+		setTitle(title);
 	}
 }

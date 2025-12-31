@@ -340,7 +340,7 @@
         </TableRow>
 
         <TableRow
-            android:id="@+id/apogee_view"
+            android:id="@+id/apogee_row"
             android:visibility="gone"
             android:layout_weight="1"
             android:padding="2dip"
@@ -380,7 +380,7 @@
         </TableRow>
 
         <TableRow
-            android:id="@+id/main_view"
+            android:id="@+id/main_row"
             android:visibility="gone"
             android:layout_weight="1"
             android:padding="2dip"
@@ -422,6 +422,182 @@
                 android:textAppearance="@style/ValueText"
                 android:text="3.8"/>
         </TableRow>
+        <TableRow
+            android:id="@+id/ignite_a_row"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:padding="2dip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <ImageView
+                android:id="@+id/ignite_a_redled"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerInside"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
+                android:contentDescription="@string/ignite_a_voltage_label"
+                android:src="@drawable/grayled" />
+
+            <ImageView
+                android:id="@+id/ignite_a_greenled"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerInside"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
+                android:contentDescription="@string/ignite_a_voltage_label"
+                android:src="@drawable/grayled" />
+
+            <TextView
+                android:id="@+id/ignite_a_voltage_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                android:text="@string/ignite_a_voltage_label" />
+
+            <TextView
+                android:id="@+id/ignite_a_voltage_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/ValueText"
+                android:text="locked"/>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/ignite_b_row"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:padding="2dip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <ImageView
+                android:id="@+id/ignite_b_redled"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerInside"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
+                android:contentDescription="@string/ignite_b_voltage_label"
+                android:src="@drawable/grayled" />
+
+            <ImageView
+                android:id="@+id/ignite_b_greenled"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerInside"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
+                android:contentDescription="@string/ignite_b_voltage_label"
+                android:src="@drawable/grayled" />
+
+            <TextView
+                android:id="@+id/ignite_b_voltage_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                android:text="@string/ignite_b_voltage_label" />
+
+            <TextView
+                android:id="@+id/ignite_b_voltage_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/ValueText"
+                android:text="locked"/>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/ignite_c_row"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:padding="2dip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <ImageView
+                android:id="@+id/ignite_c_redled"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerInside"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
+                android:contentDescription="@string/ignite_c_voltage_label"
+                android:src="@drawable/grayled" />
+
+            <ImageView
+                android:id="@+id/ignite_c_greenled"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerInside"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
+                android:contentDescription="@string/ignite_c_voltage_label"
+                android:src="@drawable/grayled" />
+
+            <TextView
+                android:id="@+id/ignite_c_voltage_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                android:text="@string/ignite_c_voltage_label" />
+
+            <TextView
+                android:id="@+id/ignite_c_voltage_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/ValueText"
+                android:text="4.0"/>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/ignite_d_row"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:padding="2dip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <ImageView
+                android:id="@+id/ignite_d_redled"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerInside"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
+                android:contentDescription="@string/ignite_d_voltage_label"
+                android:src="@drawable/grayled" />
+
+            <ImageView
+                android:id="@+id/ignite_d_greenled"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerInside"
+                android:paddingStart="0dp"
+                android:paddingEnd="5dp"
+                android:contentDescription="@string/ignite_d_voltage_label"
+                android:src="@drawable/grayled" />
+
+            <TextView
+                android:id="@+id/ignite_d_voltage_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                android:text="@string/ignite_d_voltage_label" />
+
+            <TextView
+                android:id="@+id/ignite_d_voltage_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/ValueText"
+                android:text="4.0"/>
+        </TableRow>
+
     </TableLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

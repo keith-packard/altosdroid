@@ -90,6 +90,9 @@
     <string name="receiver_latitude_label">My Lat</string>
     <string name="receiver_longitude_label">My Lon</string>
     <string name="receiver_altitude_label">My Alt</string>
+    <string name="unknown_value">«unknown»</string>
+    <string name="connecting_to">Connecting to</string>
+    <string name="not_connected">Not connected</string>
 
     <!-- Map preload -->
     <string name="preload_site_label">Known Launch Sites</string>

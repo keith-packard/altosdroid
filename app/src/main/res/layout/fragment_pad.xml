@@ -16,6 +16,7 @@
         android:layout_height="wrap_content">
 
         <TableRow
+            android:id="@+id/battery_row"
             android:layout_gravity="center"
             android:layout_weight="1"
             android:padding="2dip"
