@@ -28,7 +28,7 @@ public class AltosDebug {
 
 	static boolean	D = true;
 
-	static void init(Context context) {
+	static public void init(Context context) {
 		ApplicationInfo app_info = context.getApplicationInfo();
 
 		if ((app_info.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
@@ -40,26 +40,26 @@ public class AltosDebug {
 		}
 	}
 
-	static void info(String format, Object ... arguments) {
+	static public void info(String format, Object ... arguments) {
 		Log.i(TAG, String.format(format, arguments));
 	}
 
-	static void debug(String format, Object ... arguments) {
+	static public void debug(String format, Object ... arguments) {
 		if (D)
 			Log.d(TAG, String.format(format, arguments));
 	}
 
-	static void error(String format, Object ... arguments) {
+	static public void error(String format, Object ... arguments) {
 		Log.e(TAG, String.format(format, arguments));
 	}
 
-	static void trace(String format, Object ... arguments) {
+	static public void trace(String format, Object ... arguments) {
 		error(format, arguments);
 		for (StackTraceElement el : Thread.currentThread().getStackTrace())
 			Log.e(TAG, "\t" + el.toString() + "\n");
 	}
 
-	static void check_ui(String format, Object ... arguments) {
+	static public void check_ui(String format, Object ... arguments) {
 		if (Looper.myLooper() == Looper.getMainLooper())
 			trace("ON UI THREAD " + format, arguments);
 	}

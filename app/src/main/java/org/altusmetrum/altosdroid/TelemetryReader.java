@@ -62,6 +62,7 @@ public class TelemetryReader extends Thread {
 			while (telemQueue != null) {
 				try {
 					AltosTelemetry	telem = read();
+					AltosDebug.debug("got telemetry line");
 					telem.set_frequency(link.frequency);
 					handler.obtainMessage(TelemetryService.MSG_TELEMETRY, telem).sendToTarget();
 				} catch (ParseException pp) {

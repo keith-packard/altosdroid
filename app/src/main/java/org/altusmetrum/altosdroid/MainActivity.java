@@ -18,6 +18,7 @@ import android.app.Activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -40,8 +41,25 @@ import org.altusmetrum.altoslib_14.*;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.Arrays;
 
-public class    MainActivity extends AppCompatActivity implements LocationListener, ActivityCompat.OnRequestPermissionsResultCallback {
+class FragmentCallbacks extends FragmentManager.FragmentLifecycleCallbacks {
+
+	private MainActivity activity;
+
+	public FragmentCallbacks(MainActivity activity) {
+		this.activity = activity;
+	}
+	public void onFragmentResumed(FragmentManager fm, Fragment f) {
+		AltosDebug.debug("onFragmentResumed");
+		activity.setActiveFragment(f);
+	}
+	public void onFragmentPaused(FragmentManager fm, Fragment f) {
+		AltosDebug.debug("onFragmentPaused");
+	}
+}
+public class    MainActivity extends AppCompatActivity implements LocationListener,
+		ActivityCompat.OnRequestPermissionsResultCallback, AltosUnitsListener {
 
     // Actions sent to the telemetry server at startup time
 
@@ -94,12 +112,19 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 	public static final int SETUP_FONT_SIZE = 16;
 
 	public static FragmentManager fm;
+	public AltosFragment active_fragment;
 
 	boolean idle_mode = false;
 
 	public Location location = null;
-	public TelemetryState telemetry_state = null;
-	public AltosState state = null;
+	TelemetryState telemetry_state = null;
+	Tracker[] trackers;
+	double telem_frequency = 434.550;
+	double selected_frequency = AltosLib.MISSING;
+	int selected_serial = 0;
+	AltosState state = null;
+
+	boolean registered_units_listener;
 
 	private BluetoothAdapter mBluetoothAdapter = null;
 
@@ -110,6 +135,11 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 	private boolean mIsBound = false;
 	private Messenger mService;
 	final Messenger mMessenger = new Messenger(new IncomingHandler(this));
+
+	@Override
+	public void units_changed(boolean imperial_units) {
+		update_state(null);
+	}
 
 	// The Handler that gets information back from the Telemetry Service
 	static class IncomingHandler extends Handler {
@@ -212,11 +242,13 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_pad, R.id.navigation_flight, R.id.navigation_recover, R.id.navigation_map)
                 .build();
-		NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main);
+		fm = getSupportFragmentManager();
+		NavHostFragment navHostFragment = (NavHostFragment) fm.findFragmentById(R.id.nav_host_fragment_activity_main);
         NavController navController = navHostFragment.getNavController();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
+		fm.registerFragmentLifecycleCallbacks(new FragmentCallbacks(this), true);
     }
 
 	@Override
@@ -548,6 +580,13 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		}
 	}
 
+	void setActiveFragment(Fragment fragment) {
+		if (!(fragment instanceof AltosFragment)) {
+            return;
+        }
+		active_fragment = (AltosFragment) fragment;
+		active_fragment.show(telemetry_state, state, null, null);
+	}
 	private void idle_mode(Intent data) {
 
 	}
@@ -570,10 +609,70 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 	}
 	void update_ui(TelemetryState telem_state, AltosState state, boolean quiet) {
 		AltosDebug.debug("update_ui");
+		this.state = state;
+		this.telemetry_state = telem_state;
+		if (active_fragment != null)
+			active_fragment.show(telem_state, state, null, null);
 	}
 
 	void update_state(TelemetryState new_telemetry_state) {
 		AltosDebug.debug("update_state");
+		if (new_telemetry_state != null)
+			telemetry_state = new_telemetry_state;
+
+		if (selected_frequency != AltosLib.MISSING) {
+			AltosState selected_state = telemetry_state.get(selected_serial);
+			AltosState latest_state = telemetry_state.get(telemetry_state.latest_serial);
+
+			if (selected_state != null && selected_state.frequency == selected_frequency) {
+				selected_frequency = AltosLib.MISSING;
+			} else if ((selected_state == null || selected_state.frequency != selected_frequency) &&
+				   (latest_state != null && latest_state.frequency == selected_frequency))
+			{
+				selected_frequency = AltosLib.MISSING;
+				selected_serial = telemetry_state.latest_serial;
+			}
+		}
+
+		if (!telemetry_state.containsKey(selected_serial)) {
+			selected_serial = telemetry_state.latest_serial;
+			AltosDebug.debug("selected serial set to %d", selected_serial);
+		}
+
+		int shown_serial = selected_serial;
+
+		if (telemetry_state.idle_mode)
+			shown_serial = telemetry_state.latest_serial;
+
+		if (!registered_units_listener) {
+			registered_units_listener = true;
+			AltosPreferences.register_units_listener(this);
+		}
+
+		int	num_trackers = 0;
+
+		for (AltosState s : telemetry_state.values()) {
+			num_trackers++;
+		}
+
+		trackers = new Tracker[num_trackers + 1];
+
+		int n = 0;
+		trackers[n++] = new Tracker(0, "auto", 0.0);
+
+		for (AltosState s : telemetry_state.values())
+			trackers[n++] = new Tracker(s);
+
+		Arrays.sort(trackers);
+
+		if (telemetry_state.frequency != AltosLib.MISSING)
+			telem_frequency = telemetry_state.frequency;
+
+		//update_title(telemetry_state);
+
+		AltosState	state = telemetry_state.get(shown_serial);
+
+		update_ui(telemetry_state, state, telemetry_state.quiet);
 	}
 
 	void update_age() {
