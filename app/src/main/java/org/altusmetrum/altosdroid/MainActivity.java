@@ -616,7 +616,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
             return;
         }
 		active_fragment = (AltosFragment) fragment;
-		active_fragment.show(telemetry_state, state, null, null);
+		update_state(null);
 	}
 	private void idle_mode(Intent data) {
 
@@ -704,6 +704,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 			}
 			saved_state = new SavedState(state);
 		}
+
 		if (active_fragment != null) {
             active_fragment.show(telem_state, state, from_receiver, location);
         }
@@ -713,6 +714,9 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		AltosDebug.debug("update_state");
 		if (new_telemetry_state != null)
 			telemetry_state = new_telemetry_state;
+
+		if (telemetry_state == null)
+			return;
 
 		if (selected_frequency != AltosLib.MISSING) {
 			AltosState selected_state = telemetry_state.get(selected_serial);
@@ -762,7 +766,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		if (telemetry_state.frequency != AltosLib.MISSING)
 			telem_frequency = telemetry_state.frequency;
 
-		//update_title(telemetry_state);
+		update_title(telemetry_state);
 
 		AltosState	state = telemetry_state.get(shown_serial);
 
@@ -832,6 +836,37 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 			timer.cancel();
 			timer.purge();
 			timer = null;
+		}
+	}
+
+	public void setTitle(String title) {
+		super.setTitle(title);
+		getSupportActionBar().setTitle(title);
+	}
+	void update_title(TelemetryState telemetry_state) {
+		switch (telemetry_state.connect) {
+		case TelemetryState.CONNECT_CONNECTED:
+			if (telemetry_state.config != null) {
+				String str = String.format(Locale.getDefault(), "S/N %d %6.3f MHz%s", telemetry_state.config.serial,
+							   telemetry_state.frequency, telemetry_state.idle_mode ? " (idle)" : "");
+				if (telemetry_state.telemetry_rate != AltosLib.ao_telemetry_rate_38400)
+					str = str.concat(String.format(Locale.getDefault(), " %d bps",
+								       AltosLib.ao_telemetry_rate_values[telemetry_state.telemetry_rate]));
+				setTitle(str);
+			} else {
+				setTitle(R.string.title_connected_to);
+			}
+			break;
+		case TelemetryState.CONNECT_CONNECTING:
+			if (telemetry_state.address != null)
+				setTitle(String.format(Locale.getDefault(), "Connecting to %s...", telemetry_state.address.name));
+			else
+				setTitle("Connecting to something...");
+			break;
+		case TelemetryState.CONNECT_DISCONNECTED:
+		case TelemetryState.CONNECT_NONE:
+			setTitle(R.string.title_not_connected);
+			break;
 		}
 	}
 }
