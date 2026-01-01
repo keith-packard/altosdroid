@@ -20,7 +20,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -32,12 +31,10 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.WindowManager;
-import android.widget.PopupMenu;
 
 import org.altusmetrum.altosdroid.databinding.ActivityMainBinding;
 
@@ -714,6 +711,8 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 			}
 
 			if (next_menu_id != -1 && next_menu_id != active_menu_id) {
+				// Remove the current fragment so it doesn't end up in the back stack
+				nav_controller.popBackStack(active_menu_id, true);
 				nav_controller.navigate(next_menu_id);
 			}
 
