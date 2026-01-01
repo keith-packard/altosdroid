@@ -71,6 +71,4 @@ public class RecoverFragment extends AltosFragment {
 
 	@Override
 	public String name() { return MainActivity.recover_name; }
-	@Override
-	public int menuId() { return R.id.navigation_recover; }
 }

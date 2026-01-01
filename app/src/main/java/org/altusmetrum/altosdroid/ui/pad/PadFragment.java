@@ -154,7 +154,5 @@ public class PadFragment extends AltosFragment {
     @Override
     public String name() { return MainActivity.pad_name; }
 
-    @Override
-    public int menuId() { return R.id.navigation_pad; }
 }
 

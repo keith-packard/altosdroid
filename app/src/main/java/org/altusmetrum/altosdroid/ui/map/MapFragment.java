@@ -48,7 +48,4 @@ public class MapFragment extends AltosFragment {
 
     @Override
     public String name() { return MainActivity.map_name; }
-
-    @Override
-    public int menuId() { return R.id.navigation_map; }
 }

@@ -41,5 +41,4 @@ public abstract class AltosFragment extends Fragment {
 	}
 
 	abstract public String name();
-	abstract public int menuId();
 }

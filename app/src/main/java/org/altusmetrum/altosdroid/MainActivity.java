@@ -455,7 +455,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		if (do_update)
 			update_ui(telemetry_state, state, true);
 	}
-	
+
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -670,7 +670,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		this.state = state;
 		this.telemetry_state = telem_state;
 		int prev_state = saved_state == null ? AltosLib.ao_flight_invalid : saved_state.state;
-		int active_menu_id = active_fragment == null ? -1 : active_fragment.menuId();
+		int active_menu_id = nav_controller.getCurrentDestination().getId();
 		int next_menu_id = active_menu_id;
 		AltosGreatCircle from_receiver = null;
 
@@ -698,16 +698,16 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 
 					switch (state.state()) {
 					case AltosLib.ao_flight_boost:
+					case AltosLib.ao_flight_fast:
+					case AltosLib.ao_flight_coast:
+					case AltosLib.ao_flight_drogue:
+					case AltosLib.ao_flight_main:
 						if (active_menu_id == R.id.navigation_pad || active_menu_id == -1)
 							next_menu_id = R.id.navigation_flight;
 						break;
 					case AltosLib.ao_flight_landed:
 						if (active_menu_id == R.id.navigation_flight || active_menu_id == -1)
 							next_menu_id = R.id.navigation_recover;
-						break;
-					case AltosLib.ao_flight_stateless:
-						if (active_menu_id == R.id.navigation_pad || active_menu_id == -1)
-							next_menu_id = R.id.navigation_flight;
 						break;
 					}
 				}
