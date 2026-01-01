@@ -17,6 +17,7 @@ import org.altusmetrum.altosdroid.AltosFragment;
 import org.altusmetrum.altosdroid.AltosValue;
 import org.altusmetrum.altosdroid.AltosVoltMeter;
 import org.altusmetrum.altosdroid.GoNoGoLights;
+import org.altusmetrum.altosdroid.MainActivity;
 import org.altusmetrum.altosdroid.R;
 import org.altusmetrum.altosdroid.TelemetryState;
 import org.altusmetrum.altosdroid.databinding.FragmentFlightBinding;
@@ -63,7 +64,6 @@ public class FlightFragment extends AltosFragment {
 
     @Override
     public void show(TelemetryState telem_state, AltosState state, AltosGreatCircle from_receiver, Location receiver_location) {
-		AltosDebug.debug("Flight: update_ui()");
 		if (state != null) {
 			set_value(binding.speedValue, AltosConvert.speed, 1, state.speed());
 			set_value(binding.heightValue, AltosConvert.height, 1, state.height());
@@ -109,4 +109,10 @@ public class FlightFragment extends AltosFragment {
 			}
 		}
     }
+
+	@Override
+	public String name() { return MainActivity.flight_name; }
+
+	@Override
+	public int menuId() { return R.id.navigation_flight; }
 }

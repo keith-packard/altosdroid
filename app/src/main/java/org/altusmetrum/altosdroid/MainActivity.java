@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -31,10 +32,12 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.widget.PopupMenu;
 
 import org.altusmetrum.altosdroid.databinding.ActivityMainBinding;
 
@@ -55,11 +58,11 @@ class FragmentCallbacks extends FragmentManager.FragmentLifecycleCallbacks {
 		this.activity = activity;
 	}
 	public void onFragmentResumed(FragmentManager fm, Fragment f) {
-		AltosDebug.debug("onFragmentResumed");
+		AltosDebug.debug("onFragmentResumed 0x%x %s", f.getId(), f.getTag());
 		activity.setActiveFragment(f);
 	}
 	public void onFragmentPaused(FragmentManager fm, Fragment f) {
-		AltosDebug.debug("onFragmentPaused");
+		AltosDebug.debug("onFragmentPaused 0x%x %s", f.getId(), f.getTag());
 	}
 }
 
@@ -132,6 +135,11 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 	public static final String EXTRA_TRACKERS = "trackers";
 	public static final String EXTRA_TRACKERS_TITLE = "trackers_title";
 
+	public static final String pad_name = "pad";
+	public static final String flight_name = "flight";
+	public static final String recover_name = "recover";
+	public static final String map_name = "map";
+
 	// Setup result bits
 	public static final int SETUP_BAUD = 1;
 	public static final int SETUP_UNITS = 2;
@@ -140,9 +148,12 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 	public static final int SETUP_FONT_SIZE = 16;
 
 	public static FragmentManager fm;
+	NavController nav_controller;
 	public AltosFragment active_fragment;
+
 	ActivityMainBinding binding;
 	boolean idle_mode = false;
+	AltosVoice altos_voice;
 
 	public Location location = null;
 	TelemetryState telemetry_state = null;
@@ -269,14 +280,18 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         ActivityLayouts.applyEdgeToEdge(this, R.id.activity_main);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
+
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_pad, R.id.navigation_flight, R.id.navigation_recover, R.id.navigation_map)
                 .build();
+		Menu menu = binding.navView.getMenu();
+		MenuItem pad_item = menu.findItem(R.id.navigation_pad);
+
 		fm = getSupportFragmentManager();
 		NavHostFragment navHostFragment = (NavHostFragment) fm.findFragmentById(R.id.nav_host_fragment_activity_main);
-        NavController navController = navHostFragment.getNavController();
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(binding.navView, navController);
+        nav_controller = navHostFragment.getNavController();
+        NavigationUI.setupActionBarWithNavController(this, nav_controller, appBarConfiguration);
+        NavigationUI.setupWithNavController(binding.navView, nav_controller);
 
 		fm.registerFragmentLifecycleCallbacks(new FragmentCallbacks(this), true);
     }
@@ -314,6 +329,9 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		startService(new Intent(action, null, this, TelemetryService.class));
 
 		doBindService();
+
+		if (altos_voice == null)
+			altos_voice = new AltosVoice(this);
 	}
 
 	@Override
@@ -437,8 +455,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		if (do_update)
 			update_ui(telemetry_state, state, true);
 	}
-
-
+	
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -472,10 +489,8 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		}
 	}
 
-
 	@Override
 	public void onResume() {
-
 		super.onResume();
 
 		if (!asked_permission) {
@@ -578,13 +593,12 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		//saved_state = null;
 
 		doUnbindService();
-//		if (mAltosVoice != null) {
-//			mAltosVoice.stop();
-//			mAltosVoice = null;
-//		}
+		if (altos_voice != null) {
+			altos_voice.stop();
+			altos_voice = null;
+		}
 		stop_timer();
 	}
-
 
 	private void connectDevice(String name, String address) {
 		try {
@@ -652,13 +666,57 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 	}
 
 	void update_ui(TelemetryState telem_state, AltosState state, boolean quiet) {
-		AltosDebug.debug("update_ui");
+		//AltosDebug.debug("update_ui");
 		this.state = state;
 		this.telemetry_state = telem_state;
-
+		int prev_state = saved_state == null ? AltosLib.ao_flight_invalid : saved_state.state;
+		int active_menu_id = active_fragment == null ? -1 : active_fragment.menuId();
+		int next_menu_id = active_menu_id;
 		AltosGreatCircle from_receiver = null;
 
 		if (state != null) {
+			// compute the next fragment to switch to
+			if (state.state() == AltosLib.ao_flight_stateless) {
+				boolean	prev_locked = false;
+				boolean locked = false;
+
+				if(state.gps != null)
+					locked = state.gps.locked;
+				if (saved_state != null)
+					prev_locked = saved_state.locked;
+				if (prev_locked != locked) {
+					if (locked) {
+						if (active_menu_id == R.id.navigation_pad || active_menu_id == -1)
+							next_menu_id = R.id.navigation_flight;
+					} else {
+						if (active_menu_id == R.id.navigation_flight || active_menu_id == -1)
+							next_menu_id = R.id.navigation_pad;
+					}
+				}
+			} else {
+				if (prev_state != state.state()) {
+
+					switch (state.state()) {
+					case AltosLib.ao_flight_boost:
+						if (active_menu_id == R.id.navigation_pad || active_menu_id == -1)
+							next_menu_id = R.id.navigation_flight;
+						break;
+					case AltosLib.ao_flight_landed:
+						if (active_menu_id == R.id.navigation_flight || active_menu_id == -1)
+							next_menu_id = R.id.navigation_recover;
+						break;
+					case AltosLib.ao_flight_stateless:
+						if (active_menu_id == R.id.navigation_pad || active_menu_id == -1)
+							next_menu_id = R.id.navigation_flight;
+						break;
+					}
+				}
+			}
+
+			if (next_menu_id != -1 && next_menu_id != active_menu_id) {
+				nav_controller.navigate(next_menu_id);
+			}
+
 			if (location != null && state.gps != null && state.gps.locked) {
 				double altitude = 0;
 				if (location.hasAltitude())
@@ -685,16 +743,6 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 				else
 					binding.flightValue.setText(String.format(Locale.getDefault(), "%d", state.cal_data().flight));
 			}
-			/*
-			if (saved_state == null || state.state() != saved_state.state) {
-				if (state.state() == AltosLib.ao_flight_stateless) {
-					binding.stateValue.setVisibility(View.GONE);
-				} else {
-					binding.stateValue.setText(state.state_name());
-					mStateLayout.setVisibility(View.VISIBLE);
-				}
-			}
-			*/
 
 			if (saved_state == null || state.rssi != saved_state.rssi) {
 				if (state.rssi == AltosLib.MISSING)
@@ -708,10 +756,13 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		if (active_fragment != null) {
             active_fragment.show(telem_state, state, from_receiver, location);
         }
+
+		if (altos_voice != null) {
+			altos_voice.tell(telem_state, state, from_receiver, location, active_fragment, quiet, getResources());
+		}
 	}
 
 	void update_state(TelemetryState new_telemetry_state) {
-		AltosDebug.debug("update_state");
 		if (new_telemetry_state != null)
 			telemetry_state = new_telemetry_state;
 
@@ -734,7 +785,6 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 
 		if (1 ==1 || !telemetry_state.containsKey(selected_serial)) {
 			selected_serial = telemetry_state.latest_serial;
-			AltosDebug.debug("selected serial set to %d", selected_serial);
 		}
 
 		int shown_serial = selected_serial;
@@ -796,7 +846,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		return text;
 	}
 	void update_age() {
-		AltosDebug.debug("update_age");
+		//AltosDebug.debug("update_age");
 		if (saved_state != null) {
 			int age = state_age(saved_state.received_time);
 

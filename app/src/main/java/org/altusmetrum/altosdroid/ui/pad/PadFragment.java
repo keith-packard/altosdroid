@@ -21,6 +21,7 @@ import org.altusmetrum.altosdroid.AltosValue;
 import org.altusmetrum.altosdroid.AltosVoltMeter;
 import org.altusmetrum.altosdroid.GoNoGoLights;
 import org.altusmetrum.altosdroid.GoNoGoLights;
+import org.altusmetrum.altosdroid.MainActivity;
 import org.altusmetrum.altosdroid.R;
 import org.altusmetrum.altosdroid.TelemetryState;
 import org.altusmetrum.altosdroid.databinding.FragmentPadBinding;
@@ -82,7 +83,6 @@ public class PadFragment extends AltosFragment {
 
     @Override
     public void show(TelemetryState telem_state, AltosState state, AltosGreatCircle from_receiver, Location receiver_location) {
-        AltosDebug.debug("Pad: update_ui()");
         if (state != null) {
             // battery voltage
             battery_meter.set(state.battery_voltage);
@@ -150,5 +150,11 @@ public class PadFragment extends AltosFragment {
 			set_value(binding.receiverAltValue, AltosConvert.height, 1, altitude);
         }
     }
+
+    @Override
+    public String name() { return MainActivity.pad_name; }
+
+    @Override
+    public int menuId() { return R.id.navigation_pad; }
 }
 

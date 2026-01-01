@@ -58,11 +58,9 @@ public class TelemetryReader extends Thread {
 
 	public void run() {
 		try {
-			AltosDebug.debug("starting loop");
 			while (telemQueue != null) {
 				try {
 					AltosTelemetry	telem = read();
-					AltosDebug.debug("got telemetry line");
 					telem.set_frequency(link.frequency);
 					handler.obtainMessage(TelemetryService.MSG_TELEMETRY, telem).sendToTarget();
 				} catch (ParseException pp) {
@@ -82,14 +80,11 @@ public class TelemetryReader extends Thread {
 	}
 
 	public TelemetryReader (AltosLink in_link, Handler in_handler) {
-		AltosDebug.debug("connected TelemetryReader create started");
 		link    = in_link;
 		handler = in_handler;
 
 		telemQueue = new LinkedBlockingQueue<AltosLine>();
 		link.add_monitor(telemQueue);
 		link.set_telemetry(AltosLib.ao_telemetry_standard);
-
-		AltosDebug.debug("connected TelemetryReader created");
 	}
 }

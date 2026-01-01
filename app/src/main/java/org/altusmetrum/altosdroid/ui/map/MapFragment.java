@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.altusmetrum.altosdroid.AltosFragment;
+import org.altusmetrum.altosdroid.MainActivity;
+import org.altusmetrum.altosdroid.R;
 import org.altusmetrum.altosdroid.TelemetryState;
 import org.altusmetrum.altosdroid.databinding.FragmentMapBinding;
 import org.altusmetrum.altoslib_14.AltosGreatCircle;
@@ -43,4 +45,10 @@ public class MapFragment extends AltosFragment {
     public void show(TelemetryState telem_state, AltosState state, AltosGreatCircle from_receiver, Location receiver_location) {
 
     }
+
+    @Override
+    public String name() { return MainActivity.map_name; }
+
+    @Override
+    public int menuId() { return R.id.navigation_map; }
 }

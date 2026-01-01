@@ -12,6 +12,8 @@ import androidx.lifecycle.ViewModelProvider;
 import org.altusmetrum.altosdroid.AltosDebug;
 import org.altusmetrum.altosdroid.AltosFragment;
 import org.altusmetrum.altosdroid.AltosValue;
+import org.altusmetrum.altosdroid.MainActivity;
+import org.altusmetrum.altosdroid.R;
 import org.altusmetrum.altosdroid.TelemetryState;
 import org.altusmetrum.altosdroid.databinding.FragmentRecoverBinding;
 import org.altusmetrum.altoslib_14.AltosConvert;
@@ -41,7 +43,6 @@ public class RecoverFragment extends AltosFragment {
 
     @Override
     public void show(TelemetryState telem_state, AltosState state, AltosGreatCircle from_receiver, Location receiver_location) {
-        AltosDebug.debug("Recover: update_ui()");
 		if (from_receiver != null) {
 			binding.bearingValue.setText(String.format(Locale.getDefault(), "%1.0f°", from_receiver.bearing));
 			set_value(binding.distanceValue, AltosConvert.distance, 1, from_receiver.distance);
@@ -67,4 +68,9 @@ public class RecoverFragment extends AltosFragment {
             set_value(binding.maxAccelValue, AltosConvert.accel, 1, state.max_acceleration());
 		}
 	}
+
+	@Override
+	public String name() { return MainActivity.recover_name; }
+	@Override
+	public int menuId() { return R.id.navigation_recover; }
 }

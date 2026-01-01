@@ -39,4 +39,7 @@ public abstract class AltosFragment extends Fragment {
 		else
 			text_view.setText(units.show(width, value));
 	}
+
+	abstract public String name();
+	abstract public int menuId();
 }
