@@ -29,6 +29,8 @@ import org.altusmetrum.altoslib_14.AltosState;
 import org.altusmetrum.altoslib_14.AltosUnits;
 
 public abstract class AltosFragment extends Fragment {
+
+	public MainActivity altos_droid;
     abstract public void show(TelemetryState telem_state, AltosState state, AltosGreatCircle from_receiver, Location receiver_location);
     public void set_value(TextView text_view,
                           AltosUnits units,
@@ -39,6 +41,8 @@ public abstract class AltosFragment extends Fragment {
 		else
 			text_view.setText(units.show(width, value));
 	}
+
+	public void set_altos_droid(MainActivity altos_droid) { this.altos_droid = altos_droid; }
 
 	abstract public String name();
 }

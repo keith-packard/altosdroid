@@ -37,6 +37,7 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 
 import org.altusmetrum.altosdroid.databinding.ActivityMainBinding;
+import org.altusmetrum.altosdroid.ui.map.MapFragment;
 
 import org.altusmetrum.altoslib_14.*;
 
@@ -311,6 +312,12 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		}
 	}
 
+	MapFragment map_online;
+
+	public void tell_map_permission(MapFragment map_online) {
+		this.map_online = map_online;
+	}
+
 	private void noticeIntent(Intent intent) {
 		ensureBluetooth();
 	}
@@ -462,8 +469,8 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 					if (permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
 						have_location_permission = true;
 						enable_location_updates(true);
-//						if (map_online != null)
-//							map_online.position_permission();
+						if (map_online != null)
+							map_online.position_permission();
 					}
 					if (permissions[i].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
 						have_storage_permission = true;
@@ -627,6 +634,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
             return;
         }
 		active_fragment = (AltosFragment) fragment;
+		active_fragment.set_altos_droid(this);
 		update_state(null);
 	}
 	private void idle_mode(Intent data) {
