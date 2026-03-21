@@ -3,4 +3,5 @@
     <color name="age_ok">#33691E</color>
     <color name="age_warn">#FBC02D</color>
     <color name="age_error">#D32F2F</color>
+    <color name="rocket_blend">#80804000</color>
 </resources>

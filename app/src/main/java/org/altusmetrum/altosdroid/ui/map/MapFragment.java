@@ -3,11 +3,14 @@ package org.altusmetrum.altosdroid.ui.map;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BlendMode;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.ColorFilter;
+import android.graphics.BlendModeColorFilter;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
@@ -62,17 +65,22 @@ class RocketOnline implements Comparable {
 	}
 
 	private Bitmap rocket_bitmap(Context context, String text) {
-
-        Drawable drawable = VectorDrawableCompat.create(context.getResources(), R.drawable.flight, context.getTheme());
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-		Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
 		Paint paint = new Paint();
 		paint.setTextSize(40);
 		paint.setColor(0xff000000);
 
 		Rect bounds = new Rect();
+		String sampleString = "999999";
+		paint.getTextBounds(sampleString, 0, sampleString.length(), bounds);
+		int bitmap_size = bounds.right - bounds.left;
+		bitmap_size += bitmap_size / 10;
+
+		Drawable drawable = VectorDrawableCompat.create(context.getResources(), R.drawable.flight_orange, context.getTheme());
+		Bitmap bitmap = Bitmap.createBitmap(bitmap_size, bitmap_size, Bitmap.Config.ARGB_8888);
+		Canvas canvas = new Canvas(bitmap);
+		drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+		drawable.draw(canvas);
+
 		paint.getTextBounds(text, 0, text.length(), bounds);
 
 		int	width = bounds.right - bounds.left;
@@ -165,7 +173,7 @@ public class MapFragment extends AltosFragment implements GoogleMap.OnMarkerClic
 			mMap.setOnMapClickListener(map_fragment());
             Context context = getContext();
             Drawable drawable = VectorDrawableCompat.create(context.getResources(), R.drawable.pad, context.getTheme());
-            Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth()/4, drawable.getIntrinsicHeight()/4, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
             drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
             drawable.draw(canvas);
