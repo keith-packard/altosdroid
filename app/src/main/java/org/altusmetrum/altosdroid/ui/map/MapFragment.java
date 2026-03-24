@@ -46,6 +46,8 @@ import org.altusmetrum.altosdroid.databinding.FragmentMapBinding;
 import org.altusmetrum.altoslib_14.AltosGreatCircle;
 import org.altusmetrum.altoslib_14.AltosLatLon;
 import org.altusmetrum.altoslib_14.AltosLib;
+import org.altusmetrum.altoslib_14.AltosMap;
+import org.altusmetrum.altoslib_14.AltosPreferences;
 import org.altusmetrum.altoslib_14.AltosState;
 
 import java.util.ArrayList;
@@ -151,6 +153,20 @@ public class MapFragment extends AltosFragment implements GoogleMap.OnMarkerClic
             check_permission();
     }
     MapFragment map_fragment() { return this; }
+
+	void map_type_changed(int map_type) {
+		if (mMap != null) {
+			if (map_type == AltosMap.maptype_hybrid)
+				mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+			else if (map_type == AltosMap.maptype_satellite)
+				mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+			else if (map_type == AltosMap.maptype_terrain)
+				mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+			else
+				mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+		}
+	}
+
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         /**
@@ -165,8 +181,10 @@ public class MapFragment extends AltosFragment implements GoogleMap.OnMarkerClic
         @Override
         public void onMapReady(GoogleMap googleMap) {
             mMap = googleMap;
+			final int map_type = AltosPreferences.map_type();
             mapLoaded = true;
             check_permission();
+			map_fragment().map_type_changed(map_type);
 			mMap.getUiSettings().setTiltGesturesEnabled(false);
 			mMap.getUiSettings().setZoomControlsEnabled(false);
 			mMap.setOnMarkerClickListener(map_fragment());
