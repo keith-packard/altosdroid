@@ -63,6 +63,11 @@
             android:theme="@style/Theme.AltosDroid"
             android:configChanges="orientation|keyboardHidden"/>
 
+        <activity android:name=".SelectTrackerActivity"
+            android:label="@string/select_tracker"
+            android:theme="@android:style/Theme.Dialog"
+            android:configChanges="orientation|keyboardHidden" />
+
         <service
             android:name=".TelemetryService"
             android:foregroundServiceType="connectedDevice" />

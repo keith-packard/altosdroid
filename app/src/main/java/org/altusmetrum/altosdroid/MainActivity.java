@@ -30,6 +30,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.Parcelable;
 import android.os.RemoteException;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -43,6 +44,7 @@ import org.altusmetrum.altoslib_14.*;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Timer;
@@ -159,6 +161,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 	double telem_frequency = 434.550;
 	double selected_frequency = AltosLib.MISSING;
 	int selected_serial = 0;
+	long switch_time;
 	AltosState state = null;
 	SavedState saved_state = null;
 	Timer timer = null;
@@ -297,6 +300,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 	@Override
 	public void onLocationChanged(Location location) {
 		this.location = location;
+		update_ui(telemetry_state, state, false);
 	}
 
     private void ensureBluetooth() {
@@ -404,12 +408,12 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 			return true;
 		}
 		if (itemId == R.id.select_tracker) {
-			//start_select_tracker(trackers);
+			start_select_tracker(trackers);
 			return true;
 		}
 		if (itemId == R.id.delete_track) {
-			//if (trackers != null && trackers.length > 0)
-			//	start_select_tracker(trackers, R.string.delete_track, REQUEST_DELETE_TRACKER);
+			if (trackers != null && trackers.length > 0)
+				start_select_tracker(trackers, R.string.delete_track, REQUEST_DELETE_TRACKER);
 			return true;
 		}
 		if (itemId == R.id.idle_mode) {
@@ -436,6 +440,15 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 					connectDevice(name, address);
 				}
 				break;
+			case REQUEST_SELECT_TRACKER:
+				if (resultCode == Activity.RESULT_OK)
+					select_tracker(data);
+				break;
+			case REQUEST_DELETE_TRACKER:
+				if (resultCode == Activity.RESULT_OK)
+					delete_track(data);
+				break;
+
 			default:
 				super.onActivityResult(requestCode, resultCode, data);
 		}
@@ -790,7 +803,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 			}
 		}
 
-		if (1 ==1 || !telemetry_state.containsKey(selected_serial)) {
+		if (!telemetry_state.containsKey(selected_serial)) {
 			selected_serial = telemetry_state.latest_serial;
 		}
 
@@ -894,6 +907,11 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		}
 	}
 
+	void set_switch_time() {
+		switch_time = System.currentTimeMillis();
+		selected_serial = 0;
+	}
+
 	public void setTitle(String title) {
 		super.setTitle(title);
 		getSupportActionBar().setTitle(title);
@@ -934,4 +952,152 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 			title = title.concat(String.format(Locale.getDefault(), " (%s)", state_name));
 		setTitle(title);
 	}
+
+	void setFrequency(double freq) {
+		telem_frequency = freq;
+		selected_frequency = freq;
+		try {
+			mService.send(Message.obtain(null, TelemetryService.MSG_SETFREQUENCY, freq));
+			set_switch_time();
+		} catch (RemoteException e) {
+		}
+	}
+
+	void setFrequency(AltosFrequency frequency) {
+		setFrequency (frequency.frequency);
+	}
+
+	void setBaud(int baud) {
+		try {
+			mService.send(Message.obtain(null, TelemetryService.MSG_SETBAUD, baud));
+			set_switch_time();
+		} catch (RemoteException e) {
+		}
+	}
+
+	void setBaud(String baud) {
+		try {
+			int	value = Integer.parseInt(baud);
+			int	rate = AltosLib.ao_telemetry_rate_38400;
+			switch (value) {
+				case 2400:
+					rate = AltosLib.ao_telemetry_rate_2400;
+					break;
+				case 9600:
+					rate = AltosLib.ao_telemetry_rate_9600;
+					break;
+				case 38400:
+					rate = AltosLib.ao_telemetry_rate_38400;
+					break;
+			}
+			setBaud(rate);
+		} catch (NumberFormatException e) {
+		}
+	}
+
+	void select_tracker(int serial, double frequency) {
+
+		AltosDebug.debug("select tracker %d %7.3f\n", serial, frequency);
+
+		if (serial == selected_serial) {
+			AltosDebug.debug("%d already selected\n", serial);
+			return;
+		}
+
+		if (serial != 0) {
+			int i;
+			for (i = 0; i < trackers.length; i++)
+				if (trackers[i].serial == serial)
+					break;
+
+			if (i == trackers.length) {
+				AltosDebug.debug("attempt to select unknown tracker %d\n", serial);
+				return;
+			}
+			if (frequency != 0.0 && frequency != AltosLib.MISSING)
+				setFrequency(frequency);
+		}
+
+		selected_serial = serial;
+		update_state(null);
+	}
+
+	void select_tracker(Intent data) {
+		int serial = data.getIntExtra(SelectTrackerActivity.EXTRA_SERIAL_NUMBER, 0);
+		double frequency = data.getDoubleExtra(SelectTrackerActivity.EXTRA_FREQUENCY, 0.0);
+		select_tracker(serial, frequency);
+	}
+
+	void delete_track(int serial) {
+		try {
+			mService.send(Message.obtain(null, TelemetryService.MSG_DELETE_SERIAL, (Integer) serial));
+		} catch (Exception ex) {
+		}
+	}
+
+	void delete_track(Intent data) {
+		int serial = data.getIntExtra(SelectTrackerActivity.EXTRA_SERIAL_NUMBER, 0);
+		if (serial != 0)
+			delete_track(serial);
+	}
+
+	void start_select_tracker(Tracker[] select_trackers, int title_id, int request) {
+		Intent intent = new Intent(this, SelectTrackerActivity.class);
+		AltosDebug.debug("put title id 0x%x %s", title_id, getResources().getString(title_id));
+		intent.putExtra(EXTRA_TRACKERS_TITLE, title_id);
+		if (select_trackers != null) {
+			ArrayList<Tracker> tracker_array = new ArrayList<Tracker>(Arrays.asList(select_trackers));
+			intent.putParcelableArrayListExtra(EXTRA_TRACKERS, tracker_array);
+		} else {
+			intent.putExtra(EXTRA_TRACKERS, (Parcelable[]) null);
+		}
+		startActivityForResult(intent, request);
+	}
+
+	void start_select_tracker(Tracker[] select_trackers) {
+		start_select_tracker(select_trackers, R.string.select_tracker, REQUEST_SELECT_TRACKER);
+	}
+
+	public void touch_trackers(Integer[] serials) {
+		Tracker[] my_trackers = new Tracker[serials.length];
+
+		for (int i = 0; i < serials.length; i++) {
+			AltosState	s = telemetry_state.get(serials[i]);
+			my_trackers[i] = new Tracker(s);
+		}
+		start_select_tracker(my_trackers);
+	}
+
+	static String direction(AltosGreatCircle from_receiver,
+							Location receiver) {
+		if (from_receiver == null)
+			return null;
+
+		if (receiver == null)
+			return null;
+
+		if (!receiver.hasBearing())
+			return null;
+
+		float	bearing = receiver.getBearing();
+		float	heading = (float) from_receiver.bearing - bearing;
+
+		while (heading <= -180.0f)
+			heading += 360.0f;
+		while (heading > 180.0f)
+			heading -= 360.0f;
+
+		int iheading = (int) (heading + 0.5f);
+
+		if (-1 < iheading && iheading < 1)
+			return "ahead";
+		else if (iheading < -179 || 179 < iheading)
+			return "backwards";
+		else if (iheading < 0)
+			return String.format(Locale.getDefault(), "left %d°", -iheading);
+		else
+			return String.format(Locale.getDefault(), "right %d°", iheading);
+	}
+
+
 }

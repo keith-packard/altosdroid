@@ -244,8 +244,8 @@ public class MapFragment extends AltosFragment implements GoogleMap.OnMarkerClic
 				near.add(rocket.serial);
 		}
 
-	/*	if (near.size() != 0)
-			altos_droid.touch_trackers(near.toArray(new Integer[0]));*/
+		if (near.size() != 0)
+			altos_droid.touch_trackers(near.toArray(new Integer[0]));
 	}
 
 	public boolean onMarkerClick(Marker marker) {
