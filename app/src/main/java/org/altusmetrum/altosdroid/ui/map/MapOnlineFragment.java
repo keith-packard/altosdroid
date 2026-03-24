@@ -57,16 +57,13 @@ class RocketOnline implements Comparable {
 		this.last_packet = last_packet;
 	}
 
-	private Bitmap rocket_bitmap(Context context, String text) {
+	private Bitmap rocket_bitmap(Context context, String text, int marker_size) {
 		Paint paint = new Paint();
 		paint.setTextSize(40);
 		paint.setColor(0xff000000);
 
 		Rect bounds = new Rect();
-		String sampleString = "999999";
-		paint.getTextBounds(sampleString, 0, sampleString.length(), bounds);
-		int bitmap_size = bounds.right - bounds.left;
-		bitmap_size += bitmap_size / 10;
+		int bitmap_size = marker_size;
 
 		Drawable drawable = VectorDrawableCompat.create(context.getResources(), R.drawable.flight_orange, context.getTheme());
 		Bitmap bitmap = Bitmap.createBitmap(bitmap_size, bitmap_size, Bitmap.Config.ARGB_8888);
@@ -104,11 +101,11 @@ class RocketOnline implements Comparable {
 		return 0;
 	}
 
-	RocketOnline(Context context, int serial, GoogleMap map, double lat, double lon, long last_packet) {
+	RocketOnline(Context context, int serial, GoogleMap map, double lat, double lon, long last_packet, int marker_size) {
 		this.serial = serial;
 		String name = String.format(Locale.ROOT, "%d", serial);
 		this.marker = map.addMarker(new MarkerOptions()
-					    .icon(BitmapDescriptorFactory.fromBitmap(rocket_bitmap(context, name)))
+					    .icon(BitmapDescriptorFactory.fromBitmap(rocket_bitmap(context, name, marker_size)))
 					    .position(new LatLng(lat, lon))
 					    .visible(true));
 		this.last_packet = last_packet;
@@ -144,6 +141,17 @@ public class MapOnlineFragment extends AltosFragment implements GoogleMap.OnMark
             check_permission();
     }
     MapOnlineFragment map_fragment() { return this; }
+
+	static int get_marker_size() {
+		Paint paint = new Paint();
+		paint.setTextSize(40);
+		Rect bounds = new Rect();
+		String sampleString = "999999";
+		paint.getTextBounds(sampleString, 0, sampleString.length(), bounds);
+		return (bounds.right - bounds.left) * 11 / 10;
+	}
+
+	int marker_size = get_marker_size();
 
 	void map_type_changed(int map_type) {
 		if (mMap != null) {
@@ -181,8 +189,8 @@ public class MapOnlineFragment extends AltosFragment implements GoogleMap.OnMark
 			mMap.setOnMarkerClickListener(map_fragment());
 			mMap.setOnMapClickListener(map_fragment());
             Context context = getContext();
-            Drawable drawable = VectorDrawableCompat.create(context.getResources(), R.drawable.pad, context.getTheme());
-            Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth()/4, drawable.getIntrinsicHeight()/4, Bitmap.Config.ARGB_8888);
+            Drawable drawable = VectorDrawableCompat.create(context.getResources(), R.drawable.pad_purple, context.getTheme());
+            Bitmap bitmap = Bitmap.createBitmap(marker_size, marker_size, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
             drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
             drawable.draw(canvas);
@@ -300,7 +308,8 @@ public class MapOnlineFragment extends AltosFragment implements GoogleMap.OnMark
 				rocket = new RocketOnline(altos_droid,
 							  serial,
 							  mMap, state.gps.lat, state.gps.lon,
-							  state.received_time);
+							  state.received_time,
+						      marker_size);
 				rockets.put(serial, rocket);
 			}
 		}

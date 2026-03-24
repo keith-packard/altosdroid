@@ -4,4 +4,6 @@
     <color name="age_warn">#FBC02D</color>
     <color name="age_error">#D32F2F</color>
     <color name="rocket_blend">#80804000</color>
+    <color name="altus_orange">#ff8a00</color>
+    <color name="altus_purple">#8500d7</color>
 </resources>
