@@ -386,7 +386,6 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		if (itemId == R.id.select_freq) {
 			// R.id.select_freq:
 			// Set the TBT radio frequency
-/*
 			final AltosFrequency[] frequencies = AltosPreferences.common_frequencies();
 			String[] frequency_strings = new String[frequencies.length];
 			for (int i = 0; i < frequencies.length; i++)
@@ -403,7 +402,6 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 					 });
 			AlertDialog alert_freq = builder_freq.create();
 			alert_freq.show();
-			*/
 
 			return true;
 		}
@@ -955,7 +953,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 
 	void setFrequency(double freq) {
 		telem_frequency = freq;
-		selected_frequency = freq;
+		selected_frequency = AltosLib.MISSING;
 		try {
 			mService.send(Message.obtain(null, TelemetryService.MSG_SETFREQUENCY, freq));
 			set_switch_time();
