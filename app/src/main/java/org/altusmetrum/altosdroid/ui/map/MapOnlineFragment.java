@@ -2,27 +2,20 @@ package org.altusmetrum.altosdroid.ui.map;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.BlendMode;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.ColorFilter;
-import android.graphics.BlendModeColorFilter;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,7 +24,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -42,7 +34,6 @@ import org.altusmetrum.altosdroid.AltosFragment;
 import org.altusmetrum.altosdroid.MainActivity;
 import org.altusmetrum.altosdroid.R;
 import org.altusmetrum.altosdroid.TelemetryState;
-import org.altusmetrum.altosdroid.databinding.FragmentMapBinding;
 import org.altusmetrum.altoslib_14.AltosGreatCircle;
 import org.altusmetrum.altoslib_14.AltosLatLon;
 import org.altusmetrum.altoslib_14.AltosLib;
@@ -124,7 +115,7 @@ class RocketOnline implements Comparable {
 	}
 }
 
-public class MapFragment extends AltosFragment implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
+public class MapOnlineFragment extends AltosFragment implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
     private HashMap<Integer,RocketOnline> rockets = new HashMap<Integer,RocketOnline>();
     private GoogleMap mMap;
     private boolean mapLoaded;
@@ -152,7 +143,7 @@ public class MapFragment extends AltosFragment implements GoogleMap.OnMarkerClic
         if (mapLoaded)
             check_permission();
     }
-    MapFragment map_fragment() { return this; }
+    MapOnlineFragment map_fragment() { return this; }
 
 	void map_type_changed(int map_type) {
 		if (mMap != null) {
