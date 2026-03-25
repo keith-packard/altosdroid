@@ -61,7 +61,7 @@ class RocketOnline implements Comparable {
 	private Bitmap rocket_bitmap(Context context, String text, int marker_size) {
 		Paint paint = new Paint();
 		paint.setTextSize(40);
-		paint.setColor(0xff000000);
+
 
 		Rect bounds = new Rect();
 		int bitmap_size = marker_size;
@@ -80,8 +80,12 @@ class RocketOnline implements Comparable {
 		float x = bitmap.getWidth() / 2.0f - width / 2.0f;
 		float y = bitmap.getHeight() / 2.0f - height / 2.0f;
 
-		size = bitmap.getWidth();
-
+		paint.setColor(0xffffffff);
+		int offset = marker_size / 40;
+		for (int yoffset = -offset; yoffset <= offset; yoffset += offset)
+			for (int xoffset = -offset; xoffset <= offset; xoffset += offset)
+				canvas.drawText(text, 0, text.length(), x+xoffset, y+yoffset, paint);
+		paint.setColor(0xff000000);;
 		canvas.drawText(text, 0, text.length(), x, y, paint);
 		return bitmap;
 	}
