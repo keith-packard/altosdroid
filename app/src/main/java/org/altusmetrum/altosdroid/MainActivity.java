@@ -38,7 +38,7 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 
 import org.altusmetrum.altosdroid.databinding.ActivityMainBinding;
-import org.altusmetrum.altosdroid.ui.map.MapOnlineFragment;
+import org.altusmetrum.altosdroid.ui.map.MapFragment;
 
 import org.altusmetrum.altoslib_14.*;
 
@@ -316,9 +316,9 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		}
 	}
 
-	MapOnlineFragment map_online;
+	MapFragment map_online;
 
-	public void tell_map_permission(MapOnlineFragment map_online) {
+	public void tell_map_permission(MapFragment map_online) {
 		this.map_online = map_online;
 	}
 

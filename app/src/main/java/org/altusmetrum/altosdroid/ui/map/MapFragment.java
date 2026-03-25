@@ -30,6 +30,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.altusmetrum.altosdroid.AltosDroidMapSourceListener;
 import org.altusmetrum.altosdroid.AltosFragment;
 import org.altusmetrum.altosdroid.MainActivity;
 import org.altusmetrum.altosdroid.R;
@@ -112,7 +113,7 @@ class RocketOnline implements Comparable {
 	}
 }
 
-public class MapOnlineFragment extends AltosFragment implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
+public class MapFragment extends AltosFragment implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, AltosDroidMapSourceListener {
     private HashMap<Integer,RocketOnline> rockets = new HashMap<Integer,RocketOnline>();
     private GoogleMap mMap;
     private boolean mapLoaded;
@@ -140,7 +141,7 @@ public class MapOnlineFragment extends AltosFragment implements GoogleMap.OnMark
         if (mapLoaded)
             check_permission();
     }
-    MapOnlineFragment map_fragment() { return this; }
+    MapFragment map_fragment() { return this; }
 
 	static int get_marker_size() {
 		Paint paint = new Paint();
@@ -371,6 +372,8 @@ public class MapOnlineFragment extends AltosFragment implements GoogleMap.OnMark
             }
         }
 
-        @Override
+		public void map_source_changed(int map_source) {}
+
+		@Override
     public String name() { return MainActivity.map_name; }
 }

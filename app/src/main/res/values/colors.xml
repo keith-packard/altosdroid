@@ -7,4 +7,5 @@
     <color name="altus_orange">#ff8a00</color>
     <color name="altus_purple">#8500d7</color>
     <color name="primary_text">#000000</color>
+    <color name="primary_background">#ffffff</color>
 </resources>

@@ -21,6 +21,9 @@
 		<item name="colorPrimaryVariant">@color/altus_purple</item>
 		<item name="colorOnPrimary">@color/primary_text</item>
 		<item name="colorOnBackground">@color/primary_text</item>
+		<item name="colorControlActivated">@color/altus_orange</item>
+		<item name="colorControlHighlight">@color/altus_orange</item>
+		<item name="colorAccent">@color/altus_orange</item>
 		<item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
 		<item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>
 		<item name="buttonBarNeutralButtonStyle">@style/Widget.App.Button</item>

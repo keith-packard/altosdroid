@@ -27,6 +27,7 @@
 
     <!-- MapTypeActivity -->
     <!-- <string name="map_type">Map Type</string> -->
+    <string name="map_online">Online</string>
 
     <!-- DeviceListActivity -->
     <string name="scanning">Scanning…</string>
