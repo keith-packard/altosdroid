@@ -64,10 +64,10 @@ class RocketOnline implements Comparable {
 
 
 		Rect bounds = new Rect();
-		int bitmap_size = marker_size;
+		size = marker_size;
 
 		Drawable drawable = VectorDrawableCompat.create(context.getResources(), R.drawable.flight_orange, context.getTheme());
-		Bitmap bitmap = Bitmap.createBitmap(bitmap_size, bitmap_size, Bitmap.Config.ARGB_8888);
+		Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(bitmap);
 		drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
 		drawable.draw(canvas);
