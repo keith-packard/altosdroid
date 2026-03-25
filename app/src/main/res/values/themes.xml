@@ -11,6 +11,25 @@
 		<item name="android:windowLightStatusBar">true</item>
 
     </style>
+	<style name="Theme.App" parent="Theme.MaterialComponents.DayNight">
+		<item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
+	</style>
+	<style name="ThemeOverlay.App.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.Dialog">
+		<item name="android:colorBackground">#ffffff</item>
+		<item name="android:textColor">@color/primary_text</item>
+		<item name="colorPrimary">@color/altus_orange</item>
+		<item name="colorPrimaryVariant">@color/altus_purple</item>
+		<item name="colorOnPrimary">@color/primary_text</item>
+		<item name="colorOnBackground">@color/primary_text</item>
+		<item name="alertDialogStyle">@style/MaterialAlertDialog.App</item>
+		<item name="buttonBarPositiveButtonStyle">@style/Widget.App.Button</item>
+		<item name="buttonBarNeutralButtonStyle">@style/Widget.App.Button</item>
+		<item name="android:textAppearance">@style/ValueText</item>
+		<item name="android:textColor">@color/primary_text</item>
+	</style>
+	<style name="Theme.AltosDialog" parent="Theme.MaterialComponents.DayNight">
+		<item name="android:colorBackground">#ffffff</item>
+	</style>
 	<style name="LabelText" parent="TextAppearance.AppCompat">
 		<item name="android:textSize">18sp</item>
 	</style>
@@ -22,6 +41,14 @@
 	<style name="ButtonText" parent="LabelText">
 	</style>
 	<style name="DeviceText" parent="ValueText">
+	</style>
+	<style name="CallText" parent="ValueText">
+	</style>
+	<style name="SerialText" parent="ValueText">
+	</style>
+	<style name="FreqText" parent="ValueText">
+	</style>
+	<style name="AgeText" parent="ValueText">
 	</style>
 	<style name="AgeOk" parent="ValueText">
 		<item name="android:textColor">@color/age_ok</item>

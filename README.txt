@@ -7,3 +7,12 @@ run with:
 
 	$ ~/src/android/android-studio/bin/studio.sh
 
+
+
+ToDo list
+
+ * Edit frequency list
+ * Configuration
+ * Idle mode
+ * Offline maps
+ 
