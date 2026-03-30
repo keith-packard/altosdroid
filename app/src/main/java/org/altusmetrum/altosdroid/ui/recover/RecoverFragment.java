@@ -26,21 +26,14 @@ public class RecoverFragment extends AltosFragment {
 
     private FragmentRecoverBinding binding;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        RecoverViewModel recoverViewModel =
-                new ViewModelProvider(this).get(RecoverViewModel.class);
+	public View onCreateView(@NonNull LayoutInflater inflater,
+							 ViewGroup container, Bundle savedInstanceState) {
+		RecoverViewModel recoverViewModel =
+				new ViewModelProvider(this).get(RecoverViewModel.class);
 
-        binding = FragmentRecoverBinding.inflate(inflater, container, false);
-        return binding.getRoot();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-    }
-
+		binding = FragmentRecoverBinding.inflate(inflater, container, false);
+		return binding.getRoot();
+	}
     @Override
     public void show(TelemetryState telem_state, AltosState state, AltosGreatCircle from_receiver, Location receiver_location) {
 		if (from_receiver != null) {

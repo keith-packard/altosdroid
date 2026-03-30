@@ -25,6 +25,15 @@
     <string name="map_type">Map Type</string>
     <string name="map_source">Map Source</string>
 
+    <!-- Map Tab -->
+
+    <string-array name="map_types">
+        <item>Street</item>
+        <item>Satellite</item>
+        <item>Hybrid</item>
+        <item>Terrain</item>
+    </string-array>
+
     <!-- MapTypeActivity -->
     <!-- <string name="map_type">Map Type</string> -->
     <string name="map_online">Online</string>

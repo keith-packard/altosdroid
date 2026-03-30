@@ -10,12 +10,19 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,14 +38,21 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.altusmetrum.altosdroid.AltosDroidMapSourceListener;
+import org.altusmetrum.altosdroid.AltosDroidPreferences;
 import org.altusmetrum.altosdroid.AltosFragment;
+import org.altusmetrum.altosdroid.AltosValue;
 import org.altusmetrum.altosdroid.MainActivity;
 import org.altusmetrum.altosdroid.R;
 import org.altusmetrum.altosdroid.TelemetryState;
+import org.altusmetrum.altosdroid.databinding.FragmentMapBinding;
+import org.altusmetrum.altosdroid.databinding.FragmentRecoverBinding;
+import org.altusmetrum.altosdroid.ui.recover.RecoverViewModel;
+import org.altusmetrum.altoslib_14.AltosConvert;
 import org.altusmetrum.altoslib_14.AltosGreatCircle;
 import org.altusmetrum.altoslib_14.AltosLatLon;
 import org.altusmetrum.altoslib_14.AltosLib;
 import org.altusmetrum.altoslib_14.AltosMap;
+import org.altusmetrum.altoslib_14.AltosMapTypeListener;
 import org.altusmetrum.altoslib_14.AltosPreferences;
 import org.altusmetrum.altoslib_14.AltosState;
 
@@ -117,7 +131,7 @@ class RocketOnline implements Comparable {
 	}
 }
 
-public class MapFragment extends AltosFragment implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, AltosDroidMapSourceListener {
+public class MapFragment extends AltosFragment implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, AltosDroidMapSourceListener, AltosMapTypeListener {
     private HashMap<Integer,RocketOnline> rockets = new HashMap<Integer,RocketOnline>();
     private GoogleMap mMap;
     private boolean mapLoaded;
@@ -129,9 +143,9 @@ public class MapFragment extends AltosFragment implements GoogleMap.OnMarkerClic
 
 	private AltosLatLon my_position = null;
 	private AltosLatLon target_position = null;
+	private FragmentMapBinding binding;
 
-
-    void check_permission() {
+	void check_permission() {
         if (altos_droid == null)
             return;
         if (altos_droid.have_location_permission)
@@ -158,7 +172,8 @@ public class MapFragment extends AltosFragment implements GoogleMap.OnMarkerClic
 
 	int marker_size = get_marker_size();
 
-	void map_type_changed(int map_type) {
+	static int[] altos_map_types = { AltosMap.maptype_roadmap, AltosMap.maptype_satellite, AltosMap.maptype_hybrid, AltosMap.maptype_terrain};
+	public void map_type_changed(int map_type) {
 		if (mMap != null) {
 			if (map_type == AltosMap.maptype_hybrid)
 				mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
@@ -185,10 +200,9 @@ public class MapFragment extends AltosFragment implements GoogleMap.OnMarkerClic
         @Override
         public void onMapReady(GoogleMap googleMap) {
             mMap = googleMap;
-			final int map_type = AltosPreferences.map_type();
+			int map_type = AltosPreferences.map_type();
             mapLoaded = true;
             check_permission();
-			map_fragment().map_type_changed(map_type);
 			mMap.getUiSettings().setTiltGesturesEnabled(false);
 			mMap.getUiSettings().setZoomControlsEnabled(false);
 			mMap.setOnMarkerClickListener(map_fragment());
@@ -211,18 +225,22 @@ public class MapFragment extends AltosFragment implements GoogleMap.OnMarkerClic
 					                     .color(Color.BLUE)
 					                     .visible(false)
 					);
-
+			map_fragment().map_type_changed(AltosPreferences.map_type());
 			mapLoaded = true;
         }
     };
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_map, container, false);
-    }
+	@Nullable
+	@Override
+	public View onCreateView(@NonNull LayoutInflater inflater,
+							 ViewGroup container, Bundle savedInstanceState) {
+		MapViewModel mapViewModel =
+				new ViewModelProvider(this).get(MapViewModel.class);
+
+		binding = FragmentMapBinding.inflate(inflater, container, false);
+		return binding.getRoot();
+	}
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -232,7 +250,35 @@ public class MapFragment extends AltosFragment implements GoogleMap.OnMarkerClic
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
+		String[] map_types = getResources().getStringArray(R.array.map_types);
+		AltosPreferences.register_map_type_listener(this);
+		AltosDroidPreferences.register_map_source_listener(this);
+		ArrayAdapter adapter = new ArrayAdapter(getContext(), R.layout.map_type_menu, map_types);
+		AutoCompleteTextView mapType = view.findViewById(R.id.mapType);
+		int map_type = AltosPreferences.map_type();
+		for (int map_id = 0; map_id < altos_map_types.length; map_id++)
+			if (altos_map_types[map_id] == map_type) {
+				mapType.setText(map_types[map_id], false);
+				break;
+			}
+		mapType.setAdapter(adapter);
+		mapType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				int map_type = AltosLib.MISSING;
+				if (position < altos_map_types.length)
+					AltosPreferences.set_map_type(altos_map_types[position]);
+			}
+		});
     }
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		AltosPreferences.unregister_map_type_listener(this);
+		AltosDroidPreferences.unregister_map_source_listener(this);
+		mapLoaded = false;
+		binding = null;
+	}
 
 	private double pixel_distance(LatLng a, LatLng b) {
 		Projection projection = mMap.getProjection();
@@ -349,9 +395,15 @@ public class MapFragment extends AltosFragment implements GoogleMap.OnMarkerClic
                         mPadMarker.setPosition(new LatLng(state.pad_lat, state.pad_lon));
                         mPadMarker.setVisible(true);
                     }
-                }
-                if (state.gps != null && state.gps.lat != AltosLib.MISSING) {
 
+                }
+
+                if (state.gps != null && state.gps.lat != AltosLib.MISSING) {
+					if (binding != null) {
+						String lat_text = AltosValue.pos(state.gps.lat, "N", "S");
+						String lon_text = AltosValue.pos(state.gps.lon, "E", "W");
+						binding.mapTargetPosition.setText(lat_text + "\n" + lon_text);
+					}
                     target_position = new AltosLatLon(state.gps.lat, state.gps.lon);
                     if (state.gps.locked && state.gps.nsat >= 4)
                         center (state.gps.lat, state.gps.lon, 10);
@@ -368,12 +420,22 @@ public class MapFragment extends AltosFragment implements GoogleMap.OnMarkerClic
 
                 my_position = new AltosLatLon(receiver_location.getLatitude(), receiver_location.getLongitude());
                 center (my_position.lat, my_position.lon, accuracy);
+				if (binding != null) {
+					String lat_text = AltosValue.pos(receiver_location.getLatitude(), "N", "S");
+					String lon_text = AltosValue.pos(receiver_location.getLongitude(), "E", "W");
+					binding.mapReceiverPosition.setText(lat_text + "\n" + lon_text);
+				}
             }
 
             if (my_position != null && target_position != null && mPolyline != null) {
                 mPolyline.setPoints(Arrays.asList(new LatLng(my_position.lat, my_position.lon), new LatLng(target_position.lat, target_position.lon)));
                 mPolyline.setVisible(true);
+
             }
+			if (from_receiver != null) {
+				binding.mapBearing.setText(String.format(Locale.getDefault(), "%1.0f°", from_receiver.bearing));
+				set_value(binding.mapDistance, AltosConvert.distance, 1, from_receiver.distance);
+			}
         }
 
 		public void map_source_changed(int map_source) {}
