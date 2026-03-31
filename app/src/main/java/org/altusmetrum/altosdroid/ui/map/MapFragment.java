@@ -114,9 +114,6 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater,
 							 ViewGroup container, Bundle savedInstanceState) {
-		MapViewModel mapViewModel =
-				new ViewModelProvider(this).get(MapViewModel.class);
-
 		binding = FragmentMapBinding.inflate(inflater, container, false);
 		return binding.getRoot();
 	}
