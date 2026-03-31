@@ -32,11 +32,11 @@ public class AltosBluetooth extends AltosDroidLink {
 
 	private ConnectThread    connect_thread = null;
 
-	private BluetoothDevice device;
+	private final BluetoothDevice device;
 	private BluetoothSocket socket;
 	private InputStream input;
 	private OutputStream output;
-	private boolean		 pause;
+	private final boolean		 pause;
 
 	// Constructor
 	public AltosBluetooth(BluetoothDevice device, Handler handler, boolean pause) {

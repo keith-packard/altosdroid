@@ -123,10 +123,8 @@ public class AltosUsb extends AltosDroidLink {
 			return false;
 		if (device.getProductId() < AltosLib.product_altusmetrum_min)
 			return false;
-		if (device.getProductId() > AltosLib.product_altusmetrum_max)
-			return false;
-		return true;
-	}
+        return device.getProductId() <= AltosLib.product_altusmetrum_max;
+    }
 
 	static boolean matchProduct(int want_product, UsbDevice device) {
 
@@ -155,11 +153,8 @@ public class AltosUsb extends AltosDroidLink {
 		if (have_product == AltosLib.product_altusmetrum)	/* old devices match any request */
 			return true;
 
-		if (want_product == have_product)
-			return true;
-
-		return false;
-	}
+        return want_product == have_product;
+    }
 
 	static public boolean request_permission(Context context, UsbDevice device, PendingIntent pi) {
 		UsbManager	manager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
@@ -183,7 +178,7 @@ public class AltosUsb extends AltosDroidLink {
 			int	product = device.getProductId();
 
 			if (matchProduct(match_product, device)) {
-				AltosDebug.debug("found USB device " + device.toString());
+				AltosDebug.debug("found USB device " + device);
 				return device;
 			}
 		}

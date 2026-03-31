@@ -30,8 +30,8 @@ import java.util.Map;
 
 public class AltosDroidPreferencesBackend extends AltosPreferencesBackend {
 	public final static String        NAME    = "org.altusmetrum.AltosDroid";
-	private Context context;
-	private SharedPreferences prefs;
+	private final Context context;
+	private final SharedPreferences prefs;
 
 	public AltosDroidPreferencesBackend(Context in_context) {
 		this(in_context, NAME);

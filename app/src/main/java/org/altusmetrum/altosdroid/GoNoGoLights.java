@@ -27,12 +27,12 @@ public class GoNoGoLights {
 	private Boolean missing;
 	private Boolean set;
 
-	private ImageView red;
-	private ImageView green;
+	private final ImageView red;
+	private final ImageView green;
 
-	private Drawable dRed;
-	private Drawable dGreen;
-	private Drawable dGray;
+	private final Drawable dRed;
+	private final Drawable dGreen;
+	private final Drawable dGray;
 
 	public GoNoGoLights(ImageView in_red, ImageView in_green, Resources r) {
 		red = in_red;

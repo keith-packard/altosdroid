@@ -52,7 +52,7 @@ import java.util.TimerTask;
 
 class FragmentCallbacks extends FragmentManager.FragmentLifecycleCallbacks {
 
-	private MainActivity activity;
+	private final MainActivity activity;
 
 	public FragmentCallbacks(MainActivity activity) {
 		this.activity = activity;
@@ -212,9 +212,9 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 				break;
 			}
 		}
-	};
+	}
 
-	private ServiceConnection mConnection = new ServiceConnection() {
+    private final ServiceConnection mConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
 			AltosDebug.debug("onServiceConnected\n");
 			mService = new Messenger(service);
@@ -472,7 +472,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 	}
 
 	@Override
-	public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 		if (requestCode == MY_PERMISSION_REQUEST) {
 			for (int i = 0; i < grantResults.length; i++) {
@@ -626,7 +626,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 
 	private void disconnectDevice(boolean remember) {
 		try {
-			mService.send(Message.obtain(null, TelemetryService.MSG_DISCONNECT, (Boolean) remember));
+			mService.send(Message.obtain(null, TelemetryService.MSG_DISCONNECT, remember));
 		} catch (RemoteException e) {
 			AltosDebug.error("disconnectDevice(): %s", e.getMessage());
 		}
@@ -671,10 +671,8 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 
 	boolean same_string(String a, String b) {
 		if (a == null) {
-			if (b == null)
-				return true;
-			return false;
-		} else {
+            return b == null;
+        } else {
 			if (b == null)
 				return false;
 			return a.equals(b);
@@ -1028,7 +1026,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 
 	void delete_track(int serial) {
 		try {
-			mService.send(Message.obtain(null, TelemetryService.MSG_DELETE_SERIAL, (Integer) serial));
+			mService.send(Message.obtain(null, TelemetryService.MSG_DELETE_SERIAL, serial));
 		} catch (Exception ex) {
 		}
 	}

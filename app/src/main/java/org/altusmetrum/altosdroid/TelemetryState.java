@@ -59,7 +59,7 @@ public class TelemetryState {
     }
 
     public void remove(int serial) {
-        states.remove((Integer) serial);
+        states.remove(serial);
     }
 
     public Set<Integer> keySet() {

@@ -124,13 +124,13 @@ public abstract class AltosDroidLink extends AltosLink {
 
 	private static final int buffer_size = 64;
 
-	private byte[] in_buffer = new byte[buffer_size];
-	private byte[] out_buffer = new byte[buffer_size];
+	private final byte[] in_buffer = new byte[buffer_size];
+	private final byte[] out_buffer = new byte[buffer_size];
 	private int buffer_len = 0;
 	private int buffer_off = 0;
 	private int out_buffer_off = 0;
 
-	private byte[] debug_chars = new byte[buffer_size];
+	private final byte[] debug_chars = new byte[buffer_size];
 	private int debug_off;
 
 	private void debug_input(byte b) {

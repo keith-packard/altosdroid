@@ -33,8 +33,8 @@ import org.altusmetrum.altoslib_14.AltosLogTrace;
 import java.io.File;
 
 public class TelemetryLogger implements AltosLogTrace {
-	private TelemetryService service;
-	private AltosLink link;
+	private final TelemetryService service;
+	private final AltosLink link;
 	private AltosLog logger  = null;
 
 	private BroadcastReceiver mExternalStorageReceiver;

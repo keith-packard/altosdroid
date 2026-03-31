@@ -116,7 +116,7 @@ public class SelectTrackerActivity extends Activity implements OnTouchListener {
     public static final String EXTRA_SERIAL_NUMBER = "serial_number";
     public static final String EXTRA_FREQUENCY = "frequency";
 
-    private int button_ids[] = {
+    private final int[] button_ids = {
             R.id.call_button,
             R.id.serial_button,
             R.id.frequency_button,
@@ -127,7 +127,7 @@ public class SelectTrackerActivity extends Activity implements OnTouchListener {
     private static final int serial_button = 1;
     private static final int freq_button = 2;
     private static final int age_button = 3;
-    private RadioButton radio_buttons[] = new RadioButton[4];
+    private final RadioButton[] radio_buttons = new RadioButton[4];
     private TableLayout table;
 
     private Tracker[] trackers;
@@ -249,11 +249,11 @@ public class SelectTrackerActivity extends Activity implements OnTouchListener {
         setResult(Activity.RESULT_CANCELED);
 
         for (int i = 0; i < 4; i++) {
-            radio_buttons[i] = (RadioButton) findViewById(button_ids[i]);
+            radio_buttons[i] = findViewById(button_ids[i]);
             radio_buttons[i].setOnCheckedChangeListener(button_listener);
         }
 
-        ArrayList<Parcelable> tracker_array = (ArrayList<Parcelable>) getIntent().getParcelableArrayListExtra(MainActivity.EXTRA_TRACKERS);
+        ArrayList<Parcelable> tracker_array = getIntent().getParcelableArrayListExtra(MainActivity.EXTRA_TRACKERS);
         if (tracker_array != null) {
             Object[] array = tracker_array.toArray();
             trackers = new Tracker[array.length];
@@ -263,7 +263,7 @@ public class SelectTrackerActivity extends Activity implements OnTouchListener {
 
         start_time = System.currentTimeMillis();
 
-        table = (TableLayout) findViewById(R.id.tracker_list);
+        table = findViewById(R.id.tracker_list);
 
         init_button_state();
 

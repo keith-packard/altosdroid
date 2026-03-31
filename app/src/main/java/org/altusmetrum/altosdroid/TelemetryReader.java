@@ -67,7 +67,7 @@ public class TelemetryReader extends Thread {
 					AltosDebug.error("Parse error: %d \"%s\"", pp.getErrorOffset(), pp.getMessage());
 				} catch (AltosCRCException ce) {
 					++crc_errors;
-					handler.obtainMessage(TelemetryService.MSG_CRC_ERROR, new Integer(crc_errors)).sendToTarget();
+					handler.obtainMessage(TelemetryService.MSG_CRC_ERROR, Integer.valueOf(crc_errors)).sendToTarget();
 				}
 			}
 		} catch (InterruptedException ee) {

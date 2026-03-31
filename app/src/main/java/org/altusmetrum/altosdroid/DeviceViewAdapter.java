@@ -31,9 +31,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class DeviceViewAdapter extends RecyclerView.Adapter<DeviceViewHolder>  {
-    private ArrayList<DeviceAddress> deviceList;
+    private final ArrayList<DeviceAddress> deviceList;
 
-    private Context context;
+    private final Context context;
 
     public DeviceViewAdapter(Context context) {
         this.deviceList = new ArrayList<DeviceAddress>();

@@ -37,4 +37,4 @@ public class AltosVoltMeter {
             row.setVisibility(View.VISIBLE);
         }
     }
-};
+}

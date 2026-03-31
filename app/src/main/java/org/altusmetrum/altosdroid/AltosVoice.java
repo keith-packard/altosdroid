@@ -145,8 +145,7 @@ public class AltosVoice {
 			if (height != AltosLib.MISSING && last_height != AltosLib.MISSING)
 				height_change = Math.abs(last_height - height);
 
-			if (moved.range < 10 && height_change < 10)
-				return false;
+            return !(moved.range < 10) || !(height_change < 10);
 		}
 		return true;
 	}
@@ -159,8 +158,7 @@ public class AltosVoice {
 									     receiver.getLatitude(),
 									     receiver.getLongitude(),
 									     receiver.getAltitude());
-			if (moved.range < 10)
-				return false;
+            return !(moved.range < 10);
 		}
 		return true;
 	}

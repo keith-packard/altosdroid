@@ -61,7 +61,7 @@ public class Tracker implements CharSequence, Comparable, Parcelable {
 	}
 
 	public String toString() {
-		return display.toString();
+		return display;
 	}
 
 	/* Comparable */

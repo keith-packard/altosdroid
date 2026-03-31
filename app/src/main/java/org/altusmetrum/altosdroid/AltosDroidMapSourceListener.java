@@ -19,5 +19,5 @@
 package org.altusmetrum.altosdroid;
 
 public interface AltosDroidMapSourceListener {
-	public void map_source_changed(int map_source);
+	void map_source_changed(int map_source);
 }
