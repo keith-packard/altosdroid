@@ -16,7 +16,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/map_table">
+        app:layout_constraintBottom_toTopOf="@id/map_table_top_line">
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/map"
@@ -26,50 +26,89 @@
             tools:context=".MapsFragment" />
 
     </ViewSwitcher>
-
-    <TableLayout
-        android:id="@+id/map_table"
-        android:layout_width="match_parent"
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/map_table_top_line"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:stretchColumns="0,1"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent">
+        app:barrierDirection="top"/>
 
-        <TableRow
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:padding="2dip">
-
-            <TextView
+    <TextView
                 android:id="@+id/map_distance"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:text="Distance"
-                android:layout_weight="1"
-                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
                 android:textAppearance="@style/LabelText"
-                android:textColor="@color/primary_text" />
+                android:textColor="@color/primary_text"
+                app:layout_constrainedHeight="true"
+                app:layout_constrainedWidth="false"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/map_table_column_1"
+                app:layout_constraintTop_toTopOf="@id/map_table_top_line"
+                app:layout_constraintBottom_toTopOf="@id/map_table_center_line"/>
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/map_table_column_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="start"
+        />
 
+            <ImageView
+                android:id="@+id/map_flight"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_marginVertical="20dp"
+                android:layout_marginHorizontal="5dp"
+                app:layout_constrainedHeight="true"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toStartOf="@id/map_table_column_1"
+                app:layout_constraintEnd_toStartOf="@id/map_table_column_2"
+                app:layout_constraintTop_toTopOf="@id/map_table_top_line"
+                app:layout_constraintBottom_toTopOf="@id/map_table_center_line"
+                android:src="@drawable/flight_orange" />
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/map_table_column_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="start"
+        />
             <TextView
                 android:id="@+id/map_target_position"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
+                android:gravity="end|center_vertical"
                 android:text="Target\nPosition"
-                android:layout_weight="10"
                 android:textAppearance="@style/LabelText"
-                android:textColor="@color/primary_text" />
-
+                android:textColor="@color/primary_text"
+                android:paddingVertical="10dp"
+                android:paddingEnd="2dp"
+                app:layout_constrainedHeight="true"
+                app:layout_constraintHorizontal_bias="1"
+                app:layout_constraintStart_toStartOf="@id/map_table_column_2"
+                app:layout_constraintEnd_toStartOf="@id/map_table_column_3"
+                app:layout_constraintTop_toTopOf="@id/map_table_top_line"
+                app:layout_constraintBottom_toTopOf="@id/map_table_center_line"
+                />
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/map_table_column_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="start"
+        />
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                tools:layout_editor_absoluteX="1dp">
+                android:gravity="center"
+                app:layout_constrainedHeight="false"
+                android:paddingVertical="20dp"
+                app:layout_constraintStart_toStartOf="@id/map_table_column_3"
+                app:layout_constraintTop_toTopOf="@id/map_table_top_line"
+                app:layout_constraintBottom_toTopOf="@id/map_table_center_line"
+                app:layout_constraintEnd_toEndOf="parent">
 
                 <AutoCompleteTextView
                     android:id="@+id/mapType"
@@ -78,34 +117,70 @@
                     android:inputType="none"
                     android:layout_width="wrap_content"/>
             </com.google.android.material.textfield.TextInputLayout>
-        </TableRow>
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/map_table_center_line"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top"/>
 
-        <TableRow
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:padding="2dip">
+    <View
+        android:id="@+id/map_table_line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
+        android:layout_marginTop="1dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/map_table_center_line"
+        />
 
             <TextView
                 android:id="@+id/map_bearing"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="1"
+                android:layout_height="0dp"
+                android:layout_gravity="start"
+                android:gravity="start|center_vertical"
                 android:text="Bearing"
                 android:textAppearance="@style/LabelText"
-                android:textColor="@color/primary_text" />
+                android:textColor="@color/primary_text"
+                app:layout_constrainedHeight="true"
+                app:layout_constrainedWidth="false"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/map_table_column_1"
+                app:layout_constraintTop_toBottomOf="@id/map_table_line"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <ImageView
+                android:id="@+id/map_alien"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_gravity="center"
+                android:layout_marginVertical="10dp"
+                app:layout_constrainedHeight="true"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toStartOf="@id/map_table_column_1"
+                app:layout_constraintEnd_toStartOf="@id/map_table_column_2"
+                app:layout_constraintTop_toBottomOf="@id/map_table_line"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:src="@drawable/alien"/>
 
             <TextView
                 android:id="@+id/map_receiver_position"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_weight="10"
+                android:layout_gravity="end|center_vertical"
                 android:text="Receiver\nPosition"
                 android:textAppearance="@style/LabelText"
-                android:textColor="@color/primary_text" />
+                android:textColor="@color/primary_text"
+                android:paddingEnd="2dp"
+                app:layout_constrainedHeight="false"
+                app:layout_constraintHorizontal_bias="1"
+                app:layout_constraintStart_toStartOf="@id/map_table_column_2"
+                app:layout_constraintEnd_toStartOf="@id/map_table_column_3"
+                app:layout_constraintTop_toBottomOf="@id/map_table_line"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/map_online"
@@ -113,13 +188,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_weight="1"
                 android:background="@color/primary_background"
                 android:text="@string/map_online"
                 android:textAppearance="@style/ButtonText"
-                android:textColor="@color/primary_text" />
-        </TableRow>
-    </TableLayout>
+                android:textColor="@color/primary_text"
+                app:layout_constrainedHeight="true"
+                app:layout_constraintStart_toStartOf="@id/map_table_column_3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/map_table_line"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
 
 
