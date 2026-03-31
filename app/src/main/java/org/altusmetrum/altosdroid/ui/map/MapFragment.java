@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -254,21 +255,28 @@ public class MapFragment extends AltosFragment implements GoogleMap.OnMarkerClic
 		AltosPreferences.register_map_type_listener(this);
 		AltosDroidPreferences.register_map_source_listener(this);
 		ArrayAdapter adapter = new ArrayAdapter(getContext(), R.layout.map_type_menu, map_types);
-		AutoCompleteTextView mapType = view.findViewById(R.id.mapType);
 		int map_type = AltosPreferences.map_type();
 		for (int map_id = 0; map_id < altos_map_types.length; map_id++)
 			if (altos_map_types[map_id] == map_type) {
-				mapType.setText(map_types[map_id], false);
+				binding.mapType.setText(map_types[map_id], false);
 				break;
 			}
-		mapType.setAdapter(adapter);
-		mapType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		binding.mapType.setAdapter(adapter);
+		binding.mapType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				int map_type = AltosLib.MISSING;
 				if (position < altos_map_types.length)
 					AltosPreferences.set_map_type(altos_map_types[position]);
 			}
 		});
+		binding.mapOnline.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				int source = isChecked ? AltosDroidPreferences.MAP_SOURCE_ONLINE : AltosDroidPreferences.MAP_SOURCE_OFFLINE;
+				AltosDroidPreferences.set_map_source(source);
+			}
+		});
+		boolean isChecked = AltosDroidPreferences.map_source() == AltosDroidPreferences.MAP_SOURCE_ONLINE;
+		binding.mapOnline.setChecked(isChecked);
     }
 
 	@Override

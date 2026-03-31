@@ -44,8 +44,8 @@ public class AltosDroidPreferences extends AltosPreferences {
 	/* Map source preference name */
 	final static String mapSourcePreference = "MAP-SOURCE";
 
-	static final int	MAP_SOURCE_OFFLINE = 0;
-	static final int	MAP_SOURCE_ONLINE = 1;
+	public static final int	MAP_SOURCE_OFFLINE = 0;
+	public static final int	MAP_SOURCE_ONLINE = 1;
 
 	static int	map_source;
 
