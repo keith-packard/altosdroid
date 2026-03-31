@@ -17,22 +17,24 @@
  */
 
 package org.altusmetrum.altosdroid;
-import androidx.fragment.app.Fragment;
 
-import org.altusmetrum.altoslib_14.AltosLatLon;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 
-public class AltosMapOffline extends Fragment implements AltosMapInterface {
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-    private MainActivity altos_droid;
-    public void set_altos_droid(MainActivity altos_droid) {
-        this.altos_droid = altos_droid;
+public class HereBitmap  {
+
+    public static Bitmap create(Context context, int marker_size) {
+        Drawable drawable = VectorDrawableCompat.create(context.getResources(), R.drawable.alien, context.getTheme());
+        if (drawable == null)
+            return null;
+        Bitmap bitmap = Bitmap.createBitmap(marker_size, marker_size, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
     }
-    public void set_telem_state(TelemetryState telem_state) { }
-    public void center(double lat, double lon, double accuracy) { }
-    public void set_pad_position(double lat, double lon) { }
-    public void set_track(AltosLatLon my_position, AltosLatLon target_position) { }
-    public void position_permission() { }
-    public void destroy() {}
-    public AltosMapOffline() { }
 }
-

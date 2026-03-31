@@ -41,7 +41,6 @@
     <string name="map_bearing">Bearing</string>
     <string name="map_receiver_position">Receiver\nPosition</string>
     <string name="map_target_position">Target\nPosition</string>
-    <string name="map_type">Map Type</string>
     <string name="map_target">Target</string>
     <string name="map_receiver">Receiver</string>
 

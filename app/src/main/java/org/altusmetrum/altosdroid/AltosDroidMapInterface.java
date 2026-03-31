@@ -18,9 +18,8 @@
 package org.altusmetrum.altosdroid;
 
 import org.altusmetrum.altoslib_14.AltosLatLon;
-import org.altusmetrum.altoslib_14.AltosState;
 
-public interface AltosMapInterface {
+public interface AltosDroidMapInterface {
     void set_altos_droid(MainActivity altos_droid);
     void set_telem_state(TelemetryState telem_state);
     void center(double lat, double lon, double accuracy);

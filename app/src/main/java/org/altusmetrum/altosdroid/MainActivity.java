@@ -778,7 +778,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 		}
 	}
 
-	void update_state(TelemetryState new_telemetry_state) {
+	public void update_state(TelemetryState new_telemetry_state) {
 		if (new_telemetry_state != null)
 			telemetry_state = new_telemetry_state;
 

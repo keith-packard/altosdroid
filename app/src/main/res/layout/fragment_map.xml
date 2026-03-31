@@ -27,9 +27,8 @@
             android:layout_height="match_parent"
             tools:context=".MapsFragment" />
 
-        <androidx.fragment.app.FragmentContainerView
+        <org.altusmetrum.altosdroid.AltosDroidMapOffline
             android:id="@+id/map_offline"
-            android:name="org.altusmetrum.altosdroid.AltosMapOffline"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

@@ -19,14 +19,8 @@ package org.altusmetrum.altosdroid;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
-
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -91,7 +85,7 @@ class RocketOnline implements Comparable {
         this.last_packet = last_packet;
     }
 }
-public class AltosMapOnline implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, AltosMapInterface, AltosMapTypeListener {
+public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, AltosDroidMapInterface, AltosMapTypeListener {
     private final HashMap<Integer,RocketOnline> rockets = new HashMap<Integer,RocketOnline>();
 
     private GoogleMap mMap;
@@ -133,8 +127,8 @@ public class AltosMapOnline implements GoogleMap.OnMarkerClickListener, GoogleMa
 
             mMap.getUiSettings().setTiltGesturesEnabled(false);
             mMap.getUiSettings().setZoomControlsEnabled(false);
-            mMap.setOnMarkerClickListener(AltosMapOnline.this);
-            mMap.setOnMapClickListener(AltosMapOnline.this);
+            mMap.setOnMarkerClickListener(AltosDroidMapOnline.this);
+            mMap.setOnMapClickListener(AltosDroidMapOnline.this);
             Bitmap pad_bitmap = PadBitmap.create(context, MapFragment.marker_size);
 
             mPadMarker = mMap.addMarker(
@@ -150,7 +144,7 @@ public class AltosMapOnline implements GoogleMap.OnMarkerClickListener, GoogleMa
                             .visible(false)
             );
 
-            AltosMapOnline.this.map_type_changed(AltosPreferences.map_type());
+            AltosDroidMapOnline.this.map_type_changed(AltosPreferences.map_type());
             map_fragment.check_permission();
         }
     };
@@ -280,7 +274,7 @@ public class AltosMapOnline implements GoogleMap.OnMarkerClickListener, GoogleMa
         AltosPreferences.unregister_map_type_listener(this);
     }
 
-    public AltosMapOnline(MapFragment map_fragment, Context context) {
+    public AltosDroidMapOnline(MapFragment map_fragment, Context context) {
         this.map_fragment = map_fragment;
         this.context = context;
         AltosPreferences.register_map_type_listener(this);

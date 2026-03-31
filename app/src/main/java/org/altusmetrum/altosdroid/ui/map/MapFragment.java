@@ -1,68 +1,37 @@
 package org.altusmetrum.altosdroid.ui.map;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
-
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.Projection;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.altusmetrum.altosdroid.AltosDroidMapSourceListener;
 import org.altusmetrum.altosdroid.AltosDroidPreferences;
 import org.altusmetrum.altosdroid.AltosFragment;
-import org.altusmetrum.altosdroid.AltosMapInterface;
-import org.altusmetrum.altosdroid.AltosMapOffline;
-import org.altusmetrum.altosdroid.AltosMapOnline;
+import org.altusmetrum.altosdroid.AltosDroidMapInterface;
+import org.altusmetrum.altosdroid.AltosDroidMapOnline;
 import org.altusmetrum.altosdroid.AltosValue;
 import org.altusmetrum.altosdroid.MainActivity;
 import org.altusmetrum.altosdroid.R;
 import org.altusmetrum.altosdroid.TelemetryState;
 import org.altusmetrum.altosdroid.databinding.FragmentMapBinding;
-import org.altusmetrum.altosdroid.databinding.FragmentRecoverBinding;
-import org.altusmetrum.altosdroid.ui.recover.RecoverViewModel;
 import org.altusmetrum.altoslib_14.AltosConvert;
 import org.altusmetrum.altoslib_14.AltosGreatCircle;
 import org.altusmetrum.altoslib_14.AltosLatLon;
 import org.altusmetrum.altoslib_14.AltosLib;
 import org.altusmetrum.altoslib_14.AltosMap;
-import org.altusmetrum.altoslib_14.AltosMapTypeListener;
 import org.altusmetrum.altoslib_14.AltosPreferences;
 import org.altusmetrum.altoslib_14.AltosState;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Locale;
 
 
@@ -77,7 +46,7 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
 	private AltosLatLon target_position = null;
 	private FragmentMapBinding binding;
 
-	private AltosMapInterface mapInterface;
+	private AltosDroidMapInterface mapInterface;
 
 	public void check_permission() {
         if (altos_droid == null)
@@ -223,13 +192,17 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
 		pad_set = false;
 		int child = 0;
 		if (AltosDroidPreferences.map_source() == AltosDroidPreferences.MAP_SOURCE_ONLINE) {
-			mapInterface = new AltosMapOnline(this, getContext());
+			mapInterface = new AltosDroidMapOnline(this, getContext());
 			child = 0;
 		} else {
-			mapInterface = new AltosMapOffline();
+			mapInterface = binding.mapOffline;
+			binding.mapOffline.set_map_fragment(this);
 			child = 1;
 		}
+		mapInterface.set_altos_droid(altos_droid);
 		binding.mapView.setDisplayedChild(child);
+		if (altos_droid != null)
+			altos_droid.update_state(null);
 	}
 
 	@Override
