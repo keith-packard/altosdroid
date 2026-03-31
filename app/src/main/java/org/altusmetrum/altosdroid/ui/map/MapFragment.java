@@ -73,7 +73,6 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
 
 	private boolean pad_set;
 
-
 	private AltosLatLon my_position = null;
 	private AltosLatLon target_position = null;
 	private FragmentMapBinding binding;
@@ -142,14 +141,14 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
 					AltosPreferences.set_map_type(altos_map_types[position]);
 			}
 		});
-		binding.mapOnline.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		binding.mapSource.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				int source = isChecked ? AltosDroidPreferences.MAP_SOURCE_ONLINE : AltosDroidPreferences.MAP_SOURCE_OFFLINE;
 				AltosDroidPreferences.set_map_source(source);
 			}
 		});
 		boolean isChecked = AltosDroidPreferences.map_source() == AltosDroidPreferences.MAP_SOURCE_ONLINE;
-		binding.mapOnline.setChecked(isChecked);
+		binding.mapSource.setChecked(isChecked);
     }
 
 	@Override
@@ -162,9 +161,7 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
 		binding = null;
 	}
 
-
-	public void
-	position_permission() {
+	public void position_permission() {
 		if (mapInterface != null)
 			mapInterface.position_permission();
 	}
@@ -187,7 +184,7 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
 					binding.mapTargetPosition.setText(lat_text + "\n" + lon_text);
 				}
 				target_position = new AltosLatLon(state.gps.lat, state.gps.lon);
-				if (state.gps.locked && state.gps.nsat >= 4)
+				if (state.gps.locked && state.gps.nsat >= 4 && mapInterface != null)
 					mapInterface.center (state.gps.lat, state.gps.lon, 10);
 			}
 		}
@@ -210,23 +207,31 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
 			}
 		}
 
-		if (my_position != null && target_position != null)
+		if (my_position != null && target_position != null && mapInterface != null)
 			mapInterface.set_track(my_position, target_position);
 
-		if (from_receiver != null) {
+		if (from_receiver != null && binding != null) {
 			binding.mapBearing.setText(String.format(Locale.getDefault(), "%1.0f°", from_receiver.bearing));
 			set_value(binding.mapDistance, AltosConvert.distance, 1, from_receiver.distance);
 		}
 	}
 
 	public void map_source_changed(int map_source) {
+		if (mapInterface != null)
+			mapInterface.destroy();
+		mapInterface = null;
+		pad_set = false;
+		int child = 0;
 		if (AltosDroidPreferences.map_source() == AltosDroidPreferences.MAP_SOURCE_ONLINE) {
 			mapInterface = new AltosMapOnline(this, getContext());
+			child = 0;
 		} else {
 			mapInterface = new AltosMapOffline();
+			child = 1;
 		}
+		binding.mapView.setDisplayedChild(child);
 	}
 
-		@Override
+	@Override
     public String name() { return MainActivity.map_name; }
 }

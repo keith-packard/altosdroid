@@ -284,7 +284,7 @@ public class AltosMapOnline implements GoogleMap.OnMarkerClickListener, GoogleMa
         this.map_fragment = map_fragment;
         this.context = context;
         AltosPreferences.register_map_type_listener(this);
-        SupportMapFragment mapFragment = (SupportMapFragment) map_fragment.getChildFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) map_fragment.getChildFragmentManager().findFragmentById(R.id.map_online);
         mapFragment.getMapAsync(callback);
     }
 }
