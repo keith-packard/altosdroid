@@ -25,11 +25,11 @@ import android.os.*;
 import android.view.*;
 import android.view.View.*;
 import android.widget.*;
-import android.graphics.*;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import org.altusmetrum.altoslib_14.*;
-import org.altusmetrum.altosdroid.AltosDebug;
 
 class TrackerComparatorCall implements Comparator<Tracker> {
     public int compare(Tracker a, Tracker b) {
@@ -111,7 +111,7 @@ class TrackerComparatorFrequency implements Comparator<Tracker> {
     }
 }
 
-public class SelectTrackerActivity extends Activity implements OnTouchListener {
+public class SelectTrackerActivity extends AppCompatActivity implements OnTouchListener {
     // Return Intent extra
     public static final String EXTRA_SERIAL_NUMBER = "serial_number";
     public static final String EXTRA_FREQUENCY = "frequency";
@@ -235,7 +235,10 @@ public class SelectTrackerActivity extends Activity implements OnTouchListener {
         setResult(Activity.RESULT_OK, intent);
         finish();
     }
-
+    public void setTitle(String title) {
+        super.setTitle(title);
+        getSupportActionBar().setTitle(title);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         int title_id = getIntent().getIntExtra(MainActivity.EXTRA_TRACKERS_TITLE, R.id.select_tracker);
