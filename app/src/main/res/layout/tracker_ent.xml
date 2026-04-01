@@ -11,30 +11,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingRight="3dp"
-        android:textColor="@color/primary_text"
-        android:textAppearance="@style/CallText"
         android:text="" />
     <TextView
         android:id="@+id/serial_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingRight="3dp"
-        android:textColor="@color/primary_text"
-        android:textAppearance="@style/SerialText"
         android:text="" />
     <TextView
         android:id="@+id/frequency_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingRight="3dp"
-        android:textColor="@color/primary_text"
-        android:textAppearance="@style/FreqText"
         android:text="" />
     <TextView
         android:id="@+id/age_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/primary_text"
-        android:textAppearance="@style/AgeText"
         android:text="" />
 </android.widget.TableRow>
