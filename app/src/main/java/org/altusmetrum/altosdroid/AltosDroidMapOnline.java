@@ -93,6 +93,7 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
     private MainActivity altos_droid;
     private final Context context;
     private LatLng center;
+    private LatLng pad_position;
     private Marker mPadMarker;
     private Polyline mPolyline;
     private double mapAccuracy = -1;
@@ -146,6 +147,10 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
             );
             if (center != null)
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center,14));
+            if (pad_position != null) {
+                mPadMarker.setPosition(pad_position);
+                mPadMarker.setVisible(true);
+            }
             AltosDroidMapOnline.this.map_type_changed(AltosPreferences.map_type());
             map_fragment.check_permission();
 
@@ -255,8 +260,11 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
     }
 
     public void set_pad_position(double lat, double lon) {
-        mPadMarker.setPosition(new LatLng(lat, lon));
-        mPadMarker.setVisible(true);
+        pad_position = new LatLng(lat, lon);
+        if (mPadMarker != null) {
+            mPadMarker.setPosition(pad_position);
+            mPadMarker.setVisible(true);
+        }
     }
 
     public void set_track(AltosLatLon my_position, AltosLatLon target_position) {
