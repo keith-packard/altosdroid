@@ -11,9 +11,9 @@ run with:
 
 ToDo list
 
- * Data fields on map view. Distance, bearing to target, target and 'me' lat/lon.
+ ✓ Data fields on map view. Distance, bearing to target, target and 'me' lat/lon.
 
- * Select Device menu - devices need to be larger for tapping.
+ ✓ Select Device menu - devices need to be larger for tapping.
 
  * Select Frequency. Add 'edit frequencies' menu item.
 
@@ -47,5 +47,5 @@ ToDo list
  * Edit frequency list
  * Configuration
  * Idle mode
- * Offline maps
+ ✓ Offline maps
  
