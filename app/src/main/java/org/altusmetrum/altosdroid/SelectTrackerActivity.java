@@ -279,11 +279,11 @@ public class SelectTrackerActivity extends Activity implements OnTouchListener {
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_OUTSIDE:
-                v.setBackgroundColor(0);
+                v.setBackgroundColor(getColor(R.color.primary_background));
                 v.invalidate();
                 break;
             case MotionEvent.ACTION_DOWN:
-                v.setBackgroundColor(Color.RED);
+                v.setBackgroundColor(getColor(R.color.altus_purple));
                 v.invalidate();
                 break;
         }
