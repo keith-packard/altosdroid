@@ -7,7 +7,6 @@
         android:layout_height="match_parent"
         >
         <TableLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/tracker_list"
             android:orientation="vertical"
             android:layout_width="match_parent"
@@ -25,30 +24,22 @@
                     android:id="@+id/call_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/ButtonText"
-                    android:textColor="@color/primary_text"
                     android:text="@string/callsign_label" />
                 <RadioButton
                     android:id="@+id/serial_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/ButtonText"
-                    android:textColor="@color/primary_text"
                     android:text="@string/serial_label" />
                 <RadioButton
                     android:id="@+id/frequency_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/ButtonText"
-                    android:textColor="@color/primary_text"
                     android:text="@string/freq_label" />
                 <RadioButton
                     android:id="@+id/age_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/ButtonText"
-                    android:textColor="@color/primary_text"
-                    android:text="@string/age_label" />
+                     android:text="@string/age_label" />
             </TableRow>
         </TableLayout>
     </ScrollView>
