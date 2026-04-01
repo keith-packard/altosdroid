@@ -167,14 +167,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:barrierDirection="top" />
-
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/target_lon_view"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        app:constraint_referenced_ids="target_lon_label,target_lon_value"/>
-
+    
     <TextView
         android:id="@+id/target_lon_value"
         android:layout_width="0dp"

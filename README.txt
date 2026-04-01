@@ -47,4 +47,7 @@ ToDo list
  * Configuration
  * Idle mode
  ✓ Offline maps
- 
+
+BUGS
+
+ * Map type selection breaks after switching away/back
