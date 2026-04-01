@@ -11,13 +11,13 @@ import org.altusmetrum.altoslib_14.AltosLib;
 public class AltosVoltMeter {
     public double voltage;
     public double good_voltage;
-    TableRow row;
+    View row;
     ImageView green;
     ImageView red;
     TextView value;
     GoNoGoLights lights;
 
-    public AltosVoltMeter(double good_voltage, TableRow row, ImageView red, ImageView green, TextView value, Resources resources) {
+    public AltosVoltMeter(double good_voltage, View row, ImageView red, ImageView green, TextView value, Resources resources) {
         this.voltage = AltosLib.MISSING;
         this.good_voltage = good_voltage;
         this.row = row;
