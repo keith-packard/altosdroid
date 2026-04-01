@@ -5,7 +5,12 @@
     <color name="age_error">#D32F2F</color>
     <color name="rocket_blend">#80804000</color>
     <color name="altus_orange">#ff8a00</color>
+    <color name="altus_orange_light">#ffc075</color>
+    <color name="altus_orange_dark">#b86400</color>
     <color name="altus_purple">#8500d7</color>
+    <color name="altus_purple_light">#b030ff</color>
+    <color name="altus_purple_dark">#590090</color>
     <color name="primary_text">#000000</color>
     <color name="primary_background">#ffffff</color>
+    <color name="primary_text_variant">#808080</color>
 </resources>
