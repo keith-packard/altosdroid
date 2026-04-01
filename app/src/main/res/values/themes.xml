@@ -92,28 +92,8 @@
 		<item name="thumbTint">@color/altus_orange_switch</item>
 		<item name="trackTint">@color/altus_orange_light_switch</item>
  	</style>
-
-	<style name="SwitchButtonStyle" parent="Widget.MaterialComponents.CompoundButton.Switch">
-		<item name="materialThemeOverlay">@style/ThemeOverlay.App.Button.SwitchButton</item>
-	</style>
-
-	<style name="ThemeOverlay.App.Button.SwitchButton" parent="ThemeOverlay.App.Button">
-		<item name="android:textAppearance">@style/ButtonText</item>
-		<item name="colorAccent">@color/altus_orange</item>
-	</style>
-
-	<style name="ThemeOverlay.App.Button" parent="">
-		<item name="colorPrimary">@color/altus_orange</item>
-	</style>
-
-	<style name="Widget.App.Button" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
-		<item name="materialThemeOverlay">@style/ThemeOverlay.App.Button.TextButton</item>
-		<item name="shapeAppearance">@style/ShapeAppearance.App.SmallComponent</item>
-	</style>
-
-	<style name="ThemeOverlay.App.Button.TextButton" parent="ThemeOverlay.App.Button">
-		<item name="android:textAppearance">@style/ButtonText</item>
+	<style name="Widget.App.AutoCompleteTextView" parent="Widget.MaterialComponents.TextView">
 		<item name="android:textColor">@color/primary_text</item>
-	</style>
-
+		<item name="android:textAppearance">@style/ButtonText</item>
+ 	</style>
 </resources>
