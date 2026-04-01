@@ -17,14 +17,13 @@ ToDo list
 
  * Select Frequency. Add 'edit frequencies' menu item.
 
- * Select Tracker. Color of meatball should be purple
+ ✓ Select Tracker. Color of meatball should be purple
 
- * Select Tracker needs title "Select Tracker"
+ ✓ Select Tracker needs title "Select Tracker"
 
- * Delete Tracker needs title "Delete Tracker"
+ ✓ Delete Tracker needs title "Delete Tracker"
 
  * Setup
-
 
 	Telemetry Rate
 	Units

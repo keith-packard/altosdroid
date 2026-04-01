@@ -34,8 +34,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 
 import java.util.Set;
@@ -51,11 +54,30 @@ public class DeviceListActivity extends AppCompatActivity {
     // Member fields
     private BluetoothAdapter mBtAdapter;
     private DeviceViewAdapter mNewDevicesArrayAdapter;
+    private void enableEdgeToEdgeManually() {
+        Window window = getWindow();
+        if (window == null) return;
 
+        // Make the system bars transparent
+        window.setStatusBarColor(Color.TRANSPARENT);
+        window.setNavigationBarColor(Color.TRANSPARENT);
+
+        // Tell the system to draw behind the system bars
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.setDecorFitsSystemWindows(false);
+        } else {
+            window.getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+            );
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        //enableEdgeToEdgeManually();
 
         DeviceListBinding binding = DeviceListBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
