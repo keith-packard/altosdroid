@@ -1,6 +1,88 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Theme.App" parent="Theme.MaterialComponents.DayNight">
+        <item name="colorOnSurfaceVariant">@color/primary_text_variant</item>
 
+        <item name="colorPrimary">@color/altus_purple</item>
+        <item name="colorPrimaryVariant">@color/altus_purple_light</item>
+        <item name="colorOnPrimary">@color/primary_background</item>
+
+        <item name="colorSecondary">@color/altus_orange</item>
+        <item name="colorOnSecondary">@color/primary_text</item>
+
+        <item name="colorAccent">@color/altus_purple</item>
+        <item name="colorControlActivated">@color/altus_purple</item>
+        <item name="colorControlHighlight">@color/altus_purple_light</item>
+
+        <item name="android:textColor">@color/primary_background</item>
+        <item name="android:textColorPrimary">@color/primary_background</item>
+        <item name="android:textColorSecondary">@color/altus_orange_light</item>
+        <item name="android:textColorAlertDialogListItem">@color/primary_background</item>
+
+        <!-- widget themes -->
+        <item name="radioButtonStyle">@style/Widget.App.RadioButton</item>
+        <item name="android:radioButtonStyle">@style/Widget.App.RadioButton</item>
+        <item name="switchStyle">@style/Widget.App.Switch</item>
+        <item name="android:switchStyle">@style/Widget.App.Switch</item>
+        <item name="android:textViewStyle">@style/Widget.App.TextView</item>
+
+        <!-- other settings -->
+        <item name="android:windowLightStatusBar">false</item>
     </style>
+
+    <style name="Theme.App.Dialog" parent="Theme.MaterialComponents.DayNight.Dialog">
+        <item name="colorOnSurfaceVariant">@color/primary_text_variant</item>
+
+        <item name="colorPrimary">@color/altus_purple</item>
+        <item name="colorPrimaryVariant">@color/altus_purple_light</item>
+        <item name="colorOnPrimary">@color/primary_background</item>
+
+        <item name="colorSecondary">@color/altus_orange</item>
+        <item name="colorOnSecondary">@color/primary_text</item>
+
+        <item name="colorAccent">@color/altus_purple</item>
+        <item name="colorControlActivated">@color/altus_purple</item>
+        <item name="colorControlHighlight">@color/altus_purple_light</item>
+
+        <item name="android:textColor">@color/primary_background</item>
+        <item name="android:textColorPrimary">@color/primary_background</item>
+        <item name="android:textColorSecondary">@color/altus_orange_light</item>
+        <item name="android:textColorAlertDialogListItem">@color/primary_background</item>
+
+        <!-- widget themes -->
+        <item name="radioButtonStyle">@style/Widget.App.RadioButton</item>
+        <item name="android:radioButtonStyle">@style/Widget.App.RadioButton</item>
+        <item name="switchStyle">@style/Widget.App.Switch</item>
+        <item name="android:switchStyle">@style/Widget.App.Switch</item>
+        <item name="android:textViewStyle">@style/Widget.App.TextView</item>
+    </style>
+    <!-- widget themes -->
+    <style name="Widget.App.RadioButton" parent="Widget.MaterialComponents.CompoundButton.RadioButton">
+        <item name="android:textColor">@color/primary_background</item>
+        <item name="colorControlActivated">@color/altus_orange</item>
+        <item name="colorControlHighlight">@color/altus_orange</item>
+        <item name="colorAccent">@color/altus_orange</item>
+        <item name="colorPrimary">@color/altus_orange</item>
+        <item name="colorOnSurface">@color/altus_orange</item>
+        <item name="buttonTint">@color/altus_orange_switch</item>
+        <item name="android:textAppearance">@style/ButtonText</item>"
+        <item name="textAppearanceBodyMedium">@style/ButtonText</item>
+    </style>
+    <style name="Widget.App.TextView" parent="Widget.MaterialComponents.TextView">
+        <item name="colorControlActivated">@color/altus_orange</item>
+        <item name="colorControlHighlight">@color/altus_orange</item>
+        <item name="colorAccent">@color/altus_orange</item>
+        <item name="colorPrimary">@color/altus_orange</item>
+        <item name="android:textAppearance">@style/ValueText</item>"
+    </style>
+    <style name="Widget.App.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="android:textAppearance">@style/ButtonText</item>
+        <item name="colorSecondary">@color/altus_orange_light</item>
+        <item name="thumbTint">@color/altus_orange_switch</item>
+        <item name="trackTint">@color/altus_orange_light_switch</item>
+    </style>
+    <style name="Widget.App.AutoCompleteTextView" parent="Widget.MaterialComponents.TextView">
+        <item name="android:textAppearance">@style/ButtonText</item>
+    </style>
+
 </resources>

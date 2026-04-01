@@ -8,7 +8,6 @@
         <item name="android:textColor">@color/altus_purple</item>
     </style>
 
-
     <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.MaterialComponents.MediumComponent">
         <item name="cornerFamily">cut</item>
         <item name="cornerSize">8dp</item>
