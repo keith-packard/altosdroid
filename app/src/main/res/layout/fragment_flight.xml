@@ -36,7 +36,6 @@
                 android:id="@+id/speed_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="200m/s"/>
         </TableRow>
 
@@ -59,7 +58,6 @@
                 android:id="@+id/height_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="1001m" />
         </TableRow>
 
@@ -82,7 +80,6 @@
                 android:id="@+id/altitude_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="1234m" />
         </TableRow>
 
@@ -108,7 +105,6 @@
                 android:id="@+id/tilt_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="14°" />
         </TableRow>
 
@@ -132,7 +128,6 @@
                 android:id="@+id/max_speed_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="600m/s" />
         </TableRow>
 
@@ -156,7 +151,6 @@
                 android:id="@+id/max_height_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="1010m" />
         </TableRow>
 
@@ -180,7 +174,6 @@
                 android:id="@+id/max_altitude_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="1243m" />
         </TableRow>
 
@@ -203,7 +196,6 @@
                 android:id="@+id/elevation_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="70°" />
         </TableRow>
 
@@ -226,7 +218,6 @@
                 android:id="@+id/range_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="2456m" />
         </TableRow>
 
@@ -249,7 +240,6 @@
                 android:id="@+id/bearing_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="67°" />
         </TableRow>
 
@@ -265,7 +255,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="3"
-                android:textAppearance="@style/ValueText"
                 android:text="" />
         </TableRow>
 
@@ -288,7 +277,6 @@
                 android:id="@+id/distance_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="1400m" />
         </TableRow>
 
@@ -375,7 +363,6 @@
                 android:id="@+id/apogee_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="3.9"/>
         </TableRow>
 
@@ -419,7 +406,6 @@
                 android:id="@+id/main_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="3.8"/>
         </TableRow>
         <TableRow
@@ -462,7 +448,6 @@
                 android:id="@+id/ignite_a_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="locked"/>
         </TableRow>
 
@@ -506,7 +491,6 @@
                 android:id="@+id/ignite_b_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="locked"/>
         </TableRow>
 
@@ -550,7 +534,6 @@
                 android:id="@+id/ignite_c_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="4.0"/>
         </TableRow>
 
@@ -594,7 +577,6 @@
                 android:id="@+id/ignite_d_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="4.0"/>
         </TableRow>
 

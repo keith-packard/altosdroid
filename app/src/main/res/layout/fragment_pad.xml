@@ -55,7 +55,6 @@
                 android:id="@+id/battery_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="4.2" />
         </TableRow>
 
@@ -99,7 +98,6 @@
                 android:id="@+id/receiver_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="4.1"/>
         </TableRow>
 
@@ -141,7 +139,6 @@
                 android:id="@+id/logging_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="enabled"/>
         </TableRow>
 
@@ -183,7 +180,6 @@
                 android:id="@+id/gps_locked_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="locked"/>
         </TableRow>
 
@@ -225,7 +221,6 @@
                 android:id="@+id/gps_ready_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="ready"/>
         </TableRow>
 
@@ -269,7 +264,6 @@
                 android:id="@+id/apogee_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="4.0"/>
         </TableRow>
 
@@ -313,7 +307,6 @@
                 android:id="@+id/main_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="4.0"/>
         </TableRow>
 
@@ -357,7 +350,6 @@
                 android:id="@+id/ignite_a_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="locked"/>
         </TableRow>
 
@@ -401,7 +393,6 @@
                 android:id="@+id/ignite_b_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="locked"/>
         </TableRow>
 
@@ -445,7 +436,6 @@
                 android:id="@+id/ignite_c_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="4.0"/>
         </TableRow>
 
@@ -489,7 +479,6 @@
                 android:id="@+id/ignite_d_voltage_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="4.0"/>
         </TableRow>
 
@@ -515,7 +504,6 @@
                 android:id="@+id/tilt_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="20°"/>
         </TableRow>
 
@@ -536,7 +524,6 @@
                 android:id="@+id/receiver_lat_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="45.0"/>
         </TableRow>
 
@@ -557,7 +544,6 @@
                 android:id="@+id/receiver_lon_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="-122.0"/>
         </TableRow>
 
@@ -578,7 +564,6 @@
                 android:id="@+id/receiver_alt_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="1000m"/>
         </TableRow>
     </TableLayout>

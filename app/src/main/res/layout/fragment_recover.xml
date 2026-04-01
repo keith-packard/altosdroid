@@ -35,7 +35,6 @@
                 android:id="@+id/bearing_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="123" />
         </TableRow>
 
@@ -58,7 +57,6 @@
                 android:id="@+id/direction_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="123" />
         </TableRow>
 
@@ -81,7 +79,6 @@
                 android:id="@+id/distance_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="1010m" />
         </TableRow>
 
@@ -197,7 +194,6 @@
                 android:id="@+id/max_height_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="1010m" />
         </TableRow>
 
@@ -221,7 +217,6 @@
                 android:id="@+id/max_speed_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="600m/s" />
         </TableRow>
 
@@ -244,7 +239,6 @@
                 android:id="@+id/max_accel_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/ValueText"
                 android:text="300m/s²" />
         </TableRow>
     </TableLayout>
