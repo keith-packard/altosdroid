@@ -5,8 +5,11 @@
 		<item name="android:colorBackground">@color/primary_background</item>
 		<item name="android:colorForeground">@color/primary_text</item>
 		<item name="colorOnBackground">@color/primary_text</item>
+		<item name="colorOnSurface">@color/primary_text</item>
+		<item name="colorOnSurfaceVariant">@color/primary_text_variant</item>
 
 		<item name="colorPrimary">@color/altus_orange</item>
+		<item name="colorPrimaryVariant">@color/altus_orange_light</item>
 		<item name="colorOnPrimary">@color/primary_text</item>
 
 		<item name="colorSecondary">@color/altus_purple</item>
@@ -36,8 +39,11 @@
 		<item name="android:colorBackground">@color/primary_background</item>
 		<item name="android:colorForeground">@color/primary_text</item>
 		<item name="colorOnBackground">@color/primary_text</item>
+		<item name="colorOnSurface">@color/primary_text</item>
+		<item name="colorOnSurfaceVariant">@color/primary_text_variant</item>
 
 		<item name="colorPrimary">@color/altus_orange</item>
+		<item name="colorPrimaryVariant">@color/altus_orange_light</item>
 		<item name="colorOnPrimary">@color/primary_text</item>
 
 		<item name="colorSecondary">@color/altus_purple</item>
@@ -86,33 +92,28 @@
 		<item name="thumbTint">@color/altus_orange_switch</item>
 		<item name="trackTint">@color/altus_orange_light_switch</item>
  	</style>
-	<style name="LabelText" parent="TextAppearance.AppCompat">
-		<item name="android:textSize">18sp</item>
+
+	<style name="SwitchButtonStyle" parent="Widget.MaterialComponents.CompoundButton.Switch">
+		<item name="materialThemeOverlay">@style/ThemeOverlay.App.Button.SwitchButton</item>
 	</style>
-	<style name="ValueText" parent="LabelText">
-		<item name="android:textStyle">bold</item>
+
+	<style name="ThemeOverlay.App.Button.SwitchButton" parent="ThemeOverlay.App.Button">
+		<item name="android:textAppearance">@style/ButtonText</item>
+		<item name="colorAccent">@color/altus_orange</item>
 	</style>
-	<style name="PosText" parent="ValueText">
+
+	<style name="ThemeOverlay.App.Button" parent="">
+		<item name="colorPrimary">@color/altus_orange</item>
 	</style>
-	<style name="ButtonText" parent="LabelText">
+
+	<style name="Widget.App.Button" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+		<item name="materialThemeOverlay">@style/ThemeOverlay.App.Button.TextButton</item>
+		<item name="shapeAppearance">@style/ShapeAppearance.App.SmallComponent</item>
 	</style>
-	<style name="DeviceText" parent="ValueText">
+
+	<style name="ThemeOverlay.App.Button.TextButton" parent="ThemeOverlay.App.Button">
+		<item name="android:textAppearance">@style/ButtonText</item>
+		<item name="android:textColor">@color/primary_text</item>
 	</style>
-	<style name="CallText" parent="ValueText">
-	</style>
-	<style name="SerialText" parent="ValueText">
-	</style>
-	<style name="FreqText" parent="ValueText">
-	</style>
-	<style name="AgeText" parent="ValueText">
-	</style>
-	<style name="AgeOk" parent="ValueText">
-		<item name="android:textColor">@color/age_ok</item>
-	</style>
-	<style name="AgeWarn" parent="ValueText">
-		<item name="android:textColor">@color/age_warn</item>
-	</style>
-	<style name="AgeError" parent="ValueText">
-		<item name="android:textColor">@color/age_error</item>
-	</style>
+
 </resources>

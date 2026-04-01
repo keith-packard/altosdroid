@@ -8,28 +8,6 @@
         <item name="android:textColor">@color/altus_purple</item>
     </style>
 
-    <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Button.TextButton</item>
-        <item name="shapeAppearance">@style/ShapeAppearance.App.SmallComponent</item>
-    </style>
-
-    <style name="SwitchButtonStyle" parent="Widget.MaterialComponents.CompoundButton.Switch">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Button.SwitchButton</item>
-    </style>
-
-    <style name="ThemeOverlay.App.Button.SwitchButton" parent="ThemeOverlay.App.Button">
-        <item name="android:textAppearance">@style/ButtonText</item>
-        <item name="colorAccent">@color/altus_orange</item>
-    </style>
-
-    <style name="ThemeOverlay.App.Button" parent="">
-        <item name="colorPrimary">@color/altus_orange</item>
-    </style>
-
-    <style name="ThemeOverlay.App.Button.TextButton" parent="ThemeOverlay.App.Button">
-        <item name="android:textAppearance">@style/ButtonText</item>
-        <item name="android:textColor">@color/primary_text</item>
-    </style>
 
     <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.MaterialComponents.MediumComponent">
         <item name="cornerFamily">cut</item>
@@ -39,5 +17,34 @@
     <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
         <item name="cornerFamily">cut</item>
         <item name="cornerSize">4dp</item>
+    </style>
+    <style name="LabelText" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">18sp</item>
+    </style>
+    <style name="ValueText" parent="LabelText">
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="PosText" parent="ValueText">
+    </style>
+    <style name="ButtonText" parent="LabelText">
+    </style>
+    <style name="DeviceText" parent="ValueText">
+    </style>
+    <style name="CallText" parent="ValueText">
+    </style>
+    <style name="SerialText" parent="ValueText">
+    </style>
+    <style name="FreqText" parent="ValueText">
+    </style>
+    <style name="AgeText" parent="ValueText">
+    </style>
+    <style name="AgeOk" parent="ValueText">
+        <item name="android:textColor">@color/age_ok</item>
+    </style>
+    <style name="AgeWarn" parent="ValueText">
+        <item name="android:textColor">@color/age_warn</item>
+    </style>
+    <style name="AgeError" parent="ValueText">
+        <item name="android:textColor">@color/age_error</item>
     </style>
 </resources>
