@@ -3,4 +3,5 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="table_padding_vertical">2dp</dimen>
+    <dimen name="table_padding_start">2dp</dimen>
 </resources>

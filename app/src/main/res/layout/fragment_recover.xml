@@ -1,246 +1,376 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="?android:attr/windowBackground"
-    tools:context=".ui.recover.RecoverFragment">
-    <TableLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:stretchColumns="0,1"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+						   xmlns:app="http://schemas.android.com/apk/res-auto"
+						   xmlns:tools="http://schemas.android.com/tools"
+						   android:layout_width="match_parent"
+						   android:layout_height="match_parent"
+						   android:background="?android:attr/windowBackground"
+						   tools:context=".ui.recover.RecoverFragment">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/column_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+	android:orientation="vertical"
+        app:layout_constraintGuide_percent=".40"/>
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/bearing_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="visible"
+        app:constraint_referenced_ids="bearing_label,bearing_value"/>
+
+    <TextView
+        android:id="@+id/bearing_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/LabelText"
+        android:text="@string/bearing_label"
+        android:paddingStart="@dimen/table_padding_start"
+        android:paddingVertical="@dimen/table_padding_vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/column_name"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_weight="0"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        app:layout_constraintBottom_toTopOf="@id/bearing_row" />
 
-        <TableRow
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:padding="2dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            >
+    <TextView
+        android:id="@+id/bearing_value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="" 
+        android:paddingVertical="@dimen/table_padding_vertical"
+        app:layout_constraintStart_toStartOf="@id/column_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bearing_row" />
 
-            <TextView
-                android:id="@+id/bearing_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/LabelText"
-                android:text="@string/bearing_label" />
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/bearing_row"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top" />
 
-            <TextView
-                android:id="@+id/bearing_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="123" />
-        </TableRow>
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/direction_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="direction_label,direction_value"/>
 
-        <TableRow
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:padding="2dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            >
+    <TextView
+        android:id="@+id/direction_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/LabelText"
+        android:text="@string/direction_label"
+        android:paddingStart="@dimen/table_padding_start"
+        android:paddingVertical="@dimen/table_padding_vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/column_name"
+        app:layout_constraintTop_toTopOf="@id/bearing_row"
+        app:layout_constraintBottom_toTopOf="@id/direction_row" />
 
-            <TextView
-                android:id="@+id/direction_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/LabelText"
-                android:text="@string/direction_label" />
+    <TextView
+        android:id="@+id/direction_value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:paddingVertical="@dimen/table_padding_vertical"
+        app:layout_constraintStart_toStartOf="@id/column_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/bearing_row"
+        app:layout_constraintBottom_toTopOf="@id/direction_row" />
 
-            <TextView
-                android:id="@+id/direction_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="123" />
-        </TableRow>
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/direction_row"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top" />
 
-        <TableRow
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:padding="2dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            >
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/distance_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="distance_label,distance_value"/>
 
-            <TextView
-                android:id="@+id/distance_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/LabelText"
-                android:text="@string/distance_label" />
+    <TextView
+        android:id="@+id/distance_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/LabelText"
+        android:text="@string/distance_label"
+        android:paddingVertical="@dimen/table_padding_vertical"
+        android:paddingStart="@dimen/table_padding_start"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/column_name"
+        app:layout_constraintTop_toTopOf="@id/direction_row"
+        app:layout_constraintBottom_toTopOf="@id/distance_row" />
 
-            <TextView
-                android:id="@+id/distance_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="1010m" />
-        </TableRow>
+    <TextView
+        android:id="@+id/distance_value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:paddingVertical="@dimen/table_padding_vertical"
+        app:layout_constraintStart_toStartOf="@id/column_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/direction_row"
+        app:layout_constraintBottom_toTopOf="@id/distance_row" />
 
-        <TableRow
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:padding="2dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            >
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/distance_row"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top" />
 
-            <TextView
-                android:id="@+id/target_lat_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/LabelText"
-                android:text="@string/target_latitude_label" />
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/target_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="target_pos_icon,target_lat_value,target_lon_value"/>
 
-            <TextView
-                android:id="@+id/target_lat_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/PosText"
-                android:text="45.1234" />
-        </TableRow>
+    <ImageView
+        android:id="@+id/target_pos_icon"
+        android:layout_width="0dp"
+        android:layout_height="20pt"
+        android:scaleType="centerInside"
+        android:paddingStart="@dimen/table_padding_start"
+        android:paddingEnd="0dp"
+        android:contentDescription="Target Position"
+        android:src="@drawable/flight_orange"
+        app:layout_constrainedHeight="true"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/column_name"
+        app:layout_constraintTop_toTopOf="@id/distance_row"
+        app:layout_constraintBottom_toTopOf="@id/target_lon_row"/>
 
-        <TableRow
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:padding="2dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            >
+    <TextView
+        android:id="@+id/target_lat_value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/PosText"
+        android:text=""
+        android:paddingVertical="@dimen/table_padding_vertical"
+        app:layout_constraintStart_toStartOf="@id/column_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/distance_row"
+        app:layout_constraintBottom_toTopOf="@id/target_lat_row" />
 
-            <TextView
-                android:id="@+id/target_lon_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/LabelText"
-                android:text="@string/target_longitude_label" />
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/target_lat_row"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top" />
 
-            <TextView
-                android:id="@+id/target_lon_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/PosText"
-                android:text="123.456" />
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/target_lon_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="target_lon_label,target_lon_value"/>
 
-        </TableRow>
+    <TextView
+        android:id="@+id/target_lon_value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/PosText"
+        android:text=""
+        android:paddingVertical="@dimen/table_padding_vertical"
+        app:layout_constraintStart_toStartOf="@id/column_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/target_lat_row"
+        app:layout_constraintBottom_toTopOf="@id/target_lon_row" />
 
-        <TableRow
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:padding="2dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            >
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/target_lon_row"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top" />
 
-            <TextView
-                android:id="@+id/receiver_lat_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/LabelText"
-                android:text="@string/receiver_latitude_label" />
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/receiver_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="receiver_pos_icon,receiver_lat_value,receiver_lon_value"/>
 
-            <TextView
-                android:id="@+id/receiver_lat_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/PosText"
-                android:text="45.1234" />
-        </TableRow>
+    <ImageView
+        android:id="@+id/receiver_pos_icon"
+        android:layout_width="0dp"
+        android:layout_height="20pt"
+        android:scaleType="centerInside"
+        android:paddingStart="@dimen/table_padding_start"
+        android:paddingEnd="0dp"
+        android:contentDescription="Receiver Position"
+        android:src="@drawable/alien"
+        app:layout_constrainedHeight="true"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/column_name"
+        app:layout_constraintTop_toTopOf="@id/target_lon_row"
+        app:layout_constraintBottom_toTopOf="@id/receiver_lon_row"/>
 
-        <TableRow
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:padding="2dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            >
+    <TextView
+        android:id="@+id/receiver_lat_value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/PosText"
+        android:text=""
+        android:paddingVertical="@dimen/table_padding_vertical"
+        app:layout_constraintStart_toStartOf="@id/column_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/target_lon_row"
+        app:layout_constraintBottom_toTopOf="@id/receiver_lat_row" />
 
-            <TextView
-                android:id="@+id/receiver_lon_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/LabelText"
-                android:text="@string/receiver_longitude_label" />
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/receiver_lat_row"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top" />
 
-            <TextView
-                android:id="@+id/receiver_lon_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/PosText"
-                android:text="123.3456"/>
-        </TableRow>
+    <TextView
+        android:id="@+id/receiver_lon_value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/PosText"
+        android:text=""
+        android:paddingVertical="@dimen/table_padding_vertical"
+        app:layout_constraintStart_toStartOf="@id/column_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/receiver_lat_row"
+        app:layout_constraintBottom_toTopOf="@id/receiver_lon_row"/>
 
-        <TableRow
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:padding="2dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            >
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/receiver_lon_row"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top" />
 
-            <TextView
-                android:id="@+id/max_height_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/LabelText"
-                android:text="@string/max_height_label" />
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/max_height_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="max_height_label,max_height_value"/>
 
-            <TextView
-                android:id="@+id/max_height_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="1010m" />
-        </TableRow>
+    <TextView
+        android:id="@+id/max_height_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/LabelText"
+        android:text="@string/max_height_label"
+        android:paddingStart="@dimen/table_padding_start"
+        android:paddingVertical="@dimen/table_padding_vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/column_name"
+        app:layout_constraintTop_toTopOf="@id/receiver_lon_row"
+        app:layout_constraintBottom_toTopOf="@id/max_height_row" />
 
-        <TableRow
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:padding="2dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            >
+    <TextView
+        android:id="@+id/max_height_value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:paddingVertical="@dimen/table_padding_vertical"
+        app:layout_constraintStart_toStartOf="@id/column_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/receiver_lon_row"
+        app:layout_constraintBottom_toTopOf="@id/max_height_row" />
 
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/max_height_row"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top" />
 
-            <TextView
-                android:id="@+id/max_speed_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/LabelText"
-                android:text="@string/max_speed_label" />
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/max_speed_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="max_speed_label,max_speed_value"/>
 
-            <TextView
-                android:id="@+id/max_speed_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="600m/s" />
-        </TableRow>
+    <TextView
+        android:id="@+id/max_speed_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/LabelText"
+        android:text="@string/max_speed_label"
+        android:paddingStart="@dimen/table_padding_start"
+        android:paddingVertical="@dimen/table_padding_vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/column_name"
+        app:layout_constraintTop_toTopOf="@id/max_height_row"
+        app:layout_constraintBottom_toTopOf="@id/max_speed_row" />
 
-        <TableRow
-            android:layout_gravity="center"
-            android:layout_weight="1"
-            android:padding="2dip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            >
+    <TextView
+        android:id="@+id/max_speed_value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:paddingVertical="@dimen/table_padding_vertical"
+        app:layout_constraintStart_toStartOf="@id/column_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/max_height_row"
+        app:layout_constraintBottom_toTopOf="@id/max_speed_row" />
 
-            <TextView
-                android:id="@+id/max_accel_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/LabelText"
-                android:text="@string/max_accel_label" />
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/max_speed_row"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top" />
 
-            <TextView
-                android:id="@+id/max_accel_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="300m/s²" />
-        </TableRow>
-    </TableLayout>
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/max_accel_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="max_accel_label,max_accel_value"/>
+
+    <TextView
+        android:id="@+id/max_accel_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/LabelText"
+        android:text="@string/max_accel_label"
+        android:paddingStart="@dimen/table_padding_start"
+        android:paddingVertical="@dimen/table_padding_vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/column_name"
+        app:layout_constraintTop_toTopOf="@id/max_speed_row"
+        app:layout_constraintBottom_toTopOf="@id/max_accel_row" />
+
+    <TextView
+        android:id="@+id/max_accel_value"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:paddingVertical="@dimen/table_padding_vertical"
+        app:layout_constraintStart_toStartOf="@id/column_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/max_speed_row"
+        app:layout_constraintBottom_toTopOf="@id/max_accel_row" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/max_accel_row"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top" />
+
+    <View
+	android:layout_width="0dp"
+	android:layout_height="1000dp"
+	app:layout_constraintStart_toStartOf="parent"
+	app:layout_constraintEnd_toEndOf="parent"
+	app:layout_constraintTop_toTopOf="@id/max_accel_row"
+	app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
