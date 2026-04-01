@@ -167,7 +167,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:barrierDirection="top" />
-    
+
     <TextView
         android:id="@+id/target_lon_value"
         android:layout_width="0dp"

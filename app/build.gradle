@@ -7,11 +7,11 @@ android {
     namespace = 'org.altusmetrum.altosdroid'
     compileSdk 36
     defaultConfig {
-        applicationId "org.altusmetrum.altosdroid"
+        applicationId "org.altusmetrum.AltosDroid"
         minSdk 26
         targetSdk 36
-        versionCode 1
-        versionName "1.0"
+        versionCode 38
+        versionName "1.9.22.1ably"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
