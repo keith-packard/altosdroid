@@ -60,12 +60,12 @@
 
         <activity android:name=".DeviceListActivity"
             android:label="@string/select_device"
-            android:theme="@style/Theme.AltosDroid"
+            android:theme="@style/Theme.App.Dialog"
             android:configChanges="orientation|keyboardHidden"/>
 
         <activity android:name=".SelectTrackerActivity"
             android:label="@string/select_tracker"
-            android:theme="@style/Theme.AppCompat.Dialog"
+            android:theme="@style/Theme.App.Dialog"
             android:configChanges="orientation|keyboardHidden" />
 
         <service
