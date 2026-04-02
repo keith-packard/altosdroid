@@ -15,23 +15,27 @@ ToDo list
 
  ✓ Select Device menu - devices need to be larger for tapping.
 
- * Select Frequency. Add 'edit frequencies' menu item.
-
  ✓ Select Tracker. Color of meatball should be purple
 
  ✓ Select Tracker needs title "Select Tracker"
 
  ✓ Delete Tracker needs title "Delete Tracker"
 
- * Setup
+ ✓ Offline maps
+
+ ✓ Setup
 
 	Telemetry Rate
 	Units
 	Text Size
+
 	Map Type (?) Probably not
 	Map Offline/Online (nope)
 	Load Maps (nope)
 
+ * Make text size work
+
+ * Select Frequency. Add 'edit frequencies' menu item.
 
  * Put Load Maps in top-level menu instead of setup
 
@@ -43,13 +47,8 @@ ToDo list
 	Reboot
 	Fire Igniters
 
- * Edit frequency list
- * Configuration
- * Idle mode
- ✓ Offline maps
-
 BUGS
 
- * Map type selection breaks after switching away/back
+ ✓ Map type selection breaks after switching away/back
 
- * Select tracker should center map on new target
+ ✓ Select tracker should center map on new target

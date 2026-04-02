@@ -379,8 +379,8 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         }
         if (itemId == R.id.setup) {
             // R.id.setup:
-            //serverIntent = new Intent(this, SetupActivity.class);
-            //startActivityForResult(serverIntent, REQUEST_SETUP);
+            serverIntent = new Intent(this, SetupActivity.class);
+            startActivityForResult(serverIntent, REQUEST_SETUP);
             return true;
         }
         if (itemId == R.id.select_freq) {
