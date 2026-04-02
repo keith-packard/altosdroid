@@ -41,8 +41,6 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
 
     private boolean mapLoaded;
 
-    private boolean pad_set;
-
     private AltosLatLon my_position = null;
     private AltosLatLon target_position = null;
     public int target_serial = -1;
@@ -182,10 +180,8 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
 
             if (cal_data != null && cal_data.serial != AltosLib.MISSING)
                 target_serial = cal_data.serial;
-            if (!pad_set && state.pad_lat != AltosLib.MISSING && mapInterface != null) {
-                pad_set = true;
+            if (state.pad_lat != AltosLib.MISSING && mapInterface != null)
                 mapInterface.set_pad_position(state.pad_lat, state.pad_lon);
-            }
 
             if (state.gps != null && state.gps.lat != AltosLib.MISSING) {
                 if (binding != null) {
@@ -232,7 +228,6 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
         if (mapInterface != null)
             mapInterface.destroy();
         mapInterface = null;
-        pad_set = false;
         mapAccuracy = -1;
         int child = 0;
         if (AltosDroidPreferences.map_source() == AltosDroidPreferences.MAP_SOURCE_ONLINE) {

@@ -49,7 +49,7 @@ import java.util.HashMap;
 class RocketOnline implements Comparable {
     Marker marker;
     int		serial;
-    long		last_packet;
+    long	last_packet;
     int		width, height;
 
     void set_position(AltosLatLon position, long last_packet, boolean is_target) {
@@ -96,7 +96,7 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
     private MainActivity altos_droid;
     private final Context context;
     private LatLng center;
-    private LatLng pad_position;
+    private LatLng pad_position, here, there;
     private Marker mPadMarker;
     private Marker mHereMarker;
     private Polyline mPolyline;
@@ -133,7 +133,11 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
             mMap.setOnMarkerClickListener(AltosDroidMapOnline.this);
             mMap.setOnMapClickListener(AltosDroidMapOnline.this);
             mMap.setMapColorScheme(MapColorScheme.FOLLOW_SYSTEM);
+
             AltosMarker pad_marker = new PadMarker(context);
+
+            if (mPadMarker != null)
+                mPadMarker.remove();
 
             mPadMarker = mMap.addMarker(
                     new MarkerOptions().icon(BitmapDescriptorFactory.fromBitmap(pad_marker.bitmap))
@@ -144,12 +148,18 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
 
             AltosMarker here_marker = new HereMarker(context);
 
+            if (mHereMarker != null)
+                mHereMarker.remove();
+
             mHereMarker = mMap.addMarker(
                     new MarkerOptions().icon(BitmapDescriptorFactory.fromBitmap(here_marker.bitmap))
                             .position(new LatLng(0, 0))
                             .anchor(here_marker.off_x, here_marker.off_y)
                             .visible(false)
             );
+
+            if (mPolyline != null)
+                mPolyline.remove();
 
             mPolyline = mMap.addPolyline(
                     new PolylineOptions().add(new LatLng(0,0), new LatLng(0,0))
@@ -159,10 +169,11 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
             );
             if (center != null)
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center,14));
-            if (pad_position != null) {
-                mPadMarker.setPosition(pad_position);
-                mPadMarker.setVisible(true);
-            }
+
+            set_pad();
+            set_here();
+            set_polyline();
+
             AltosDroidMapOnline.this.map_type_changed(AltosPreferences.map_type());
             map_fragment.check_permission();
 
@@ -265,30 +276,41 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
         }
     }
 
-    public void set_pad_position(double lat, double lon) {
-        pad_position = new LatLng(lat, lon);
-        if (mPadMarker != null) {
+    private void set_pad() {
+        if (pad_position != null && mPadMarker != null) {
             mPadMarker.setPosition(pad_position);
             mPadMarker.setVisible(true);
         }
     }
 
-    private LatLng here, there;
+    private void set_here() {
+        if (here != null && mPadMarker != null) {
+            mPadMarker.setPosition(pad_position);
+            mPadMarker.setVisible(true);
+        }
+    }
+
+    private void set_polyline() {
+        if (here != null && there != null && mPolyline != null) {
+            mPolyline.setPoints(Arrays.asList(here, there));
+            mPolyline.setVisible(true);
+        }
+    }
+
+    public void set_pad_position(double lat, double lon) {
+        pad_position = new LatLng(lat, lon);
+        set_pad();
+    }
 
     public void set_here_position(double lat, double lon) {
         here = new LatLng(lat, lon);
-        if (mHereMarker != null) {
-            mHereMarker.setPosition(here);
-            mHereMarker.setVisible(true);
-        }
+        set_here();
+        set_polyline();
     }
 
     public void set_there_position(double lat, double lon) {
         there = new LatLng(lat, lon);
-        if (here != null && mPolyline != null) {
-            mPolyline.setPoints(Arrays.asList(here, there));
-            mPolyline.setVisible(true);
-        }
+        set_polyline();
     }
 
     public void position_permission() {
