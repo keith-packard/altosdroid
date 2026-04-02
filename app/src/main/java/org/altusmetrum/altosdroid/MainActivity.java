@@ -8,6 +8,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.hardware.usb.UsbDevice;
 import android.location.Location;
 import android.location.LocationListener;
@@ -426,6 +430,10 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         if (itemId == R.id.delete_track) {
             if (trackers != null && trackers.length > 0)
                 start_select_tracker(trackers, R.string.delete_track, REQUEST_DELETE_TRACKER);
+            return true;
+        }
+        if (itemId == R.id.load_maps) {
+            start_preload_maps();
             return true;
         }
         if (itemId == R.id.idle_mode) {
@@ -1068,6 +1076,10 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         start_select_tracker(select_trackers, R.string.select_tracker, REQUEST_SELECT_TRACKER);
     }
 
+    void start_preload_maps() {
+        Intent intent = new Intent(this, PreloadMapActivity.class);
+        startActivityForResult(intent, REQUEST_PRELOAD_MAPS);
+    }
     public void touch_trackers(Integer[] serials) {
         Tracker[] my_trackers = new Tracker[serials.length];
 
@@ -1108,4 +1120,24 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         else
             return String.format(Locale.getDefault(), "right %d°", iheading);
     }
+
+    public static void draw_text(Context context, Canvas canvas, String text, float x, float y, int size_id, Paint.Align align) {
+        float size = context.getResources().getDimension(size_id);
+        Paint paint = new Paint();
+        paint.setTextSize(size);
+        paint.setTextAlign(align);
+        paint.setAntiAlias(true);
+        paint.setTypeface(Typeface.DEFAULT_BOLD);
+        float offset = size / 40;
+        paint.setColor(Color.BLACK);
+        for (float yoffset = -offset; yoffset <= offset; yoffset += offset)
+            for (float xoffset = -offset; xoffset <= offset; xoffset += offset)
+                canvas.drawText(text, x+xoffset, y+yoffset, paint);
+        paint.setColor(Color.WHITE);
+        canvas.drawText(text, x, y, paint);
+    }
+    public static void draw_text(Context context, Canvas canvas, String text, float x, float y, Paint.Align align) {
+        draw_text(context, canvas, text, x, y, R.dimen.map_text_size, align);
+    }
+
 }

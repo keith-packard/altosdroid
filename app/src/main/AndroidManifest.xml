@@ -78,6 +78,11 @@
             android:theme="@style/Theme.App.Dialog"
             android:configChanges="orientation|keyboardHidden"/>
 
+        <activity android:name=".PreloadMapActivity"
+            android:label="@string/preload_maps"
+            android:theme="@style/Theme.App.Dialog"
+            android:configChanges="orientation|keyboardHidden"/>
+
         <service
             android:name=".TelemetryService"
             android:foregroundServiceType="connectedDevice" />

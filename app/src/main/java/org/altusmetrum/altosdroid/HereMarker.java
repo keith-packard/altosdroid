@@ -19,22 +19,9 @@
 package org.altusmetrum.altosdroid;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.Drawable;
 
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
-
-public class HereBitmap  {
-
-    public static Bitmap create(Context context, int marker_size) {
-        Drawable drawable = VectorDrawableCompat.create(context.getResources(), R.drawable.alien, context.getTheme());
-        if (drawable == null)
-            return null;
-        Bitmap bitmap = Bitmap.createBitmap(marker_size, marker_size, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-        return bitmap;
+public class HereMarker extends AltosMarker {
+    public HereMarker(Context context) {
+        super(context, R.drawable.alien_light, 0.56f, 1.0f);
     }
 }

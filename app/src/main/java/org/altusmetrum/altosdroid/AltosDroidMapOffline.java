@@ -22,8 +22,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -58,25 +58,26 @@ import java.util.Locale;
 class RocketOffline implements Comparable {
     AltosLatLon position;
     int serial;
-    int size;
+    int width, height;
     long last_packet;
     boolean active;
     AltosDroidMapOffline map_offline;
-    Bitmap bitmap;
-    int off_x, off_y;
+    AltosMarker marker;
 
-    RocketOffline(Context context, int serial, AltosDroidMapOffline map_offline, int marker_size) {
+
+    RocketOffline(Context context, int serial, AltosDroidMapOffline map_offline) {
         this.serial = serial;
         String name = String.format(Locale.ROOT, "%d", serial);
+        map_offline = map_offline;
+        marker = new RocketMarker(context, serial);
+        width = marker.width;
+        height = marker.height;
         this.map_offline = map_offline;
-        this.bitmap = RocketBitmap.create(context, name, marker_size);
-        this.size = marker_size;
-        this.off_x = marker_size - 1;
-        this.off_y = 0;
     }
 
     void paint() {
-        map_offline.draw_bitmap(position, bitmap, off_x, off_y);
+        if (map_offline != null)
+            map_offline.draw_marker(position, marker);
     }
 
     void set_position(AltosLatLon position, long last_packet) {
@@ -118,11 +119,8 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
 
     Canvas canvas;
     Paint paint;
-
-    Bitmap pad_bitmap;
-    int pad_off_x, pad_off_y;
-    Bitmap here_bitmap;
-    int here_off_x, here_off_y;
+    AltosMarker pad_marker;
+    AltosMarker here_marker;
     Line line = new Line();
     int stroke_width = 20;
     HashMap<Integer, RocketOffline> rockets = new HashMap<>();
@@ -151,9 +149,9 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
             if (map_image != null) bitmap = map_image.bitmap;
 
             if (bitmap != null) {
-                canvas.drawBitmap(bitmap, pt.x, pt.y, paint);
+                canvas.drawBitmap(bitmap, pt.x, pt.y, null);
             } else {
-                paint.setColor(0xff808080);
+                paint.setColor(Color.GRAY);
                 canvas.drawRect(pt.x, pt.y, pt.x + px_size, pt.y + px_size, paint);
                 if (t.has_location()) {
                     String message = null;
@@ -172,18 +170,10 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
                             break;
                     }
                     if (message != null) {
-                        Rect bounds = new Rect();
-                        paint.getTextBounds(message, 0, message.length(), bounds);
-
-                        int width = bounds.right - bounds.left;
-                        int height = bounds.bottom - bounds.top;
-
                         float x = pt.x + px_size / 2.0f;
                         float y = pt.y + px_size / 2.0f;
-                        x = x - width / 2.0f;
-                        y = y + height / 2.0f;
-                        paint.setColor(0xff000000);
-                        canvas.drawText(message, 0, message.length(), x, y, paint);
+
+                        MainActivity.draw_text(context, canvas, message, x, y, R.dimen.map_text_missing_size, Paint.Align.CENTER);
                     }
                 }
             }
@@ -249,8 +239,8 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
                 continue;
             }
             double distance = map.transform.hypot(latlon, rocket.position);
-            debug("check select %d distance %g width %d\n", rocket.serial, distance, rocket.size);
-            if (distance < rocket.size * 2.0) {
+            debug("check select %d distance %g width %d\n", rocket.serial, distance, rocket.width);
+            if (distance < rocket.width * 2.0) {
                 debug("selecting %d\n", rocket.serial);
                 near.add(rocket.serial);
             }
@@ -262,27 +252,14 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
     void draw_text(AltosLatLon lat_lon, String text, int off_x, int off_y) {
         if (lat_lon != null && map != null && map.transform != null) {
             AltosPointInt pt = new AltosPointInt(map.transform.screen(lat_lon));
-
-            Rect bounds = new Rect();
-            paint.getTextBounds(text, 0, text.length(), bounds);
-
-            int width = bounds.right - bounds.left;
-            int height = bounds.bottom - bounds.top;
-
-            float x = pt.x;
-            float y = pt.y;
-            x = x - width / 2.0f - off_x;
-            y = y + height / 2.0f - off_y;
-            paint.setColor(0xff000000);
-            canvas.drawText(text, 0, text.length(), x, y, paint);
+            MainActivity.draw_text(context, canvas, text, (float) pt.x, (float) pt.y, Paint.Align.CENTER);
         }
     }
 
-    void draw_bitmap(AltosLatLon lat_lon, Bitmap bitmap, int off_x, int off_y) {
+    void draw_marker(AltosLatLon lat_lon, AltosMarker marker) {
         if (lat_lon != null && map != null && map.transform != null) {
             AltosPointInt pt = new AltosPointInt(map.transform.screen(lat_lon));
-
-            canvas.drawBitmap(bitmap, pt.x - off_x, pt.y - off_y, paint);
+            marker.draw(canvas, (float) pt.x, (float) pt.y);
         }
     }
 
@@ -297,20 +274,17 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
         line.set_a(there);
         line.set_b(here);
         line.paint();
-        draw_bitmap(pad, pad_bitmap, pad_off_x, pad_off_y);
+        if (pad != null)
+            draw_marker(pad, pad_marker);
 
         for (RocketOffline rocket : sorted_rockets())
             rocket.paint();
-        draw_bitmap(here, here_bitmap, here_off_x, here_off_y);
+        draw_marker(here, here_marker);
     }
 
     @Override
     protected void onDraw(@NonNull Canvas view_canvas) {
         super.onDraw(view_canvas);
-        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setTextSize(40);
-        String text = "Hello, world";
-        view_canvas.drawText(text, 0, text.length(), 200, 200, paint);
         if (map == null) {
             debug("MapView draw without map\n");
             return;
@@ -320,12 +294,10 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
             return;
         }
         canvas = view_canvas;
-        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setStrokeWidth(stroke_width);
-        paint.setStrokeCap(Paint.Cap.ROUND);
-        paint.setStrokeJoin(Paint.Join.ROUND);
-        paint.setTextSize(40);
+
         map.paint();
+        float y = getResources().getDimension(R.dimen.map_text_size);
+        MainActivity.draw_text(context, canvas, String.format("%d", map.get_zoom()), width() - y / 10, y, Paint.Align.RIGHT);
         draw_positions();
         canvas = null;
     }
@@ -462,7 +434,7 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
                     if (rockets.containsKey(serial))
                         rocket = rockets.get(serial);
                     else {
-                        rocket = new RocketOffline(context, serial, this, MapFragment.marker_size);
+                        rocket = new RocketOffline(context, serial, this);
                         rockets.put(serial, rocket);
                     }
                     if (state.gps != null) {
@@ -503,15 +475,14 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
         map = new AltosMap(this, scale);
         map.set_maptype(AltosPreferences.map_type());
 
-        pad_bitmap = PadBitmap.create(context, MapFragment.marker_size);
-        /* arrow at the bottom of the launchpad image */
-        pad_off_x = pad_bitmap.getWidth() / 2;
-        pad_off_y = pad_bitmap.getHeight();
+        pad_marker = new PadMarker(context);
 
-        here_bitmap = HereBitmap.create(context, MapFragment.marker_size);
-        /* Center of the dot */
-        here_off_x = here_bitmap.getWidth() / 2;
-        here_off_y = here_bitmap.getHeight() / 2;
+        here_marker = new HereMarker(context);
+
+        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setStrokeWidth(stroke_width);
+        paint.setStrokeCap(Paint.Cap.ROUND);
+        paint.setStrokeJoin(Paint.Join.ROUND);
     }
 }
 

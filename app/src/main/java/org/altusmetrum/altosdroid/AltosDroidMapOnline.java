@@ -18,7 +18,6 @@
 package org.altusmetrum.altosdroid;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 
@@ -29,6 +28,7 @@ import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapColorScheme;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -45,13 +45,12 @@ import org.altusmetrum.altoslib_14.AltosState;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Locale;
 
 class RocketOnline implements Comparable {
     Marker marker;
     int		serial;
     long		last_packet;
-    int		size;
+    int		width, height;
 
     void set_position(AltosLatLon position, long last_packet) {
         marker.setPosition(new LatLng(position.lat, position.lon));
@@ -76,12 +75,13 @@ class RocketOnline implements Comparable {
 
     RocketOnline(Context context, int serial, GoogleMap map, double lat, double lon, long last_packet, int marker_size) {
         this.serial = serial;
-        this.size = marker_size;
-        String name = String.format(Locale.ROOT, "%d", serial);
+        AltosMarker marker = new RocketMarker(context, serial);
+        this.width = marker.width;
+        this.height = marker.height;
         this.marker = map.addMarker(new MarkerOptions()
-                .icon(BitmapDescriptorFactory.fromBitmap(RocketBitmap.create(context, name, marker_size)))
+                .icon(BitmapDescriptorFactory.fromBitmap(marker.bitmap))
                 .position(new LatLng(lat, lon))
-                .anchor(1.0f, 0.0f)
+                .anchor(marker.off_x, marker.off_y)
                 .visible(true));
         this.last_packet = last_packet;
     }
@@ -96,6 +96,7 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
     private LatLng center;
     private LatLng pad_position;
     private Marker mPadMarker;
+    private Marker mHereMarker;
     private Polyline mPolyline;
 
     public void map_type_changed(int map_type) {
@@ -125,17 +126,26 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
         @Override
         public void onMapReady(GoogleMap googleMap) {
             mMap = googleMap;
-            int map_type = AltosPreferences.map_type();
-
             mMap.getUiSettings().setTiltGesturesEnabled(false);
             mMap.getUiSettings().setZoomControlsEnabled(false);
             mMap.setOnMarkerClickListener(AltosDroidMapOnline.this);
             mMap.setOnMapClickListener(AltosDroidMapOnline.this);
-            Bitmap pad_bitmap = PadBitmap.create(context, MapFragment.marker_size);
+            mMap.setMapColorScheme(MapColorScheme.FOLLOW_SYSTEM);
+            AltosMarker pad_marker = new PadMarker(context);
 
             mPadMarker = mMap.addMarker(
-                    new MarkerOptions().icon(BitmapDescriptorFactory.fromBitmap(pad_bitmap))
+                    new MarkerOptions().icon(BitmapDescriptorFactory.fromBitmap(pad_marker.bitmap))
                             .position(new LatLng(0,0))
+                            .anchor(pad_marker.off_x, pad_marker.off_y)
+                            .visible(false)
+            );
+
+            AltosMarker here_marker = new HereMarker(context);
+
+            mHereMarker = mMap.addMarker(
+                    new MarkerOptions().icon(BitmapDescriptorFactory.fromBitmap(here_marker.bitmap))
+                            .position(new LatLng(0, 0))
+                            .anchor(here_marker.off_x, here_marker.off_y)
                             .visible(false)
             );
 
@@ -185,7 +195,7 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
                 continue;
 
             double distance = pixel_distance(lat_lng, pos);
-            if (distance <= rocket.size * 2)
+            if (distance <= rocket.width * 2)
                 near.add(rocket.serial);
         }
 
@@ -205,7 +215,7 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
     public void center(double lat, double lon, double accuracy) {
         center = new LatLng(lat, lon);
         if (mMap != null)
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center,14));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(center,14));
     }
 
     private void set_rocket(int serial, AltosState state) {
@@ -266,12 +276,17 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
             mPolyline.setPoints(Arrays.asList(new LatLng(my_position.lat, my_position.lon), new LatLng(target_position.lat, target_position.lon)));
             mPolyline.setVisible(true);
         }
+        if (mHereMarker != null) {
+            mHereMarker.setPosition(new LatLng(my_position.lat, my_position.lon));
+            mHereMarker.setVisible(true);
+        }
     }
 
     public void position_permission() {
         if (mMap != null) {
             try {
                 mMap.setMyLocationEnabled(true);
+                mMap.getUiSettings().setMyLocationButtonEnabled(true);
             } catch (SecurityException e) {
             }
         }
