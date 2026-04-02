@@ -111,9 +111,10 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
     public static final int REQUEST_PRELOAD_MAPS   = 3;
     public static final int REQUEST_IDLE_MODE      = 5;
     public static final int REQUEST_IGNITERS       = 6;
-    public static final int REQUEST_SETUP	       = 7;
+    public static final int REQUEST_SETUP	   = 7;
     public static final int REQUEST_SELECT_TRACKER = 8;
     public static final int REQUEST_DELETE_TRACKER = 9;
+    public static final int REQUEST_MANAGE_FREQ    = 10;
 
     static final int MY_PERMISSION_REQUEST = 1001;
 
@@ -355,6 +356,18 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         return true;
     }
 
+    void set_selected_freq_item(int item, AltosFrequency[] frequencies) {
+        if (item >= 0) {
+            if (item == 0) {
+                Intent serverIntent = new Intent(MainActivity.this, ManageFrequenciesActivity.class);
+                startActivityForResult(serverIntent, REQUEST_MANAGE_FREQ);
+            } else {
+                setFrequency(frequencies[item-1]);
+                selected_frequency = frequencies[item-1].frequency;
+            }
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent serverIntent = null;
@@ -383,21 +396,22 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
             startActivityForResult(serverIntent, REQUEST_SETUP);
             return true;
         }
+
         if (itemId == R.id.select_freq) {
             // R.id.select_freq:
             // Set the TBT radio frequency
             final AltosFrequency[] frequencies = AltosPreferences.common_frequencies();
-            String[] frequency_strings = new String[frequencies.length];
+            String[] frequency_strings = new String[frequencies.length + 1];
+            frequency_strings[0] = "Manage Frequencies";
             for (int i = 0; i < frequencies.length; i++)
-                frequency_strings[i] = frequencies[i].toString();
+                frequency_strings[i+1] = frequencies[i].toString();
 
             AlertDialog.Builder builder_freq = new AlertDialog.Builder(this);
             builder_freq.setTitle("Select Frequency");
             builder_freq.setItems(frequency_strings,
                                   new DialogInterface.OnClickListener() {
                                       public void onClick(DialogInterface dialog, int item) {
-                                          setFrequency(frequencies[item]);
-                                          selected_frequency = frequencies[item].frequency;
+                                          set_selected_freq_item(item, frequencies);
                                       }
                                   });
             AlertDialog alert_freq = builder_freq.create();

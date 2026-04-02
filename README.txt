@@ -35,7 +35,7 @@ ToDo list
 
  * Make text size work
 
- * Select Frequency. Add 'edit frequencies' menu item.
+ ✓ Select Frequency. Add 'edit frequencies' menu item.
 
  * Put Load Maps in top-level menu instead of setup
 

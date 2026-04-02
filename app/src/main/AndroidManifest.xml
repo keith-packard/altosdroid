@@ -73,6 +73,11 @@
             android:theme="@style/Theme.App.Dialog"
             android:configChanges="orientation|keyboardHidden" />
 
+        <activity android:name=".ManageFrequenciesActivity"
+            android:label="@string/manage_frequencies"
+            android:theme="@style/Theme.App.Dialog"
+            android:configChanges="orientation|keyboardHidden"/>
+
         <service
             android:name=".TelemetryService"
             android:foregroundServiceType="connectedDevice" />

@@ -24,6 +24,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -135,8 +136,10 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
         public void paint(AltosMapTransform t) {
             AltosPointInt pt = new AltosPointInt(t.screen(upper_left));
 
-            if (canvas.quickReject(pt.x, pt.y, pt.x + px_size, pt.y + px_size)) {
-                return;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (canvas.quickReject(pt.x, pt.y, pt.x + px_size, pt.y + px_size)) {
+                    return;
+                }
             }
 
             AltosImage altos_image = this.get_image();
