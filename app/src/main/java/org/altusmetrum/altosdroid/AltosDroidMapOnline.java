@@ -81,6 +81,7 @@ class RocketOnline implements Comparable {
         this.marker = map.addMarker(new MarkerOptions()
                 .icon(BitmapDescriptorFactory.fromBitmap(RocketBitmap.create(context, name, marker_size)))
                 .position(new LatLng(lat, lon))
+                .anchor(1.0f, 0.0f)
                 .visible(true));
         this.last_packet = last_packet;
     }

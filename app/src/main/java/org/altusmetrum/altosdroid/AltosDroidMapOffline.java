@@ -62,6 +62,7 @@ class RocketOffline implements Comparable {
     boolean active;
     AltosDroidMapOffline map_offline;
     Bitmap bitmap;
+    int off_x, off_y;
 
     RocketOffline(Context context, int serial, AltosDroidMapOffline map_offline, int marker_size) {
         this.serial = serial;
@@ -69,11 +70,11 @@ class RocketOffline implements Comparable {
         this.map_offline = map_offline;
         this.bitmap = RocketBitmap.create(context, name, marker_size);
         this.size = marker_size;
+        this.off_x = marker_size - 1;
+        this.off_y = 0;
     }
 
     void paint() {
-        int off_x = bitmap.getWidth() / 2;
-        int off_y = bitmap.getHeight() / 2;
         map_offline.draw_bitmap(position, bitmap, off_x, off_y);
     }
 
