@@ -49,7 +49,8 @@
         android:id="@+id/bearing_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="bearing_label,bearing_value"/>
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/direction_view"
@@ -86,7 +87,8 @@
         android:id="@+id/direction_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="direction_label,direction_value"/>
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/distance_view"
@@ -123,17 +125,18 @@
         android:id="@+id/distance_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="distance_label,distance_value"/>
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/target_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="visible"
-        app:constraint_referenced_ids="target_pos_icon,target_lat_value,target_lon_value"/>
+        app:constraint_referenced_ids="target_icon,target_lat_value,target_lon_value"/>
 
     <ImageView
-        android:id="@+id/target_pos_icon"
+        android:id="@+id/target_icon"
         android:layout_width="0dp"
         android:layout_height="20pt"
         android:scaleType="centerInside"
@@ -166,7 +169,8 @@
         android:id="@+id/target_lat_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="target_lat_value"/>
 
     <TextView
         android:id="@+id/target_lon_value"
@@ -184,17 +188,18 @@
         android:id="@+id/target_lon_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="target_lon_value"/>
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/receiver_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="visible"
-        app:constraint_referenced_ids="receiver_pos_icon,receiver_lat_value,receiver_lon_value"/>
+        app:constraint_referenced_ids="receiver_icon,receiver_lat_value,receiver_lon_value"/>
 
     <ImageView
-        android:id="@+id/receiver_pos_icon"
+        android:id="@+id/receiver_icon"
         android:layout_width="0dp"
         android:layout_height="20pt"
         android:scaleType="centerInside"
@@ -227,7 +232,8 @@
         android:id="@+id/receiver_lat_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="receiver_lat_value"/>
 
     <TextView
         android:id="@+id/receiver_lon_value"
@@ -245,7 +251,8 @@
         android:id="@+id/receiver_lon_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="receiver_lon_value"/>
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/max_height_view"
@@ -282,7 +289,8 @@
         android:id="@+id/max_height_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="max_height_label,max_height_value"/>
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/max_speed_view"
@@ -319,7 +327,8 @@
         android:id="@+id/max_speed_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="max_speed_label,max_speed_value"/>
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/max_accel_view"
@@ -356,14 +365,7 @@
         android:id="@+id/max_accel_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
-
-    <View
-	android:layout_width="0dp"
-	android:layout_height="1000dp"
-	app:layout_constraintStart_toStartOf="parent"
-	app:layout_constraintEnd_toEndOf="parent"
-	app:layout_constraintTop_toTopOf="@id/max_accel_row"
-	app:layout_constraintBottom_toBottomOf="parent"/>
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="max_accel_label,max_accel_value"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

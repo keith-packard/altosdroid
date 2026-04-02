@@ -51,3 +51,5 @@ ToDo list
 BUGS
 
  * Map type selection breaks after switching away/back
+
+ * Select tracker should center map on new target

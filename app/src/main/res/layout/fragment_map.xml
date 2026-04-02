@@ -38,7 +38,29 @@
         android:id="@+id/map_table_top_line"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="@id/map_view"/>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/map_table_column_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="end"
+        app:constraint_referenced_ids="map_distance,map_bearing"/>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/map_table_column_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="end"
+        app:constraint_referenced_ids="map_target,map_receiver"/>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/map_table_column_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="end"
+        app:constraint_referenced_ids="map_target_position,map_receiver_position"/>
 
     <TextView
         android:id="@+id/map_distance"
@@ -54,34 +76,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/map_table_top_line" />
 
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/map_table_column_1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="start" />
-
     <ImageView
-        android:id="@+id/map_flight"
+        android:id="@+id/map_target"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_marginHorizontal="5dp"
-        android:layout_marginVertical="20dp"
         android:contentDescription="@string/map_target"
         android:src="@drawable/flight_orange"
+	android:padding="4dp"
         app:layout_constrainedHeight="true"
-        app:layout_constrainedWidth="true"
+        app:layout_constrainedWidth="false"
         app:layout_constraintBottom_toTopOf="@id/map_table_center_line"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toStartOf="@id/map_table_column_2"
         app:layout_constraintStart_toStartOf="@id/map_table_column_1"
         app:layout_constraintTop_toTopOf="@id/map_table_top_line" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/map_table_column_2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="start" />
 
     <TextView
         android:id="@+id/map_target_position"
@@ -99,12 +107,6 @@
         app:layout_constraintHorizontal_bias="1"
         app:layout_constraintStart_toStartOf="@id/map_table_column_2"
         app:layout_constraintTop_toTopOf="@id/map_table_top_line" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/map_table_column_3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="start" />
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -160,13 +162,12 @@
         app:layout_constraintTop_toBottomOf="@id/map_table_line" />
 
     <ImageView
-        android:id="@+id/map_alien"
+        android:id="@+id/map_receiver"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_gravity="center"
-        android:layout_marginVertical="10dp"
         android:contentDescription="@string/map_receiver"
         android:src="@drawable/alien"
+	android:padding="4dp"
         app:layout_constrainedHeight="true"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"

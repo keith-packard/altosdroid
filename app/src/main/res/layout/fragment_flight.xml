@@ -56,7 +56,8 @@
         android:id="@+id/speed_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="speed_label,speed_value"/>
 
     <TextView
         android:id="@+id/height_label"
@@ -85,7 +86,8 @@
         android:id="@+id/height_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="height_label,height_value"/>
 
     <TextView
         android:id="@+id/altitude_label"
@@ -114,7 +116,8 @@
         android:id="@+id/altitude_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="altitude_label,altitude_value"/>
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/tilt_view"
@@ -151,7 +154,8 @@
         android:id="@+id/tilt_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="tilt_label,tilt_value"/>
 
     <TextView
         android:id="@+id/max_speed_label"
@@ -181,7 +185,8 @@
         android:id="@+id/max_speed_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="max_speed_label,max_speed_value"/>
 
     <TextView
         android:id="@+id/max_height_label"
@@ -211,7 +216,8 @@
         android:id="@+id/max_height_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="max_height_label,max_height_value"/>
 
     <TextView
         android:id="@+id/max_altitude_label"
@@ -241,7 +247,8 @@
         android:id="@+id/max_altitude_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="max_altitude_label,max_altitude_value"/>
 
     <TextView
         android:id="@+id/elevation_label"
@@ -271,7 +278,8 @@
         android:id="@+id/elevation_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="elevation_label,elevation_value"/>
 
     <TextView
         android:id="@+id/range_label"
@@ -301,7 +309,8 @@
         android:id="@+id/range_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="range_label,range_value"/>
 
     <TextView
         android:id="@+id/bearing_label"
@@ -331,7 +340,8 @@
         android:id="@+id/bearing_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="bearing_label,bearing_value"/>
 
     <TextView
         android:id="@+id/compass_value"
@@ -348,7 +358,8 @@
         android:id="@+id/compass_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="compass_value"/>
 
     <TextView
         android:id="@+id/distance_label"
@@ -378,7 +389,8 @@
         android:id="@+id/distance_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="distance_label,distance_value"/>
 
     <ImageView
         android:id="@+id/target_pos_icon"
@@ -426,7 +438,8 @@
         android:id="@+id/lat_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="lat_label,lat_value"/>
 
     <TextView
         android:id="@+id/lon_label"
@@ -457,10 +470,11 @@
         android:id="@+id/lon_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="lon_label,lon_value"/>
 
     <androidx.constraintlayout.widget.Group
-        android:id="@+id/apogee_voltage_view"
+        android:id="@+id/apogee_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="visible"
@@ -527,10 +541,11 @@
         android:id="@+id/apogee_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="apogee_redled,apogee_greenled,apogee_voltage_label,apogee_voltage_value"/>
 
     <androidx.constraintlayout.widget.Group
-        android:id="@+id/main_voltage_view"
+        android:id="@+id/main_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="visible"
@@ -597,10 +612,11 @@
         android:id="@+id/main_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="main_redled,main_greenled,main_voltage_label,main_voltage_value"/>
 
     <androidx.constraintlayout.widget.Group
-        android:id="@+id/ignite_a_voltage_view"
+        android:id="@+id/ignite_a_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="visible"
@@ -667,10 +683,11 @@
         android:id="@+id/ignite_a_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="ignite_a_redled,ignite_a_greenled,ignite_a_voltage_label,ignite_a_voltage_value"/>
 
     <androidx.constraintlayout.widget.Group
-        android:id="@+id/ignite_b_voltage_view"
+        android:id="@+id/ignite_b_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="visible"
@@ -738,10 +755,11 @@
         android:id="@+id/ignite_b_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="ignite_b_redled,ignite_b_greenled,ignite_b_voltage_label,ignite_b_voltage_value"/>
 
     <androidx.constraintlayout.widget.Group
-        android:id="@+id/ignite_c_voltage_view"
+        android:id="@+id/ignite_c_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="visible"
@@ -808,10 +826,11 @@
         android:id="@+id/ignite_c_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="ignite_c_redled,ignite_c_greenled,ignite_c_voltage_label,ignite_c_voltage_value"/>
 
     <androidx.constraintlayout.widget.Group
-        android:id="@+id/ignite_d_voltage_view"
+        android:id="@+id/ignite_d_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="visible"
@@ -878,15 +897,7 @@
         android:id="@+id/ignite_d_row"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:barrierDirection="top" />
-
-    <View
-	android:layout_width="0dp"
-	android:layout_height="1000dp"
-	app:layout_constrainedHeight="true"
-	app:layout_constraintStart_toStartOf="parent"
-	app:layout_constraintEnd_toEndOf="parent"
-	app:layout_constraintTop_toTopOf="@id/ignite_d_row"
-	app:layout_constraintBottom_toBottomOf="parent"/>
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="ignite_d_redled,ignite_d_greenled,ignite_d_voltage_label,ignite_d_voltage_value"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
