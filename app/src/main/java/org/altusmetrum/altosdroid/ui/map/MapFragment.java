@@ -86,23 +86,43 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
         return binding.getRoot();
     }
 
-
+    /*
+     * Kludge to make sure the map type menu entries are populated when the fragment
+     * is re-created.
+     */
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        check_permission();
-        map_source_changed(AltosDroidPreferences.map_source());
-
+    public void onResume() {
+        super.onResume();
         String[] map_types = getResources().getStringArray(R.array.map_types);
-        AltosDroidPreferences.register_map_source_listener(this);
-        ArrayAdapter adapter = new ArrayAdapter(getContext(), R.layout.map_type_menu, map_types);
+        ArrayAdapter adapter = new ArrayAdapter(requireContext(), R.layout.map_type_menu, map_types);
+        binding.mapType.setAdapter(adapter);
         int map_type = AltosPreferences.map_type();
         for (int map_id = 0; map_id < altos_map_types.length; map_id++)
             if (altos_map_types[map_id] == map_type) {
                 binding.mapType.setText(map_types[map_id], false);
                 break;
             }
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        check_permission();
+        AltosDroidPreferences.register_map_source_listener(this);
+
+        String[] map_types = getResources().getStringArray(R.array.map_types);
+        ArrayAdapter adapter = new ArrayAdapter(getContext(), R.layout.map_type_menu, map_types);
         binding.mapType.setAdapter(adapter);
+
+        if (savedInstanceState == null) {
+            int map_type = AltosPreferences.map_type();
+            for (int map_id = 0; map_id < altos_map_types.length; map_id++)
+                if (altos_map_types[map_id] == map_type) {
+                    binding.mapType.setText(map_types[map_id], false);
+                    break;
+                }
+        }
+
         binding.mapType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     int map_type = AltosLib.MISSING;
@@ -116,8 +136,8 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
                     AltosDroidPreferences.set_map_source(source);
                 }
             });
-        boolean isChecked = AltosDroidPreferences.map_source() == AltosDroidPreferences.MAP_SOURCE_ONLINE;
-        binding.mapSource.setChecked(isChecked);
+
+        map_source_changed(AltosDroidPreferences.map_source());
     }
 
     @Override
@@ -214,6 +234,7 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
             binding.mapOffline.set_map_fragment(this);
             child = 1;
         }
+        binding.mapSource.setChecked(map_source == AltosDroidPreferences.MAP_SOURCE_ONLINE);
         mapInterface.set_altos_droid(altos_droid);
         binding.mapView.setDisplayedChild(child);
         if (altos_droid != null)
