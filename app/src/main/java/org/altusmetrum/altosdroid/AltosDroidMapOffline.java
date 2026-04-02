@@ -124,7 +124,6 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
     Line line = new Line();
     int stroke_width = 20;
     HashMap<Integer, RocketOffline> rockets = new HashMap<>();
-    double mapAccuracy;
     private MainActivity altos_droid;
     class MapTile extends AltosMapTile {
 
@@ -374,10 +373,8 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
     }
 
     public void center(double lat, double lon, double accuracy) {
-        if (mapAccuracy <= 0 || accuracy < mapAccuracy / 10 || (map != null && !map.has_centre())) {
-            if (map != null) map.maybe_centre(lat, lon);
-            mapAccuracy = accuracy;
-        }
+        if (map != null)
+            map.maybe_centre(lat, lon);
     }
 
     public void set_visible(boolean visible) {

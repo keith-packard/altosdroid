@@ -31,11 +31,13 @@ import org.altusmetrum.altoslib_14.AltosUnits;
 public abstract class AltosFragment extends Fragment {
 
 	public MainActivity altos_droid;
-    abstract public void show(TelemetryState telem_state, AltosState state, AltosGreatCircle from_receiver, Location receiver_location);
-    public void set_value(TextView text_view,
-                          AltosUnits units,
-                          int width,
-                          double value) {
+
+	abstract public void show(TelemetryState telem_state, AltosState state, AltosGreatCircle from_receiver, Location receiver_location);
+
+	public void set_value(TextView text_view,
+			      AltosUnits units,
+			      int width,
+			      double value) {
 		if (value == AltosLib.MISSING)
 			text_view.setText("");
 		else
@@ -43,6 +45,8 @@ public abstract class AltosFragment extends Fragment {
 	}
 
 	public void set_altos_droid(MainActivity altos_droid) { this.altos_droid = altos_droid; }
+
+	public void select_tracker(int serial) { }
 
 	abstract public String name();
 }
