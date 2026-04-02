@@ -52,8 +52,9 @@ class RocketOnline implements Comparable {
     long		last_packet;
     int		width, height;
 
-    void set_position(AltosLatLon position, long last_packet) {
+    void set_position(AltosLatLon position, long last_packet, boolean is_target) {
         marker.setPosition(new LatLng(position.lat, position.lon));
+        marker.setZIndex(is_target ? 2 : 1);
         this.last_packet = last_packet;
     }
 
@@ -82,6 +83,7 @@ class RocketOnline implements Comparable {
                 .icon(BitmapDescriptorFactory.fromBitmap(marker.bitmap))
                 .position(new LatLng(lat, lon))
                 .anchor(marker.off_x, marker.off_y)
+                .zIndex(1)
                 .visible(true));
         this.last_packet = last_packet;
     }
@@ -218,7 +220,7 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(center,14));
     }
 
-    private void set_rocket(int serial, AltosState state) {
+    private void set_rocket(int serial, AltosState state, boolean is_target) {
         RocketOnline	rocket;
 
         if (state.gps == null || state.gps.lat == AltosLib.MISSING)
@@ -230,7 +232,7 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
         synchronized(rockets) {
             if (rockets.containsKey(serial)) {
                 rocket = rockets.get(serial);
-                rocket.set_position(new AltosLatLon(state.gps.lat, state.gps.lon), state.received_time);
+                rocket.set_position(new AltosLatLon(state.gps.lat, state.gps.lon), state.received_time, is_target);
             } else {
                 rocket = new RocketOnline(altos_droid,
                         serial,
@@ -258,7 +260,7 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
             }
 
             for (int serial : telem_state.keySet()) {
-                set_rocket(serial, telem_state.get(serial));
+                set_rocket(serial, telem_state.get(serial), serial == map_fragment.target_serial);
             }
         }
     }
@@ -271,14 +273,21 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
         }
     }
 
-    public void set_track(AltosLatLon my_position, AltosLatLon target_position) {
-        if (mPolyline != null) {
-            mPolyline.setPoints(Arrays.asList(new LatLng(my_position.lat, my_position.lon), new LatLng(target_position.lat, target_position.lon)));
-            mPolyline.setVisible(true);
-        }
+    private LatLng here, there;
+
+    public void set_here_position(double lat, double lon) {
+        here = new LatLng(lat, lon);
         if (mHereMarker != null) {
-            mHereMarker.setPosition(new LatLng(my_position.lat, my_position.lon));
+            mHereMarker.setPosition(here);
             mHereMarker.setVisible(true);
+        }
+    }
+
+    public void set_there_position(double lat, double lon) {
+        there = new LatLng(lat, lon);
+        if (here != null && mPolyline != null) {
+            mPolyline.setPoints(Arrays.asList(here, there));
+            mPolyline.setVisible(true);
         }
     }
 

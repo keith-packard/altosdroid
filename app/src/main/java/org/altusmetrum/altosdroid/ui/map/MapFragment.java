@@ -24,6 +24,7 @@ import org.altusmetrum.altosdroid.MainActivity;
 import org.altusmetrum.altosdroid.R;
 import org.altusmetrum.altosdroid.TelemetryState;
 import org.altusmetrum.altosdroid.databinding.FragmentMapBinding;
+import org.altusmetrum.altoslib_14.AltosCalData;
 import org.altusmetrum.altoslib_14.AltosConvert;
 import org.altusmetrum.altoslib_14.AltosGreatCircle;
 import org.altusmetrum.altoslib_14.AltosLatLon;
@@ -44,6 +45,7 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
 
     private AltosLatLon my_position = null;
     private AltosLatLon target_position = null;
+    public int target_serial = -1;
     private FragmentMapBinding binding;
 
     private AltosDroidMapInterface mapInterface;
@@ -176,6 +178,10 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
         }
 
         if (state != null) {
+            AltosCalData cal_data = state.cal_data();
+
+            if (cal_data != null && cal_data.serial != AltosLib.MISSING)
+                target_serial = cal_data.serial;
             if (!pad_set && state.pad_lat != AltosLib.MISSING && mapInterface != null) {
                 pad_set = true;
                 mapInterface.set_pad_position(state.pad_lat, state.pad_lon);
@@ -210,8 +216,11 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
             }
         }
 
-        if (my_position != null && target_position != null && mapInterface != null)
-            mapInterface.set_track(my_position, target_position);
+        if (my_position != null && mapInterface != null)
+            mapInterface.set_here_position(my_position.lat, my_position.lon);
+
+        if (target_position != null && mapInterface != null)
+            mapInterface.set_there_position(target_position.lat, target_position.lon);
 
         if (from_receiver != null && binding != null) {
             binding.mapBearing.setText(String.format(Locale.getDefault(), "%1.0f°", from_receiver.bearing));

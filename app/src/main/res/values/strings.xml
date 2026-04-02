@@ -117,7 +117,7 @@
     <string name="heading_backwards">backwards</string>
 
     <!-- Map preload -->
-    <string name="preload_site_label">Known Launch Sites</string>
+    <string name="preload_site_label">Launch Site</string>
     <string name="preload_latitude_label">Latitude</string>
     <string name="preload_longitude_label">Longitude</string>
 

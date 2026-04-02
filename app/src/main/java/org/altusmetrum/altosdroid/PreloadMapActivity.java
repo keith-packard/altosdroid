@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.*;
 import android.widget.AdapterView.*;
 import android.location.Location;
@@ -293,6 +294,16 @@ public class PreloadMapActivity extends AppCompatActivity implements AltosLaunch
 	double[]	radius_km = { 1, 2, 5, 10, 20, 30 };
 	double		radius_def_km = 2;
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        /* Force window to full width instead of wrap_content */
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+        lp.copyFrom(getWindow().getAttributes());
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+        getWindow().setAttributes(lp);
+    }
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		//setTheme(AltosDroid.dialog_themes[AltosDroidPreferences.font_size()]);

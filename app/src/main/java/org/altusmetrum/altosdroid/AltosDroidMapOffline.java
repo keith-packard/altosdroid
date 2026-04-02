@@ -271,15 +271,26 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
     }
 
     private void draw_positions() {
-        line.set_a(there);
-        line.set_b(here);
-        line.paint();
+        if (here != null && there != null) {
+            line.set_a(there);
+            line.set_b(here);
+            line.paint();
+        }
         if (pad != null)
             draw_marker(pad, pad_marker);
 
-        for (RocketOffline rocket : sorted_rockets())
-            rocket.paint();
-        draw_marker(here, here_marker);
+        RocketOffline target_rocket = null;
+
+        for (RocketOffline rocket : Arrays.asList(sorted_rockets()).reversed()) {
+            if (rocket.serial == map_fragment.target_serial)
+                target_rocket = rocket;
+            else
+                rocket.paint();
+        }
+        if (target_rocket != null)
+            target_rocket.paint();
+        if (here != null)
+            draw_marker(here, here_marker);
     }
 
     @Override
@@ -452,9 +463,13 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
         repaint();
     }
 
-    public void set_track(AltosLatLon my_position, AltosLatLon target_position) {
-        here = my_position;
-        there = target_position;
+    public void set_here_position(double lat, double lon) {
+        here = new AltosLatLon(lat, lon);
+        repaint();
+    }
+
+    public void set_there_position(double lat, double lon) {
+        there = new AltosLatLon(lat, lon);
         repaint();
     }
 

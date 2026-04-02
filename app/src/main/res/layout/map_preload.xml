@@ -1,106 +1,246 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Copyright © 2015 Keith Packard <keithp@keithp.com>
+Copyright © 2015 Keith Packard <keithp@keithp.com>
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2 of the License, or
-  (at your option) any later version.
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 
-  This program is distributed in the hope that it will be useful, but
-  WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  General Public License for more details.
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+General Public License for more details.
 
-  You should have received a copy of the GNU General Public License along
-  with this program; if not, write to the Free Software Foundation, Inc.,
-  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
-  <ScrollView android:layout_width="fill_parent"
-	      android:layout_height="wrap_content">
-    <LinearLayout android:layout_width="wrap_content"
-		  android:layout_height="wrap_content"
-                  android:orientation="vertical">
-      <TextView android:id="@+id/preload_site_label"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:text="@string/preload_site_label"
-		/>
-      <Spinner android:id="@+id/preload_site_list"
-	       android:layout_width="fill_parent"
-	       android:layout_height="wrap_content"
-	       android:prompt="@string/preload_site_label"
-	       android:spinnerMode="dropdown"
-	       />
-      <TextView android:id="@+id/preload_latitude_label"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:text="@string/preload_latitude_label"
-		/>
-      <EditText android:id="@+id/preload_latitude"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:hint="@string/preload_latitude_label"
-		android:inputType="number|numberSigned|numberDecimal"/>
-      <TextView android:id="@+id/preload_longitude_label"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:text="@string/preload_longitude_label"
-		/>
-      <EditText android:id="@+id/preload_longitude"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:hint="@string/preload_longitude_label"
-		android:inputType="number|numberSigned|numberDecimal"/>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                   xmlns:tools="http://schemas.android.com/tools"
+                                                   android:layout_width="match_parent"
+                                                   android:layout_height="match_parent"
+                                                   android:background="?android:attr/windowBackground">
 
-      <TextView android:id="@+id/preload_min_zoom_label"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:text="@string/preload_min_zoom"
-		/>
-      <Spinner android:id="@+id/preload_min_zoom"
-	       android:layout_width="fill_parent"
-	       android:layout_height="wrap_content"
-	       android:prompt="@string/preload_min_zoom"
-	       android:spinnerMode="dropdown"
-	       />
-      <TextView android:id="@+id/preload_max_zoom_label"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:text="@string/preload_max_zoom"
-		/>
-      <Spinner android:id="@+id/preload_max_zoom"
-	       android:layout_width="fill_parent"
-	       android:layout_height="wrap_content"
-	       android:prompt="@string/preload_max_zoom"
-	       android:spinnerMode="dropdown"
-	       />
-      <TextView android:id="@+id/preload_radius_label"
-		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:text="@string/preload_radius"
-		/>
-      <Spinner android:id="@+id/preload_radius"
-	       android:layout_width="fill_parent"
-	       android:layout_height="wrap_content"
-	       android:prompt="@string/preload_radius"
-	       android:spinnerMode="dropdown"
-	       />
-      <Button android:id="@+id/preload_load"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:text="@string/preload_load"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/column_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".5"/>
+
+    <TextView android:id="@+id/preload_site_label"
+	      android:layout_width="0dp"
+	      android:layout_height="wrap_content"
+	      android:text="@string/preload_site_label"
+              android:textAppearance="@style/LabelText"
+              android:paddingVertical="@dimen/table_padding_vertical"
+              app:layout_constraintTop_toTopOf="parent"
+              app:layout_constraintBottom_toTopOf="@id/preload_site_list"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintEnd_toStartOf="@id/column_1"
 	      />
-      <ProgressBar android:id="@+id/preload_progress"
-		   android:layout_width="match_parent"
-		   android:layout_height="wrap_content"
-		   style="@android:style/Widget.ProgressBar.Horizontal"
-		   />
-    </LinearLayout>
-  </ScrollView>
-</LinearLayout>
+
+    <Spinner android:id="@+id/preload_site_list"
+	     android:layout_width="0dp"
+	     android:layout_height="wrap_content"
+	     android:prompt="@string/preload_site_label"
+	     android:spinnerMode="dropdown"
+             android:paddingVertical="@dimen/table_padding_vertical"
+             android:textAppearance="@style/ValueText"
+             app:layout_constraintTop_toBottomOf="@id/preload_site_label"
+             app:layout_constraintBottom_toTopOf="@id/preload_site_barrier"
+             app:layout_constraintStart_toStartOf="parent"
+             app:layout_constraintEnd_toEndOf="parent"
+	     />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/preload_site_barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="preload_site_list"/>
+
+    <TextView android:id="@+id/preload_latitude_label"
+	      android:layout_width="0dp"
+	      android:layout_height="wrap_content"
+	      android:text="@string/preload_latitude_label"
+              android:textAppearance="@style/LabelText"
+              android:paddingVertical="@dimen/table_padding_vertical"
+              app:layout_constraintTop_toBottomOf="@id/preload_site_barrier"
+              app:layout_constraintBottom_toTopOf="@id/preload_latitude_barrier"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintEnd_toStartOf="@id/column_1"
+	      />
+
+    <EditText android:id="@+id/preload_latitude"
+	      android:layout_width="0dp"
+	      android:layout_height="wrap_content"
+	      android:hint="@string/preload_latitude_label"
+	      android:inputType="number|numberSigned|numberDecimal"
+              android:paddingVertical="@dimen/table_padding_vertical"
+              android:textAppearance="@style/ValueText"
+              app:layout_constraintTop_toBottomOf="@id/preload_site_barrier"
+              app:layout_constraintBottom_toTopOf="@id/preload_latitude_barrier"
+              app:layout_constraintStart_toEndOf="@id/column_1"
+              app:layout_constraintEnd_toEndOf="parent"
+              />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/preload_latitude_barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="preload_latitude_label,preload_latitude"/>
+
+    <TextView android:id="@+id/preload_longitude_label"
+	      android:layout_width="0dp"
+	      android:layout_height="wrap_content"
+	      android:text="@string/preload_longitude_label"
+              android:textAppearance="@style/LabelText"
+              android:paddingVertical="@dimen/table_padding_vertical"
+              app:layout_constraintTop_toBottomOf="@id/preload_latitude_barrier"
+              app:layout_constraintBottom_toTopOf="@id/preload_longitude_barrier"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintEnd_toStartOf="@id/column_1"
+	      />
+
+    <EditText android:id="@+id/preload_longitude"
+	      android:layout_width="0dp"
+	      android:layout_height="wrap_content"
+	      android:hint="@string/preload_longitude_label"
+	      android:inputType="number|numberSigned|numberDecimal"
+              android:paddingVertical="@dimen/table_padding_vertical"
+              android:textAppearance="@style/ValueText"
+              app:layout_constraintTop_toBottomOf="@id/preload_latitude_barrier"
+              app:layout_constraintBottom_toTopOf="@id/preload_longitude_barrier"
+              app:layout_constraintStart_toEndOf="@id/column_1"
+              app:layout_constraintEnd_toEndOf="parent"
+              />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/preload_longitude_barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="preload_longitude_label,preload_longitude"/>
+
+    <TextView android:id="@+id/preload_min_zoom_label"
+	      android:layout_width="0dp"
+	      android:layout_height="wrap_content"
+	      android:text="@string/preload_min_zoom"
+              android:textAppearance="@style/LabelText"
+              android:paddingVertical="@dimen/table_padding_vertical"
+              app:layout_constraintTop_toBottomOf="@id/preload_longitude_barrier"
+              app:layout_constraintBottom_toTopOf="@id/preload_min_zoom_barrier"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintEnd_toStartOf="@id/column_1"
+	      />
+
+    <Spinner android:id="@+id/preload_min_zoom"
+	     android:layout_width="0dp"
+	     android:layout_height="wrap_content"
+	     android:prompt="@string/preload_min_zoom"
+	     android:spinnerMode="dropdown"
+             android:paddingVertical="@dimen/table_padding_vertical"
+             android:textAppearance="@style/ValueText"
+             app:layout_constraintTop_toBottomOf="@id/preload_longitude_barrier"
+             app:layout_constraintBottom_toTopOf="@id/preload_min_zoom_barrier"
+             app:layout_constraintStart_toEndOf="@id/column_1"
+             app:layout_constraintEnd_toEndOf="parent"
+	     />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/preload_min_zoom_barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="preload_min_zoom_label,preload_min_zoom"/>
+
+    <TextView android:id="@+id/preload_max_zoom_label"
+	      android:layout_width="0dp"
+	      android:layout_height="wrap_content"
+	      android:text="@string/preload_max_zoom"
+              android:textAppearance="@style/LabelText"
+              android:paddingVertical="@dimen/table_padding_vertical"
+              app:layout_constraintTop_toBottomOf="@id/preload_min_zoom_barrier"
+              app:layout_constraintBottom_toTopOf="@id/preload_max_zoom_barrier"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintEnd_toStartOf="@id/column_1"
+	      />
+
+    <Spinner android:id="@+id/preload_max_zoom"
+	     android:layout_width="0dp"
+	     android:layout_height="wrap_content"
+	     android:prompt="@string/preload_max_zoom"
+	     android:spinnerMode="dropdown"
+             android:paddingVertical="@dimen/table_padding_vertical"
+             android:textAppearance="@style/ValueText"
+             app:layout_constraintTop_toBottomOf="@id/preload_min_zoom_barrier"
+             app:layout_constraintBottom_toTopOf="@id/preload_max_zoom_barrier"
+             app:layout_constraintStart_toEndOf="@id/column_1"
+             app:layout_constraintEnd_toEndOf="parent"
+	     />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/preload_max_zoom_barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="preload_max_zoom_label,preload_max_zoom"/>
+
+    <TextView android:id="@+id/preload_radius_label"
+	      android:layout_width="0dp"
+	      android:layout_height="wrap_content"
+	      android:text="@string/preload_radius"
+              android:textAppearance="@style/LabelText"
+              android:paddingVertical="@dimen/table_padding_vertical"
+              app:layout_constraintTop_toBottomOf="@id/preload_max_zoom_barrier"
+              app:layout_constraintBottom_toTopOf="@id/preload_radius_barrier"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintEnd_toStartOf="@id/column_1"
+	      />
+
+    <Spinner android:id="@+id/preload_radius"
+	     android:layout_width="0dp"
+	     android:layout_height="wrap_content"
+	     android:prompt="@string/preload_radius"
+	     android:spinnerMode="dropdown"
+             android:paddingVertical="@dimen/table_padding_vertical"
+             android:textAppearance="@style/ValueText"
+             app:layout_constraintTop_toBottomOf="@id/preload_max_zoom_barrier"
+             app:layout_constraintBottom_toTopOf="@id/preload_radius_barrier"
+             app:layout_constraintStart_toEndOf="@id/column_1"
+             app:layout_constraintEnd_toEndOf="parent"
+	     />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/preload_radius_barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="preload_radius_label,preload_radius"/>
+
+    <Button android:id="@+id/preload_load"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/preload_load"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintTop_toBottomOf="@id/preload_radius_barrier"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+	    />
+
+    <ProgressBar android:id="@+id/preload_progress"
+		 android:layout_width="match_parent"
+		 android:layout_height="wrap_content"
+                 android:paddingHorizontal="5dp"
+		 style="@android:style/Widget.ProgressBar.Horizontal"
+                 android:paddingVertical="@dimen/table_padding_vertical"
+                 app:layout_constraintTop_toBottomOf="@id/preload_load"
+                 app:layout_constraintStart_toStartOf="parent"
+                 app:layout_constraintEnd_toEndOf="parent"
+		 />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
