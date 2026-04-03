@@ -58,3 +58,5 @@ BUGS
  ✓ Rocket trackers in online mode end up duplicated
 
  * Need scroll view wrappers around three data views for giant font mode
+
+ * Make sure telemetry keeps working when the phone sleeps and on app switch

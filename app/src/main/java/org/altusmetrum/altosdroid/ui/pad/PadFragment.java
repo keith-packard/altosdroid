@@ -97,6 +97,10 @@ public class PadFragment extends AltosFragment {
 				double voltage = i < num_igniter ? state.igniter_voltage[i] : AltosLib.MISSING;
 				ignite_meters[i].set(voltage);
 			}
+			String product = state.cal_data().product;
+			String version = state.cal_data().firmware_version;
+			binding.productValue.setText(product != null ? product : "");
+			binding.versionValue.setText(version != null ? version : "");
 			// recording status
 			if (state.cal_data().flight != 0) {
 				if (state.state() <= AltosLib.ao_flight_pad)

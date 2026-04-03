@@ -48,7 +48,7 @@ public class RecoverFragment extends AltosFragment {
 		if (state != null && state.gps != null) {
 			binding.targetLatValue.setText(AltosValue.pos(state.gps.lat, "N", "S"));
 			binding.targetLonValue.setText(AltosValue.pos(state.gps.lon, "E", "W"));
-		}
+                }
 
 		if (receiver_location != null) {
 			binding.receiverLatValue.setText(AltosValue.pos(receiver_location.getLatitude(), "N", "S"));

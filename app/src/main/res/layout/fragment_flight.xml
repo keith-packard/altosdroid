@@ -1,902 +1,911 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.flight.FlightFragment">
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/column_bad"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent=".06"/>
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/column_good"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent=".12"/>
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/column_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-	android:orientation="vertical"
-        app:layout_constraintGuide_percent=".50"/>
-
-    <TextView
-        android:id="@+id/speed_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/LabelText"
-        android:text="@string/speed_label"
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_good"
-        app:layout_constraintEnd_toStartOf="@id/column_name"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/speed_row" />
-
-    <TextView
-        android:id="@+id/speed_value"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text=""
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/speed_row"/>
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/speed_row"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="speed_label,speed_value"/>
-
-    <TextView
-        android:id="@+id/height_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/LabelText"
-        android:text="@string/height_label"
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_good"
-        app:layout_constraintEnd_toStartOf="@id/column_name"
-        app:layout_constraintTop_toTopOf="@id/speed_row"
-        app:layout_constraintBottom_toTopOf="@id/height_row" />
-
-    <TextView
-        android:id="@+id/height_value"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text=""
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/speed_row"
-        app:layout_constraintBottom_toTopOf="@id/height_row" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/height_row"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="height_label,height_value"/>
-
-    <TextView
-        android:id="@+id/altitude_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/LabelText"
-        android:text="@string/altitude_label"
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_good"
-        app:layout_constraintEnd_toStartOf="@id/column_name"
-        app:layout_constraintTop_toTopOf="@id/height_row"
-        app:layout_constraintBottom_toTopOf="@id/altitude_row" />
-
-    <TextView
-        android:id="@+id/altitude_value"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text=""
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/height_row"
-        app:layout_constraintBottom_toTopOf="@id/altitude_row" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/altitude_row"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="altitude_label,altitude_value"/>
-
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/tilt_view"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        app:constraint_referenced_ids="tilt_label,tilt_value"/>
-
-    <TextView
-        android:id="@+id/tilt_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_column="2"
-        android:textAppearance="@style/LabelText"
-        android:text="@string/tilt_label"
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_good"
-        app:layout_constraintEnd_toStartOf="@id/column_name"
-        app:layout_constraintTop_toTopOf="@id/altitude_row"
-        app:layout_constraintBottom_toTopOf="@id/tilt_row" />
-
-    <TextView
-        android:id="@+id/tilt_value"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text=""
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/altitude_row"
-        app:layout_constraintBottom_toTopOf="@id/tilt_row" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/tilt_row"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="tilt_label,tilt_value"/>
-
-    <TextView
-        android:id="@+id/max_speed_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_column="2"
-        android:textAppearance="@style/LabelText"
-        android:text="@string/max_speed_label"
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_good"
-        app:layout_constraintEnd_toStartOf="@id/column_name"
-        app:layout_constraintTop_toTopOf="@id/tilt_row"
-        app:layout_constraintBottom_toTopOf="@id/max_speed_row" />
-
-    <TextView
-        android:id="@+id/max_speed_value"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text=""
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tilt_row"
-        app:layout_constraintBottom_toTopOf="@id/max_speed_row" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/max_speed_row"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="max_speed_label,max_speed_value"/>
-
-    <TextView
-        android:id="@+id/max_height_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_column="2"
-        android:textAppearance="@style/LabelText"
-        android:text="@string/max_height_label"
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_good"
-        app:layout_constraintEnd_toStartOf="@id/column_name"
-        app:layout_constraintTop_toTopOf="@id/max_speed_row"
-        app:layout_constraintBottom_toTopOf="@id/max_height_row" />
-
-    <TextView
-        android:id="@+id/max_height_value"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text=""
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/max_speed_row"
-        app:layout_constraintBottom_toTopOf="@id/max_height_row" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/max_height_row"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="max_height_label,max_height_value"/>
-
-    <TextView
-        android:id="@+id/max_altitude_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_column="2"
-        android:textAppearance="@style/LabelText"
-        android:text="@string/max_altitude_label"
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_good"
-        app:layout_constraintEnd_toStartOf="@id/column_name"
-        app:layout_constraintTop_toTopOf="@id/max_height_row"
-        app:layout_constraintBottom_toTopOf="@id/max_altitude_row" />
-
-    <TextView
-        android:id="@+id/max_altitude_value"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text=""
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/max_height_row"
-        app:layout_constraintBottom_toTopOf="@id/max_altitude_row" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/max_altitude_row"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="max_altitude_label,max_altitude_value"/>
-
-    <TextView
-        android:id="@+id/elevation_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_column="2"
-        android:textAppearance="@style/LabelText"
-        android:text="@string/elevation_label"
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_good"
-        app:layout_constraintEnd_toStartOf="@id/column_name"
-        app:layout_constraintTop_toTopOf="@id/max_altitude_row"
-        app:layout_constraintBottom_toTopOf="@id/elevation_row" />
-
-    <TextView
-        android:id="@+id/elevation_value"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text=""
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/max_altitude_row"
-        app:layout_constraintBottom_toTopOf="@id/elevation_row" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/elevation_row"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="elevation_label,elevation_value"/>
-
-    <TextView
-        android:id="@+id/range_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_column="2"
-        android:textAppearance="@style/LabelText"
-        android:text="@string/range_label"
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_good"
-        app:layout_constraintEnd_toStartOf="@id/column_name"
-        app:layout_constraintTop_toTopOf="@id/elevation_row"
-        app:layout_constraintBottom_toTopOf="@id/range_row" />
-
-    <TextView
-        android:id="@+id/range_value"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text=""
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/elevation_row"
-        app:layout_constraintBottom_toTopOf="@id/range_row" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/range_row"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="range_label,range_value"/>
-
-    <TextView
-        android:id="@+id/bearing_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_column="2"
-        android:textAppearance="@style/LabelText"
-        android:text="@string/bearing_label"
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_good"
-        app:layout_constraintEnd_toStartOf="@id/column_name"
-        app:layout_constraintTop_toTopOf="@id/range_row"
-        app:layout_constraintBottom_toTopOf="@id/bearing_row" />
-
-    <TextView
-        android:id="@+id/bearing_value"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text=""
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/range_row"
-        app:layout_constraintBottom_toTopOf="@id/bearing_row" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/bearing_row"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="bearing_label,bearing_value"/>
-
-    <TextView
-        android:id="@+id/compass_value"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text=""
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/bearing_row"
-        app:layout_constraintBottom_toTopOf="@id/compass_row" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/compass_row"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="compass_value"/>
-
-    <TextView
-        android:id="@+id/distance_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_column="2"
-        android:textAppearance="@style/LabelText"
-        android:text="@string/gnd_distance_label"
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_good"
-        app:layout_constraintEnd_toStartOf="@id/column_name"
-        app:layout_constraintTop_toTopOf="@id/compass_row"
-        app:layout_constraintBottom_toTopOf="@id/distance_row" />
-
-    <TextView
-        android:id="@+id/distance_value"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text=""
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/compass_row"
-        app:layout_constraintBottom_toTopOf="@id/distance_row" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/distance_row"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="distance_label,distance_value"/>
-
-    <ImageView
-        android:id="@+id/target_pos_icon"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:scaleType="centerInside"
-        android:paddingStart="@dimen/table_padding_start"
-        android:paddingEnd="10dp"
-        android:contentDescription="@string/target_position_label"
-        android:src="@drawable/flight_orange"
-        app:layout_constrainedHeight="true"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/column_good"
-        app:layout_constraintTop_toTopOf="@id/distance_row"
-        app:layout_constraintBottom_toTopOf="@id/lon_row"/>
-
-    <TextView
-        android:id="@+id/lat_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_column="2"
-        android:textAppearance="@style/LabelText"
-        android:text="@string/latitude_label"
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_good"
-        app:layout_constraintEnd_toStartOf="@id/column_name"
-        app:layout_constraintTop_toTopOf="@id/distance_row"
-        app:layout_constraintBottom_toTopOf="@id/lat_row" />
-
-    <TextView
-        android:id="@+id/lat_value"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/PosText"
-        android:text=""
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/distance_row"
-        app:layout_constraintBottom_toTopOf="@id/lat_row" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/lat_row"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="lat_label,lat_value"/>
-
-    <TextView
-        android:id="@+id/lon_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_column="2"
-        android:textAppearance="@style/LabelText"
-        android:text="@string/longitude_label"
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_good"
-        app:layout_constraintEnd_toStartOf="@id/column_name"
-        app:layout_constraintTop_toTopOf="@id/lat_row"
-        app:layout_constraintBottom_toTopOf="@id/lon_row" />
-
-    <TextView
-        android:id="@+id/lon_value"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/PosText"
-        android:text=""
-	android:paddingVertical="@dimen/table_padding_vertical"
-        app:layout_constraintStart_toStartOf="@id/column_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/lat_row"
-        app:layout_constraintBottom_toTopOf="@id/lon_row" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/lon_row"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="lon_label,lon_value"/>
-
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/apogee_view"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        app:constraint_referenced_ids="apogee_redled,apogee_greenled,apogee_voltage_label,apogee_voltage_value"/>
-
-    <ImageView
-        android:id="@+id/apogee_redled"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:scaleType="centerInside"
-        android:paddingStart="0dp"
-        android:paddingEnd="0dp"
-        android:contentDescription="@string/apogee_voltage_label"
-        android:src="@drawable/grayled"
-        app:layout_constrainedHeight="true"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/column_bad"
-        app:layout_constraintTop_toTopOf="@id/lon_row"
-        app:layout_constraintBottom_toTopOf="@id/apogee_row" />
-
-    <ImageView
-        android:id="@+id/apogee_greenled"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:scaleType="centerInside"
-        android:paddingStart="0dp"
-        android:paddingEnd="0dp"
-        android:contentDescription="@string/apogee_voltage_label"
-        android:src="@drawable/grayled"
-        app:layout_constrainedHeight="true"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintStart_toStartOf="@id/column_bad"
-        app:layout_constraintEnd_toStartOf="@id/column_good"
-        app:layout_constraintTop_toTopOf="@id/lon_row"
-        app:layout_constraintBottom_toTopOf="@id/apogee_row" />
-
-    <TextView
-        android:id="@+id/apogee_voltage_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/LabelText"
-        android:paddingVertical="@dimen/table_padding_vertical"
-        android:text="@string/apogee_voltage_label"
-        app:layout_constraintStart_toStartOf="@id/column_good"
-        app:layout_constraintEnd_toStartOf="@id/column_name"
-        app:layout_constraintTop_toTopOf="@id/lon_row"
-        app:layout_constraintBottom_toTopOf="@id/apogee_row" />
-
-    <TextView
-        android:id="@+id/apogee_voltage_value"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:paddingVertical="@dimen/table_padding_vertical"
-        android:text=""
-        app:layout_constraintStart_toStartOf="@id/column_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/lon_row"
-        app:layout_constraintBottom_toTopOf="@id/apogee_row" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/apogee_row"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="apogee_redled,apogee_greenled,apogee_voltage_label,apogee_voltage_value"/>
-
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/main_view"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        app:constraint_referenced_ids="main_redled,main_greenled,main_voltage_label,main_voltage_value"/>
-
-    <ImageView
-        android:id="@+id/main_redled"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:scaleType="centerInside"
-        android:paddingStart="0dp"
-        android:paddingEnd="0dp"
-        android:contentDescription="@string/main_voltage_label"
-        android:src="@drawable/grayled"
-        app:layout_constrainedHeight="true"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/column_bad"
-        app:layout_constraintTop_toTopOf="@id/apogee_row"
-        app:layout_constraintBottom_toTopOf="@id/main_row" />
-
-    <ImageView
-        android:id="@+id/main_greenled"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:scaleType="centerInside"
-        android:paddingStart="0dp"
-        android:paddingEnd="0dp"
-        android:contentDescription="@string/main_voltage_label"
-        android:src="@drawable/grayled"
-        app:layout_constrainedHeight="true"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintStart_toStartOf="@id/column_bad"
-        app:layout_constraintEnd_toStartOf="@id/column_good"
-        app:layout_constraintTop_toTopOf="@id/apogee_row"
-        app:layout_constraintBottom_toTopOf="@id/main_row" />
-
-    <TextView
-        android:id="@+id/main_voltage_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/LabelText"
-        android:paddingVertical="@dimen/table_padding_vertical"
-        android:text="@string/main_voltage_label"
-        app:layout_constraintStart_toStartOf="@id/column_good"
-        app:layout_constraintEnd_toStartOf="@id/column_name"
-        app:layout_constraintTop_toTopOf="@id/apogee_row"
-        app:layout_constraintBottom_toTopOf="@id/main_row" />
-
-    <TextView
-        android:id="@+id/main_voltage_value"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:paddingVertical="@dimen/table_padding_vertical"
-        android:text=""
-        app:layout_constraintStart_toStartOf="@id/column_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/apogee_row"
-        app:layout_constraintBottom_toTopOf="@id/main_row"/>
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/main_row"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="main_redled,main_greenled,main_voltage_label,main_voltage_value"/>
-
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/ignite_a_view"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        app:constraint_referenced_ids="ignite_a_redled,ignite_a_greenled,ignite_a_voltage_label,ignite_a_voltage_value"/>
-
-    <ImageView
-        android:id="@+id/ignite_a_redled"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:scaleType="centerInside"
-        android:paddingStart="0dp"
-        android:paddingEnd="0dp"
-        android:contentDescription="@string/ignite_a_voltage_label"
-        android:src="@drawable/grayled"
-        app:layout_constrainedHeight="true"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/column_bad"
-        app:layout_constraintTop_toTopOf="@id/main_row"
-        app:layout_constraintBottom_toTopOf="@id/ignite_a_row" />
-
-    <ImageView
-        android:id="@+id/ignite_a_greenled"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:scaleType="centerInside"
-        android:paddingStart="0dp"
-        android:paddingEnd="0dp"
-        android:contentDescription="@string/ignite_a_voltage_label"
-        android:src="@drawable/grayled"
-        app:layout_constrainedHeight="true"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintStart_toStartOf="@id/column_bad"
-        app:layout_constraintEnd_toStartOf="@id/column_good"
-        app:layout_constraintTop_toTopOf="@id/main_row"
-        app:layout_constraintBottom_toTopOf="@id/ignite_a_row" />
-
-    <TextView
-        android:id="@+id/ignite_a_voltage_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/LabelText"
-        android:paddingVertical="@dimen/table_padding_vertical"
-        android:text="@string/ignite_a_voltage_label"
-        app:layout_constraintStart_toStartOf="@id/column_good"
-        app:layout_constraintEnd_toStartOf="@id/column_name"
-        app:layout_constraintTop_toTopOf="@id/main_row"
-        app:layout_constraintBottom_toTopOf="@id/ignite_a_row" />
-
-    <TextView
-        android:id="@+id/ignite_a_voltage_value"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:paddingVertical="@dimen/table_padding_vertical"
-        android:text=""
-        app:layout_constraintStart_toStartOf="@id/column_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/main_row"
-        app:layout_constraintBottom_toTopOf="@id/ignite_a_row"/>
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/ignite_a_row"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="ignite_a_redled,ignite_a_greenled,ignite_a_voltage_label,ignite_a_voltage_value"/>
-
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/ignite_b_view"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        app:constraint_referenced_ids="ignite_b_redled,ignite_b_greenled,ignite_b_voltage_label,ignite_b_voltage_value"/>
-
-    <ImageView
-        android:id="@+id/ignite_b_redled"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:scaleType="centerInside"
-        android:paddingStart="0dp"
-        android:paddingEnd="0dp"
-        android:contentDescription="@string/ignite_b_voltage_label"
-        android:src="@drawable/grayled"
-        app:layout_constrainedHeight="true"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/column_bad"
-        app:layout_constraintTop_toTopOf="@id/ignite_a_row"
-        app:layout_constraintBottom_toTopOf="@id/ignite_b_row" />
-
-    <ImageView
-        android:id="@+id/ignite_b_greenled"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:scaleType="centerInside"
-        android:paddingStart="0dp"
-        android:paddingEnd="0dp"
-        android:contentDescription="@string/ignite_b_voltage_label"
-        android:src="@drawable/grayled"
-        app:layout_constrainedHeight="true"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintStart_toStartOf="@id/column_bad"
-        app:layout_constraintEnd_toStartOf="@id/column_good"
-        app:layout_constraintTop_toTopOf="@id/ignite_a_row"
-        app:layout_constraintBottom_toTopOf="@id/ignite_b_row" />
-
-    <TextView
-        android:id="@+id/ignite_b_voltage_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/LabelText"
-        android:paddingVertical="@dimen/table_padding_vertical"
-        android:text="@string/ignite_b_voltage_label"
-        app:layout_constraintStart_toStartOf="@id/column_good"
-        app:layout_constraintEnd_toStartOf="@id/column_name"
-        app:layout_constraintTop_toTopOf="@id/ignite_a_row"
-        app:layout_constraintBottom_toTopOf="@id/ignite_b_row" />
-
-    <TextView
-        android:id="@+id/ignite_b_voltage_value"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:paddingVertical="@dimen/table_padding_vertical"
-        android:text=""
-        app:layout_constraintStart_toStartOf="@id/column_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/ignite_a_row"
-        app:layout_constraintBottom_toTopOf="@id/ignite_b_row"
-	/>
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/ignite_b_row"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="ignite_b_redled,ignite_b_greenled,ignite_b_voltage_label,ignite_b_voltage_value"/>
-
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/ignite_c_view"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        app:constraint_referenced_ids="ignite_c_redled,ignite_c_greenled,ignite_c_voltage_label,ignite_c_voltage_value"/>
-
-    <ImageView
-        android:id="@+id/ignite_c_redled"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:scaleType="centerInside"
-        android:paddingStart="0dp"
-        android:paddingEnd="0dp"
-        android:contentDescription="@string/ignite_c_voltage_label"
-        android:src="@drawable/grayled"
-        app:layout_constrainedHeight="true"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/column_bad"
-        app:layout_constraintTop_toTopOf="@id/ignite_b_row"
-        app:layout_constraintBottom_toTopOf="@id/ignite_c_row" />
-
-    <ImageView
-        android:id="@+id/ignite_c_greenled"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:scaleType="centerInside"
-        android:paddingStart="0dp"
-        android:paddingEnd="0dp"
-        android:contentDescription="@string/ignite_c_voltage_label"
-        android:src="@drawable/grayled" 
-        app:layout_constrainedHeight="true"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintStart_toStartOf="@id/column_bad"
-        app:layout_constraintEnd_toStartOf="@id/column_good"
-        app:layout_constraintTop_toTopOf="@id/ignite_b_row"
-        app:layout_constraintBottom_toTopOf="@id/ignite_c_row" />
-
-    <TextView
-        android:id="@+id/ignite_c_voltage_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/LabelText"
-        android:paddingVertical="@dimen/table_padding_vertical"
-        android:text="@string/ignite_c_voltage_label" 
-        app:layout_constraintStart_toStartOf="@id/column_good"
-        app:layout_constraintEnd_toStartOf="@id/column_name"
-        app:layout_constraintTop_toTopOf="@id/ignite_b_row"
-        app:layout_constraintBottom_toTopOf="@id/ignite_c_row" />
-
-    <TextView
-        android:id="@+id/ignite_c_voltage_value"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:paddingVertical="@dimen/table_padding_vertical"
-        android:text=""
-        app:layout_constraintStart_toStartOf="@id/column_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/ignite_b_row"
-        app:layout_constraintBottom_toTopOf="@id/ignite_c_row" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/ignite_c_row"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="ignite_c_redled,ignite_c_greenled,ignite_c_voltage_label,ignite_c_voltage_value"/>
-
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/ignite_d_view"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        app:constraint_referenced_ids="ignite_d_redled,ignite_d_greenled,ignite_d_voltage_label,ignite_d_voltage_value"/>
-
-    <ImageView
-        android:id="@+id/ignite_d_redled"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:scaleType="centerInside"
-        android:paddingStart="0dp"
-        android:paddingEnd="0dp"
-        android:contentDescription="@string/ignite_d_voltage_label"
-        android:src="@drawable/grayled"
-        app:layout_constrainedHeight="true"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/column_bad"
-        app:layout_constraintTop_toTopOf="@id/ignite_c_row"
-        app:layout_constraintBottom_toTopOf="@id/ignite_d_row" />
-
-    <ImageView
-        android:id="@+id/ignite_d_greenled"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:scaleType="centerInside"
-        android:paddingStart="0dp"
-        android:paddingEnd="0dp"
-        android:contentDescription="@string/ignite_d_voltage_label"
-        android:src="@drawable/grayled"
-        app:layout_constrainedHeight="true"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintStart_toStartOf="@id/column_bad"
-        app:layout_constraintEnd_toStartOf="@id/column_good"
-        app:layout_constraintTop_toTopOf="@id/ignite_c_row"
-        app:layout_constraintBottom_toTopOf="@id/ignite_d_row" />
-
-    <TextView
-        android:id="@+id/ignite_d_voltage_label"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/LabelText"
-        android:paddingVertical="@dimen/table_padding_vertical"
-        android:text="@string/ignite_d_voltage_label"
-        app:layout_constraintStart_toStartOf="@id/column_good"
-        app:layout_constraintEnd_toStartOf="@id/column_name"
-        app:layout_constraintTop_toTopOf="@id/ignite_c_row"
-        app:layout_constraintBottom_toTopOf="@id/ignite_d_row" />
-
-    <TextView
-        android:id="@+id/ignite_d_voltage_value"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:paddingVertical="@dimen/table_padding_vertical"
-        android:text=""
-        app:layout_constraintStart_toStartOf="@id/column_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/ignite_c_row"
-        app:layout_constraintBottom_toTopOf="@id/ignite_d_row"/>
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/ignite_d_row"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="ignite_d_redled,ignite_d_greenled,ignite_d_voltage_label,ignite_d_voltage_value"/>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    >
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	tools:context=".ui.flight.FlightFragment">
+
+	<androidx.constraintlayout.widget.Guideline
+            android:id="@+id/column_bad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".06"/>
+
+	<androidx.constraintlayout.widget.Guideline
+            android:id="@+id/column_good"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".12"/>
+
+	<androidx.constraintlayout.widget.Guideline
+            android:id="@+id/column_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+	    android:orientation="vertical"
+            app:layout_constraintGuide_percent=".50"/>
+
+	<TextView
+            android:id="@+id/speed_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/LabelText"
+            android:text="@string/speed_label"
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/speed_row" />
+
+	<TextView
+            android:id="@+id/speed_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/speed_row"/>
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/speed_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="speed_label,speed_value"/>
+
+	<TextView
+            android:id="@+id/height_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/LabelText"
+            android:text="@string/height_label"
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/speed_row"
+            app:layout_constraintBottom_toTopOf="@id/height_row" />
+
+	<TextView
+            android:id="@+id/height_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/speed_row"
+            app:layout_constraintBottom_toTopOf="@id/height_row" />
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/height_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="height_label,height_value"/>
+
+	<TextView
+            android:id="@+id/altitude_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/LabelText"
+            android:text="@string/altitude_label"
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/height_row"
+            app:layout_constraintBottom_toTopOf="@id/altitude_row" />
+
+	<TextView
+            android:id="@+id/altitude_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/height_row"
+            app:layout_constraintBottom_toTopOf="@id/altitude_row" />
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/altitude_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="altitude_label,altitude_value"/>
+
+	<androidx.constraintlayout.widget.Group
+            android:id="@+id/tilt_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:constraint_referenced_ids="tilt_label,tilt_value"/>
+
+	<TextView
+            android:id="@+id/tilt_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_column="2"
+            android:textAppearance="@style/LabelText"
+            android:text="@string/tilt_label"
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/altitude_row"
+            app:layout_constraintBottom_toTopOf="@id/tilt_row" />
+
+	<TextView
+            android:id="@+id/tilt_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/altitude_row"
+            app:layout_constraintBottom_toTopOf="@id/tilt_row" />
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/tilt_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="tilt_label,tilt_value"/>
+
+	<TextView
+            android:id="@+id/max_speed_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_column="2"
+            android:textAppearance="@style/LabelText"
+            android:text="@string/max_speed_label"
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/tilt_row"
+            app:layout_constraintBottom_toTopOf="@id/max_speed_row" />
+
+	<TextView
+            android:id="@+id/max_speed_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tilt_row"
+            app:layout_constraintBottom_toTopOf="@id/max_speed_row" />
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/max_speed_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="max_speed_label,max_speed_value"/>
+
+	<TextView
+            android:id="@+id/max_height_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_column="2"
+            android:textAppearance="@style/LabelText"
+            android:text="@string/max_height_label"
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/max_speed_row"
+            app:layout_constraintBottom_toTopOf="@id/max_height_row" />
+
+	<TextView
+            android:id="@+id/max_height_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/max_speed_row"
+            app:layout_constraintBottom_toTopOf="@id/max_height_row" />
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/max_height_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="max_height_label,max_height_value"/>
+
+	<TextView
+            android:id="@+id/max_altitude_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_column="2"
+            android:textAppearance="@style/LabelText"
+            android:text="@string/max_altitude_label"
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/max_height_row"
+            app:layout_constraintBottom_toTopOf="@id/max_altitude_row" />
+
+	<TextView
+            android:id="@+id/max_altitude_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/max_height_row"
+            app:layout_constraintBottom_toTopOf="@id/max_altitude_row" />
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/max_altitude_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="max_altitude_label,max_altitude_value"/>
+
+	<TextView
+            android:id="@+id/elevation_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_column="2"
+            android:textAppearance="@style/LabelText"
+            android:text="@string/elevation_label"
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/max_altitude_row"
+            app:layout_constraintBottom_toTopOf="@id/elevation_row" />
+
+	<TextView
+            android:id="@+id/elevation_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/max_altitude_row"
+            app:layout_constraintBottom_toTopOf="@id/elevation_row" />
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/elevation_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="elevation_label,elevation_value"/>
+
+	<TextView
+            android:id="@+id/range_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_column="2"
+            android:textAppearance="@style/LabelText"
+            android:text="@string/range_label"
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/elevation_row"
+            app:layout_constraintBottom_toTopOf="@id/range_row" />
+
+	<TextView
+            android:id="@+id/range_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/elevation_row"
+            app:layout_constraintBottom_toTopOf="@id/range_row" />
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/range_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="range_label,range_value"/>
+
+	<TextView
+            android:id="@+id/bearing_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_column="2"
+            android:textAppearance="@style/LabelText"
+            android:text="@string/bearing_label"
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/range_row"
+            app:layout_constraintBottom_toTopOf="@id/bearing_row" />
+
+	<TextView
+            android:id="@+id/bearing_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/range_row"
+            app:layout_constraintBottom_toTopOf="@id/bearing_row" />
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/bearing_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="bearing_label,bearing_value"/>
+
+	<TextView
+            android:id="@+id/compass_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/bearing_row"
+            app:layout_constraintBottom_toTopOf="@id/compass_row" />
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/compass_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="compass_value"/>
+
+	<TextView
+            android:id="@+id/distance_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_column="2"
+            android:textAppearance="@style/LabelText"
+            android:text="@string/gnd_distance_label"
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/compass_row"
+            app:layout_constraintBottom_toTopOf="@id/distance_row" />
+
+	<TextView
+            android:id="@+id/distance_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/compass_row"
+            app:layout_constraintBottom_toTopOf="@id/distance_row" />
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/distance_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="distance_label,distance_value"/>
+
+	<ImageView
+            android:id="@+id/target_pos_icon"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="centerInside"
+            android:paddingStart="@dimen/table_padding_start"
+            android:paddingEnd="10dp"
+            android:contentDescription="@string/target_position_label"
+            android:src="@drawable/flight_orange"
+            app:layout_constrainedHeight="true"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/column_good"
+            app:layout_constraintTop_toTopOf="@id/distance_row"
+            app:layout_constraintBottom_toTopOf="@id/lon_row"/>
+
+	<TextView
+            android:id="@+id/lat_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_column="2"
+            android:textAppearance="@style/LabelText"
+            android:text="@string/latitude_label"
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/distance_row"
+            app:layout_constraintBottom_toTopOf="@id/lat_row" />
+
+	<TextView
+            android:id="@+id/lat_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/PosText"
+            android:text=""
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/distance_row"
+            app:layout_constraintBottom_toTopOf="@id/lat_row" />
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/lat_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="lat_label,lat_value"/>
+
+	<TextView
+            android:id="@+id/lon_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_column="2"
+            android:textAppearance="@style/LabelText"
+            android:text="@string/longitude_label"
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/lat_row"
+            app:layout_constraintBottom_toTopOf="@id/lon_row" />
+
+	<TextView
+            android:id="@+id/lon_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/PosText"
+            android:text=""
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/lat_row"
+            app:layout_constraintBottom_toTopOf="@id/lon_row" />
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/lon_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="lon_label,lon_value"/>
+
+	<androidx.constraintlayout.widget.Group
+            android:id="@+id/apogee_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:constraint_referenced_ids="apogee_redled,apogee_greenled,apogee_voltage_label,apogee_voltage_value"/>
+
+	<ImageView
+            android:id="@+id/apogee_redled"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="centerInside"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:contentDescription="@string/apogee_voltage_label"
+            android:src="@drawable/grayled"
+            app:layout_constrainedHeight="true"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/column_bad"
+            app:layout_constraintTop_toTopOf="@id/lon_row"
+            app:layout_constraintBottom_toTopOf="@id/apogee_row" />
+
+	<ImageView
+            android:id="@+id/apogee_greenled"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="centerInside"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:contentDescription="@string/apogee_voltage_label"
+            android:src="@drawable/grayled"
+            app:layout_constrainedHeight="true"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="@id/column_bad"
+            app:layout_constraintEnd_toStartOf="@id/column_good"
+            app:layout_constraintTop_toTopOf="@id/lon_row"
+            app:layout_constraintBottom_toTopOf="@id/apogee_row" />
+
+	<TextView
+            android:id="@+id/apogee_voltage_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/LabelText"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            android:text="@string/apogee_voltage_label"
+            app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/lon_row"
+            app:layout_constraintBottom_toTopOf="@id/apogee_row" />
+
+	<TextView
+            android:id="@+id/apogee_voltage_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            android:text=""
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/lon_row"
+            app:layout_constraintBottom_toTopOf="@id/apogee_row" />
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/apogee_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="apogee_redled,apogee_greenled,apogee_voltage_label,apogee_voltage_value"/>
+
+	<androidx.constraintlayout.widget.Group
+            android:id="@+id/main_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:constraint_referenced_ids="main_redled,main_greenled,main_voltage_label,main_voltage_value"/>
+
+	<ImageView
+            android:id="@+id/main_redled"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="centerInside"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:contentDescription="@string/main_voltage_label"
+            android:src="@drawable/grayled"
+            app:layout_constrainedHeight="true"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/column_bad"
+            app:layout_constraintTop_toTopOf="@id/apogee_row"
+            app:layout_constraintBottom_toTopOf="@id/main_row" />
+
+	<ImageView
+            android:id="@+id/main_greenled"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="centerInside"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:contentDescription="@string/main_voltage_label"
+            android:src="@drawable/grayled"
+            app:layout_constrainedHeight="true"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="@id/column_bad"
+            app:layout_constraintEnd_toStartOf="@id/column_good"
+            app:layout_constraintTop_toTopOf="@id/apogee_row"
+            app:layout_constraintBottom_toTopOf="@id/main_row" />
+
+	<TextView
+            android:id="@+id/main_voltage_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/LabelText"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            android:text="@string/main_voltage_label"
+            app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/apogee_row"
+            app:layout_constraintBottom_toTopOf="@id/main_row" />
+
+	<TextView
+            android:id="@+id/main_voltage_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            android:text=""
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/apogee_row"
+            app:layout_constraintBottom_toTopOf="@id/main_row"/>
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/main_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="main_redled,main_greenled,main_voltage_label,main_voltage_value"/>
+
+	<androidx.constraintlayout.widget.Group
+            android:id="@+id/ignite_a_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:constraint_referenced_ids="ignite_a_redled,ignite_a_greenled,ignite_a_voltage_label,ignite_a_voltage_value"/>
+
+	<ImageView
+            android:id="@+id/ignite_a_redled"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="centerInside"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:contentDescription="@string/ignite_a_voltage_label"
+            android:src="@drawable/grayled"
+            app:layout_constrainedHeight="true"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/column_bad"
+            app:layout_constraintTop_toTopOf="@id/main_row"
+            app:layout_constraintBottom_toTopOf="@id/ignite_a_row" />
+
+	<ImageView
+            android:id="@+id/ignite_a_greenled"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="centerInside"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:contentDescription="@string/ignite_a_voltage_label"
+            android:src="@drawable/grayled"
+            app:layout_constrainedHeight="true"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="@id/column_bad"
+            app:layout_constraintEnd_toStartOf="@id/column_good"
+            app:layout_constraintTop_toTopOf="@id/main_row"
+            app:layout_constraintBottom_toTopOf="@id/ignite_a_row" />
+
+	<TextView
+            android:id="@+id/ignite_a_voltage_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/LabelText"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            android:text="@string/ignite_a_voltage_label"
+            app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/main_row"
+            app:layout_constraintBottom_toTopOf="@id/ignite_a_row" />
+
+	<TextView
+            android:id="@+id/ignite_a_voltage_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            android:text=""
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/main_row"
+            app:layout_constraintBottom_toTopOf="@id/ignite_a_row"/>
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/ignite_a_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="ignite_a_redled,ignite_a_greenled,ignite_a_voltage_label,ignite_a_voltage_value"/>
+
+	<androidx.constraintlayout.widget.Group
+            android:id="@+id/ignite_b_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:constraint_referenced_ids="ignite_b_redled,ignite_b_greenled,ignite_b_voltage_label,ignite_b_voltage_value"/>
+
+	<ImageView
+            android:id="@+id/ignite_b_redled"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="centerInside"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:contentDescription="@string/ignite_b_voltage_label"
+            android:src="@drawable/grayled"
+            app:layout_constrainedHeight="true"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/column_bad"
+            app:layout_constraintTop_toTopOf="@id/ignite_a_row"
+            app:layout_constraintBottom_toTopOf="@id/ignite_b_row" />
+
+	<ImageView
+            android:id="@+id/ignite_b_greenled"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="centerInside"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:contentDescription="@string/ignite_b_voltage_label"
+            android:src="@drawable/grayled"
+            app:layout_constrainedHeight="true"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="@id/column_bad"
+            app:layout_constraintEnd_toStartOf="@id/column_good"
+            app:layout_constraintTop_toTopOf="@id/ignite_a_row"
+            app:layout_constraintBottom_toTopOf="@id/ignite_b_row" />
+
+	<TextView
+            android:id="@+id/ignite_b_voltage_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/LabelText"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            android:text="@string/ignite_b_voltage_label"
+            app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/ignite_a_row"
+            app:layout_constraintBottom_toTopOf="@id/ignite_b_row" />
+
+	<TextView
+            android:id="@+id/ignite_b_voltage_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            android:text=""
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/ignite_a_row"
+            app:layout_constraintBottom_toTopOf="@id/ignite_b_row"
+	    />
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/ignite_b_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="ignite_b_redled,ignite_b_greenled,ignite_b_voltage_label,ignite_b_voltage_value"/>
+
+	<androidx.constraintlayout.widget.Group
+            android:id="@+id/ignite_c_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:constraint_referenced_ids="ignite_c_redled,ignite_c_greenled,ignite_c_voltage_label,ignite_c_voltage_value"/>
+
+	<ImageView
+            android:id="@+id/ignite_c_redled"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="centerInside"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:contentDescription="@string/ignite_c_voltage_label"
+            android:src="@drawable/grayled"
+            app:layout_constrainedHeight="true"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/column_bad"
+            app:layout_constraintTop_toTopOf="@id/ignite_b_row"
+            app:layout_constraintBottom_toTopOf="@id/ignite_c_row" />
+
+	<ImageView
+            android:id="@+id/ignite_c_greenled"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="centerInside"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:contentDescription="@string/ignite_c_voltage_label"
+            android:src="@drawable/grayled" 
+            app:layout_constrainedHeight="true"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="@id/column_bad"
+            app:layout_constraintEnd_toStartOf="@id/column_good"
+            app:layout_constraintTop_toTopOf="@id/ignite_b_row"
+            app:layout_constraintBottom_toTopOf="@id/ignite_c_row" />
+
+	<TextView
+            android:id="@+id/ignite_c_voltage_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/LabelText"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            android:text="@string/ignite_c_voltage_label" 
+            app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/ignite_b_row"
+            app:layout_constraintBottom_toTopOf="@id/ignite_c_row" />
+
+	<TextView
+            android:id="@+id/ignite_c_voltage_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            android:text=""
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/ignite_b_row"
+            app:layout_constraintBottom_toTopOf="@id/ignite_c_row" />
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/ignite_c_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="ignite_c_redled,ignite_c_greenled,ignite_c_voltage_label,ignite_c_voltage_value"/>
+
+	<androidx.constraintlayout.widget.Group
+            android:id="@+id/ignite_d_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:constraint_referenced_ids="ignite_d_redled,ignite_d_greenled,ignite_d_voltage_label,ignite_d_voltage_value"/>
+
+	<ImageView
+            android:id="@+id/ignite_d_redled"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="centerInside"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:contentDescription="@string/ignite_d_voltage_label"
+            android:src="@drawable/grayled"
+            app:layout_constrainedHeight="true"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/column_bad"
+            app:layout_constraintTop_toTopOf="@id/ignite_c_row"
+            app:layout_constraintBottom_toTopOf="@id/ignite_d_row" />
+
+	<ImageView
+            android:id="@+id/ignite_d_greenled"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="centerInside"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:contentDescription="@string/ignite_d_voltage_label"
+            android:src="@drawable/grayled"
+            app:layout_constrainedHeight="true"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="@id/column_bad"
+            app:layout_constraintEnd_toStartOf="@id/column_good"
+            app:layout_constraintTop_toTopOf="@id/ignite_c_row"
+            app:layout_constraintBottom_toTopOf="@id/ignite_d_row" />
+
+	<TextView
+            android:id="@+id/ignite_d_voltage_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/LabelText"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            android:text="@string/ignite_d_voltage_label"
+            app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/ignite_c_row"
+            app:layout_constraintBottom_toTopOf="@id/ignite_d_row" />
+
+	<TextView
+            android:id="@+id/ignite_d_voltage_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            android:text=""
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/ignite_c_row"
+            app:layout_constraintBottom_toTopOf="@id/ignite_d_row"/>
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/ignite_d_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="ignite_d_redled,ignite_d_greenled,ignite_d_voltage_label,ignite_d_voltage_value"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
