@@ -10,8 +10,8 @@ android {
         applicationId "org.altusmetrum.AltosDroid"
         minSdk 26
         targetSdk 36
-        versionCode 39
-        versionName "1.9.22.2"
+        versionCode 40
+        versionName "1.9.22.3"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -33,7 +33,7 @@ ToDo list
 	Map Offline/Online (nope)
 	Load Maps (nope)
 
- * Don't need to make text size work -- android has it internally.
+ ✓ Don't need to make text size work -- android has it internally.
 
  ✓ Select Frequency. Add 'edit frequencies' menu item.
 
@@ -57,6 +57,6 @@ BUGS
 
  ✓ Rocket trackers in online mode end up duplicated
 
- * Need scroll view wrappers around three data views for giant font mode
+ ✓ Need scroll view wrappers around three data views for giant font mode
 
- * Make sure telemetry keeps working when the phone sleeps and on app switch
+ ✓ Make sure telemetry keeps working when the phone sleeps and on app switch
