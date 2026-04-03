@@ -33,19 +33,21 @@ ToDo list
 	Map Offline/Online (nope)
 	Load Maps (nope)
 
- * Make text size work
+ * Don't need to make text size work -- android has it internally.
 
  ✓ Select Frequency. Add 'edit frequencies' menu item.
 
- * Put Load Maps in top-level menu instead of setup
+ ✓ Put Load Maps in top-level menu instead of setup
 
- * Idle Mode
+ ✓ Idle Mode
 
 	Call Sign
-	Frequency (Make this a pop-down menu thingy)
+	Frequency
 	Monitor
 	Reboot
 	Fire Igniters
+
+ * Pop-down menu for frequency in idle mode.
 
 BUGS
 
