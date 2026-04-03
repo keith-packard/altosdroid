@@ -289,9 +289,9 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
     }
 
     private void set_here() {
-        if (here != null && mPadMarker != null) {
-            mPadMarker.setPosition(pad_position);
-            mPadMarker.setVisible(true);
+        if (here != null && mHereMarker != null) {
+            mHereMarker.setPosition(here);
+            mHereMarker.setVisible(true);
         }
     }
 

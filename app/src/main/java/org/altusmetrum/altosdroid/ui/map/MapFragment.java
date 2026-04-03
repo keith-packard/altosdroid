@@ -44,6 +44,7 @@ import java.util.Locale;
 public class MapFragment extends AltosFragment implements AltosDroidMapSourceListener, AltosLaunchSiteListener {
 
     private boolean mapLoaded;
+    private boolean launch_sites_set;
 
     private AltosLatLon my_position = null;
     private AltosLatLon target_position = null;
@@ -220,6 +221,10 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
             binding.mapBearing.setText(String.format(Locale.getDefault(), "%1.0f°", from_receiver.bearing));
             set_value(binding.mapDistance, AltosConvert.distance, 1, from_receiver.distance);
         }
+        if (launch_sites_set && mapInterface != null) {
+            mapInterface.set_launch_sites(sites);
+            launch_sites_set = false;
+        }
     }
 
     public void map_source_changed(int map_source) {
@@ -243,13 +248,11 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
         binding.mapView.setDisplayedChild(child);
         if (altos_droid != null)
             altos_droid.update_state(null);
-
     }
 
     public void notify_launch_sites(List<AltosLaunchSite> sites) {
         this.sites = sites;
-        if (mapInterface != null)
-            mapInterface.set_launch_sites(sites);
+        launch_sites_set = true;
     }
 
     @Override

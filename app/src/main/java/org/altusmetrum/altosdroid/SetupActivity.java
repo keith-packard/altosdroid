@@ -33,11 +33,6 @@ import org.altusmetrum.altoslib_14.*;
 public class SetupActivity extends AppCompatActivity {
 	private Spinner select_rate;
 	private Spinner set_units;
-	private Spinner font_size;
-	private Spinner map_type;
-	private Spinner map_source;
-	private Button manage_frequencies;
-	private Button preload_maps;
 	private Button done;
 
 	private boolean is_bound;
@@ -75,37 +70,8 @@ public class SetupActivity extends AppCompatActivity {
 		"2400",
 	};
 
-	static final String[] sizes = {
-		"Small",
-		"Medium",
-		"Large",
-		"Extra"
-	};
-
-	static final String[] map_types = {
-		"Hybrid",
-		"Satellite",
-		"Roadmap",
-		"Terrain"
-	};
-
-	static final int[] map_type_values = {
-		AltosMap.maptype_hybrid,
-		AltosMap.maptype_satellite,
-		AltosMap.maptype_roadmap,
-		AltosMap.maptype_terrain,
-	};
-
-	static final String[] map_sources = {
-		"Online",
-		"Offline"
-	};
-
 	private int	set_telemetry_rate;
-	private int	set_map_source;
-	private int	set_map_type;
 	private boolean	set_imperial_units;
-	private int	set_font_size;
 
 	private void done() {
 		int	changes = 0;
@@ -119,25 +85,15 @@ public class SetupActivity extends AppCompatActivity {
 			changes |= MainActivity.SETUP_UNITS;
 			AltosPreferences.set_imperial_units(set_imperial_units);
 		}
-		if (set_map_source != AltosDroidPreferences.map_source()) {
-			changes |= MainActivity.SETUP_MAP_SOURCE;
-			AltosDroidPreferences.set_map_source(set_map_source);
-		}
-		if (set_map_type != AltosPreferences.map_type()) {
-			changes |= MainActivity.SETUP_MAP_TYPE;
-			AltosPreferences.set_map_type(set_map_type);
-		}
-		if (set_font_size != AltosDroidPreferences.font_size()) {
-			changes |= MainActivity.SETUP_FONT_SIZE;
-			AltosDroidPreferences.set_font_size(set_font_size);
-		}
 		intent.putExtra(EXTRA_SETUP_CHANGES, changes);
 		setResult(Activity.RESULT_OK, intent);
 		finish();
 	}
 
 	private void add_strings(Spinner spinner, String[] strings, int def) {
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner);
+
+                adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
 
 		for (int i = 0; i < strings.length; i++)
 			adapter.add(strings[i]);
@@ -213,13 +169,8 @@ public class SetupActivity extends AppCompatActivity {
 		}
 	}
 
-	private void set_font_size(int pos) {
-		set_font_size = pos;
-	}
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-//		setTheme(AltosDroid.dialog_themes[AltosDroidPreferences.font_size()]);
 		super.onCreate(savedInstanceState);
 
 		AltosDebug.init(this);
@@ -227,6 +178,7 @@ public class SetupActivity extends AppCompatActivity {
 
 		// Initialise preferences
 		AltosDroidPreferences.init(this);
+
 
 		// Setup the window
 		setContentView(R.layout.setup);
@@ -247,16 +199,6 @@ public class SetupActivity extends AppCompatActivity {
 		set_units.setOnItemSelectedListener(new OnItemSelectedListener() {
 				public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
 					set_units(pos);
-				}
-				public void onNothingSelected(AdapterView<?> parent) {
-				}
-			});
-
-		font_size = (Spinner) findViewById(R.id.font_size);
-		add_strings(font_size, sizes, AltosDroidPreferences.font_size());
-		font_size.setOnItemSelectedListener(new OnItemSelectedListener() {
-				public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-					set_font_size(pos);
 				}
 				public void onNothingSelected(AdapterView<?> parent) {
 				}

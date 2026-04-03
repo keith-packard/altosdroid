@@ -229,7 +229,9 @@ public class PreloadMapActivity extends AppCompatActivity implements AltosLaunch
 
 	private void add_numbers(Spinner spinner, int min, int max, int def) {
 
-		ArrayAdapter<Integer> adapter = new ArrayAdapter<Integer>(this, android.R.layout.simple_spinner_item);
+		ArrayAdapter<Integer> adapter = new ArrayAdapter<Integer>(this, R.layout.spinner);
+
+                adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
 
 		int	spinner_def = 0;
 		int	pos = 0;
@@ -248,7 +250,9 @@ public class PreloadMapActivity extends AppCompatActivity implements AltosLaunch
 
 	private void add_distance(Spinner spinner, double[] distances_km, double def_km, double[] distances_mi, double def_mi) {
 
-		ArrayAdapter<Double> adapter = new ArrayAdapter<Double>(this, android.R.layout.simple_spinner_item);
+                ArrayAdapter<Double> adapter = new ArrayAdapter<Double>(this, R.layout.spinner);
+
+                adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
 
 		int	spinner_def = 0;
 		int	pos = 0;
@@ -357,9 +361,9 @@ public class PreloadMapActivity extends AppCompatActivity implements AltosLaunch
 		// one for newly discovered devices
 		known_sites_spinner = (Spinner) findViewById(R.id.preload_site_list);
 
-		known_sites_adapter = new ArrayAdapter<AltosLaunchSite>(this, android.R.layout.simple_spinner_item);
+		known_sites_adapter = new ArrayAdapter<AltosLaunchSite>(this, R.layout.spinner);
 
-		known_sites_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		known_sites_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
 
 		known_sites_spinner.setAdapter(known_sites_adapter);
 		known_sites_spinner.setOnItemSelectedListener(new SiteListListener());

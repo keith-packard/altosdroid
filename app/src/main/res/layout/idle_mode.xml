@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+ Copyright © 2016 Keith Packard <keithp@keithp.com>
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along
+ with this program; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
+
+-->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".25"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".5"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".75"/>
+
+	<TextView android:id="@+id/set_callsign_label"
+		  android:layout_width="0dp"
+		  android:layout_height="wrap_content"
+		  android:text="@string/set_callsign_label"
+            android:textAppearance="@style/LabelText"
+            android:padding="@dimen/menu_padding_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/set_callsign_row"/>
+
+	<EditText android:id="@+id/set_callsign"
+		  android:layout_width="0dp"
+		  android:layout_height="wrap_content"
+            android:autofillHints=""
+            android:hint="@string/set_callsign_label"
+            android:padding="@dimen/menu_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/set_callsign_row"/>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/set_callsign_row"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="set_callsign_label,set_callsign"/>
+
+    <TextView android:id="@+id/frequency_label"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/frequency"
+        android:textAppearance="@style/LabelText"
+        android:padding="@dimen/menu_padding_vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/center"
+        app:layout_constraintTop_toBottomOf="@id/set_callsign_row"
+        app:layout_constraintBottom_toTopOf="@id/frequency_row"/>
+
+    <TextView android:id="@+id/frequency"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/frequency"
+        android:padding="@dimen/menu_padding_vertical"
+        app:layout_constraintStart_toEndOf="@id/center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/set_callsign_row"
+        app:layout_constraintBottom_toBottomOf="@id/frequency_row"/>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/frequency_row"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="frequency_label,frequency"/>
+
+      <Button android:id="@+id/connect_idle"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:text="@string/connect_idle"
+          app:layout_constraintStart_toEndOf="@id/left"
+          app:layout_constraintEnd_toStartOf="@id/right"
+          app:layout_constraintTop_toBottomOf="@id/frequency_row"
+          app:layout_constraintBottom_toTopOf="@id/disconnect_idle"/>
+
+      <Button android:id="@+id/disconnect_idle"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:text="@string/disconnect_idle"
+          app:layout_constraintStart_toEndOf="@id/left"
+          app:layout_constraintEnd_toStartOf="@id/right"
+          app:layout_constraintTop_toBottomOf="@id/connect_idle"
+          app:layout_constraintBottom_toTopOf="@id/reboot_idle"/>
+
+      <Button android:id="@+id/reboot_idle"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:text="@string/reboot_idle"
+          app:layout_constraintStart_toEndOf="@id/left"
+          app:layout_constraintEnd_toStartOf="@id/right"
+          app:layout_constraintTop_toBottomOf="@id/disconnect_idle"
+          app:layout_constraintBottom_toTopOf="@id/igniters_idle"/>
+
+      <Button android:id="@+id/igniters_idle"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:text="@string/igniters_idle"
+          app:layout_constraintStart_toEndOf="@id/left"
+          app:layout_constraintEnd_toStartOf="@id/right"
+          app:layout_constraintTop_toBottomOf="@id/reboot_idle"
+          app:layout_constraintBottom_toBottomOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

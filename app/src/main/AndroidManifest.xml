@@ -83,6 +83,16 @@
             android:theme="@style/Theme.App.Dialog"
             android:configChanges="orientation|keyboardHidden"/>
 
+        <activity android:name=".IdleModeActivity"
+            android:label="@string/idle_mode"
+            android:theme="@style/Theme.App.Dialog"
+            android:configChanges="orientation|keyboardHidden"/>
+
+        <activity android:name=".IgniterActivity"
+            android:label="@string/igniters"
+            android:theme="@style/Theme.App.Dialog"
+            android:configChanges="orientation|keyboardHidden"/>
+
         <service
             android:name=".TelemetryService"
             android:foregroundServiceType="connectedDevice" />

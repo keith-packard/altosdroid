@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <color name="age_ok">#33691E</color>
     <color name="age_warn">#FBC02D</color>
     <color name="age_error">#D32F2F</color>
@@ -13,10 +12,9 @@
     <color name="altus_purple_light">#b030ff</color>
     <color name="altus_purple_dark">#590090</color>
 
-    <color name="foreground">#000000</color>
+    <color name="foreground">#ffffff</color>
     <color name="variant">#808080</color>
     <color name="disabled">#808080</color>
-    <color name="disabledVariant">#c0c0c0</color>
-    <color name="background">#ffffff</color>
-
+    <color name="disabledVariant">#505050</color>
+    <color name="background">#000000</color>
 </resources>

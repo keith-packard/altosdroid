@@ -23,6 +23,9 @@
     <style name="ValueText" parent="LabelText">
         <item name="android:textStyle">bold</item>
     </style>
+    <style name="Widget.App.ActionBar.TextStyle" parent="Widget.AppCompat.ActionBar.TabText">
+        <item name="android:textSize">18sp</item>
+    </style>
     <style name="PosText" parent="ValueText">
     </style>
     <style name="ButtonText" parent="LabelText">

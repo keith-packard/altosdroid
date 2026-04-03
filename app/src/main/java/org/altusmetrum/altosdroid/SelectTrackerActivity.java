@@ -282,7 +282,7 @@ public class SelectTrackerActivity extends AppCompatActivity implements OnTouchL
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_OUTSIDE:
-                v.setBackgroundColor(getColor(R.color.primary_background));
+                v.setBackgroundColor(getColor(R.color.background));
                 v.invalidate();
                 break;
             case MotionEvent.ACTION_DOWN:

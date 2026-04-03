@@ -438,14 +438,11 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
             return true;
         }
         if (itemId == R.id.idle_mode) {
-            /*
               serverIntent = new Intent(this, IdleModeActivity.class);
               serverIntent.putExtra(EXTRA_IDLE_MODE, idle_mode);
               serverIntent.putExtra(EXTRA_FREQUENCY, telem_frequency);
               startActivityForResult(serverIntent, REQUEST_IDLE_MODE);
-
-            */
-            return true;
+              return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -461,6 +458,17 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
                 connectDevice(name, address);
             }
             break;
+        case REQUEST_IDLE_MODE:
+            if (resultCode == Activity.RESULT_OK)
+                idle_mode(data);
+            break;
+        case REQUEST_IGNITERS:
+            break;
+        case REQUEST_SETUP:
+            if (resultCode == Activity.RESULT_OK)
+				note_setup_changes(data);
+            break;
+
         case REQUEST_SELECT_TRACKER:
             if (resultCode == Activity.RESULT_OK)
                 select_tracker(data);
@@ -472,6 +480,35 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 
         default:
             super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    private void note_setup_changes(Intent data) {
+        int changes = data.getIntExtra(SetupActivity.EXTRA_SETUP_CHANGES, 0);
+
+        AltosDebug.debug("note_setup_changes changes %d\n", changes);
+
+        if ((changes & SETUP_BAUD) != 0) {
+            try {
+                mService.send(Message.obtain(null, TelemetryService.MSG_SETBAUD,
+                    AltosPreferences.telemetry_rate(1)));
+            } catch (RemoteException re) {
+            }
+        }
+        if ((changes & SETUP_UNITS) != 0) {
+            /* nothing to do here */
+        }
+        if ((changes & SETUP_MAP_SOURCE) != 0) {
+            /* nothing to do here */
+        }
+        if ((changes & SETUP_MAP_TYPE) != 0) {
+            /* nothing to do here */
+        }
+        set_switch_time();
+        if ((changes & SETUP_FONT_SIZE) != 0) {
+            AltosDebug.debug(" ==== Recreate to switch font sizes ==== ");
+            //finish();
+            //startActivity(getIntent());
         }
     }
 
@@ -671,9 +708,41 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         active_fragment.set_altos_droid(this);
         update_state(null);
     }
-    private void idle_mode(Intent data) {
 
+    private void idle_mode(Intent data) {
+        int type = data.getIntExtra(IdleModeActivity.EXTRA_IDLE_RESULT, -1);
+        Message msg;
+
+        AltosDebug.debug("intent idle_mode %d", type);
+        switch (type) {
+            case IdleModeActivity.IDLE_MODE_CONNECT:
+                msg = Message.obtain(null, TelemetryService.MSG_MONITOR_IDLE_START);
+                try {
+                    mService.send(msg);
+                } catch (RemoteException re) {
+                }
+                break;
+            case IdleModeActivity.IDLE_MODE_DISCONNECT:
+                msg = Message.obtain(null, TelemetryService.MSG_MONITOR_IDLE_STOP);
+                try {
+                    mService.send(msg);
+                } catch (RemoteException re) {
+                }
+                break;
+            case IdleModeActivity.IDLE_MODE_REBOOT:
+                msg = Message.obtain(null, TelemetryService.MSG_REBOOT);
+                try {
+                    mService.send(msg);
+                } catch (RemoteException re) {
+                }
+                break;
+            case IdleModeActivity.IDLE_MODE_IGNITERS:
+                Intent serverIntent = new Intent(this, IgniterActivity.class);
+                startActivityForResult(serverIntent, REQUEST_IGNITERS);
+                break;
+        }
     }
+
     boolean fail_shown;
 
     private void file_failed(File file) {
