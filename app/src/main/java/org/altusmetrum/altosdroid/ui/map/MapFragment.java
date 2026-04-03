@@ -86,24 +86,6 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
         return binding.getRoot();
     }
 
-    /*
-     * Kludge to make sure the map type menu entries are populated when the fragment
-     * is re-created.
-     */
-    @Override
-    public void onResume() {
-        super.onResume();
-        String[] map_types = getResources().getStringArray(R.array.map_types);
-        ArrayAdapter adapter = new ArrayAdapter(requireContext(), R.layout.map_type_menu, map_types);
-        binding.mapType.setAdapter(adapter);
-        int map_type = AltosPreferences.map_type();
-        for (int map_id = 0; map_id < altos_map_types.length; map_id++)
-            if (altos_map_types[map_id] == map_type) {
-                binding.mapType.setText(map_types[map_id], false);
-                break;
-            }
-    }
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -111,29 +93,27 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
         AltosDroidPreferences.register_map_source_listener(this);
 
         String[] map_types = getResources().getStringArray(R.array.map_types);
-        ArrayAdapter adapter = new ArrayAdapter(getContext(), R.layout.map_type_menu, map_types);
+
+        ArrayAdapter adapter = new ArrayAdapter(getContext(), R.layout.spinner, map_types);
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+
         binding.mapType.setAdapter(adapter);
 
         if (savedInstanceState == null) {
             int map_type = AltosPreferences.map_type();
             for (int map_id = 0; map_id < altos_map_types.length; map_id++)
                 if (altos_map_types[map_id] == map_type) {
-                    binding.mapType.setText(map_types[map_id], false);
+                    binding.mapType.setSelection(map_id);
                     break;
                 }
         }
 
-        binding.mapType.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    int map_type = AltosLib.MISSING;
+        binding.mapType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     if (position < altos_map_types.length)
                         AltosPreferences.set_map_type(altos_map_types[position]);
                 }
-            });
-        binding.mapSource.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    int source = isChecked ? AltosDroidPreferences.MAP_SOURCE_ONLINE : AltosDroidPreferences.MAP_SOURCE_OFFLINE;
-                    AltosDroidPreferences.set_map_source(source);
+                public void onNothingSelected(AdapterView<?> parent) {
                 }
             });
 

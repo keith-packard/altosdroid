@@ -113,8 +113,9 @@
         app:layout_constraintStart_toStartOf="@id/map_table_column_2"
         app:layout_constraintTop_toTopOf="@id/map_table_top_line" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+    <Spinner
+        android:id="@+id/map_type"
+	android:spinnerMode="dropdown"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -124,17 +125,7 @@
         app:layout_constraintBottom_toTopOf="@id/map_table_center_line"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/map_table_column_3"
-        app:layout_constraintTop_toTopOf="@id/map_table_top_line">
-
-        <AutoCompleteTextView
-            android:id="@+id/mapType"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="none"
-            android:text="@string/map_type"
-            style="@style/Widget.App.AutoCompleteTextView"
-            tools:ignore="LabelFor" />
-    </com.google.android.material.textfield.TextInputLayout>
+        app:layout_constraintTop_toTopOf="@id/map_table_top_line"/>
 
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/map_table_center_line"

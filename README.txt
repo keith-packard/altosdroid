@@ -55,4 +55,6 @@ BUGS
 
  ✓ Select tracker should center map on new target
 
- * Rocket trackers in online mode end up duplicated
+ ✓ Rocket trackers in online mode end up duplicated
+
+ * Need scroll view wrappers around three data views for giant font mode
