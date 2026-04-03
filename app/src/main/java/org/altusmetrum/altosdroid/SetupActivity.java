@@ -20,6 +20,8 @@ package org.altusmetrum.altosdroid;
 
 import android.app.Activity;
 import android.content.*;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.*;
 import android.view.*;
 import android.view.View.*;
@@ -31,199 +33,215 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.altusmetrum.altoslib_14.*;
 
 public class SetupActivity extends AppCompatActivity {
-	private Spinner select_rate;
-	private Spinner set_units;
-	private Button done;
+    private Spinner select_rate;
+    private Spinner set_units;
+    private Button done;
 
-	private boolean is_bound;
-	private Messenger service = null;
+    private boolean is_bound;
+    private Messenger service = null;
+    private String versionName;
+    private int version;
 
-	public final static String EXTRA_SETUP_CHANGES = "setup_changes";
+    public final static String EXTRA_SETUP_CHANGES = "setup_changes";
 
-	private ServiceConnection connection = new ServiceConnection() {
-		public void onServiceConnected(ComponentName className, IBinder binder) {
-			service = new Messenger(binder);
-		}
 
-		public void onServiceDisconnected(ComponentName className) {
-			// This is called when the connection with the service has been unexpectedly disconnected - process crashed.
-			service = null;
-		}
+    private ServiceConnection connection = new ServiceConnection() {
+            public void onServiceConnected(ComponentName className, IBinder binder) {
+                service = new Messenger(binder);
+            }
+
+            public void onServiceDisconnected(ComponentName className) {
+                // This is called when the connection with the service has been unexpectedly disconnected - process crashed.
+                service = null;
+            }
 	};
 
-	void doBindService() {
-		bindService(new Intent(this, TelemetryService.class), connection, Context.BIND_AUTO_CREATE);
-		is_bound = true;
-	}
+    void doBindService() {
+        bindService(new Intent(this, TelemetryService.class), connection, Context.BIND_AUTO_CREATE);
+        is_bound = true;
+    }
 
-	void doUnbindService() {
-		if (is_bound) {
-			// If we have received the service, and hence registered with it, then now is the time to unregister.
-			unbindService(connection);
-			is_bound = false;
-		}
-	}
+    void doUnbindService() {
+        if (is_bound) {
+            // If we have received the service, and hence registered with it, then now is the time to unregister.
+            unbindService(connection);
+            is_bound = false;
+        }
+    }
 
-	static final String[] rates = {
-		"38400",
-		"9600",
-		"2400",
-	};
+    static final String[] rates = {
+        "38400",
+        "9600",
+        "2400",
+    };
 
-	private int	set_telemetry_rate;
-	private boolean	set_imperial_units;
+    private int	set_telemetry_rate;
+    private boolean	set_imperial_units;
 
-	private void done() {
-		int	changes = 0;
-		Intent intent = new Intent();
+    private void done() {
+        int	changes = 0;
+        Intent intent = new Intent();
 
-		if (set_telemetry_rate != AltosPreferences.telemetry_rate(1)) {
-			changes |= MainActivity.SETUP_BAUD;
-			AltosPreferences.set_telemetry_rate(1, set_telemetry_rate);
-		}
-		if (set_imperial_units != AltosPreferences.imperial_units()) {
-			changes |= MainActivity.SETUP_UNITS;
-			AltosPreferences.set_imperial_units(set_imperial_units);
-		}
-		intent.putExtra(EXTRA_SETUP_CHANGES, changes);
-		setResult(Activity.RESULT_OK, intent);
-		finish();
-	}
+        if (set_telemetry_rate != AltosPreferences.telemetry_rate(1)) {
+            changes |= MainActivity.SETUP_BAUD;
+            AltosPreferences.set_telemetry_rate(1, set_telemetry_rate);
+        }
+        if (set_imperial_units != AltosPreferences.imperial_units()) {
+            changes |= MainActivity.SETUP_UNITS;
+            AltosPreferences.set_imperial_units(set_imperial_units);
+        }
+        intent.putExtra(EXTRA_SETUP_CHANGES, changes);
+        setResult(Activity.RESULT_OK, intent);
+        finish();
+    }
 
-	private void add_strings(Spinner spinner, String[] strings, int def) {
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner);
+    private void add_strings(Spinner spinner, String[] strings, int def) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner);
 
-                adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
 
-		for (int i = 0; i < strings.length; i++)
-			adapter.add(strings[i]);
+        for (int i = 0; i < strings.length; i++)
+            adapter.add(strings[i]);
 
-		spinner.setAdapter(adapter);
-		if (def >= 0)
-			spinner.setSelection(def);
-	}
+        spinner.setAdapter(adapter);
+        if (def >= 0)
+            spinner.setSelection(def);
+    }
 
-	private int default_rate_pos() {
-		int	default_rate = AltosPreferences.telemetry_rate(1);
+    private int default_rate_pos() {
+        int	default_rate = AltosPreferences.telemetry_rate(1);
 
-		for (int pos = 0; pos < rates.length; pos++) {
-			if (string_to_rate(rates[pos]) == default_rate)
-				return pos;
-		}
-		return -1;
-	}
+        for (int pos = 0; pos < rates.length; pos++) {
+            if (string_to_rate(rates[pos]) == default_rate)
+                return pos;
+        }
+        return -1;
+    }
 
-	private void setBaud(int baud) {
-		set_telemetry_rate = baud;
-	}
+    private void setBaud(int baud) {
+        set_telemetry_rate = baud;
+    }
 
-	private int string_to_rate(String baud) {
-		int	rate = AltosLib.ao_telemetry_rate_38400;
-		try {
-			int	value = Integer.parseInt(baud);
-			switch (value) {
-			case 2400:
-				rate = AltosLib.ao_telemetry_rate_2400;
-				break;
-			case 9600:
-				rate = AltosLib.ao_telemetry_rate_9600;
-				break;
-			case 38400:
-				rate = AltosLib.ao_telemetry_rate_38400;
-				break;
-			}
-		} catch (NumberFormatException e) {
-		}
-		return rate;
-	}
+    private int string_to_rate(String baud) {
+        int	rate = AltosLib.ao_telemetry_rate_38400;
+        try {
+            int	value = Integer.parseInt(baud);
+            switch (value) {
+            case 2400:
+                rate = AltosLib.ao_telemetry_rate_2400;
+                break;
+            case 9600:
+                rate = AltosLib.ao_telemetry_rate_9600;
+                break;
+            case 38400:
+                rate = AltosLib.ao_telemetry_rate_38400;
+                break;
+            }
+        } catch (NumberFormatException e) {
+        }
+        return rate;
+    }
 
-	private void setBaud(String baud) {
-		setBaud(string_to_rate(baud));
-	}
+    private void setBaud(String baud) {
+        setBaud(string_to_rate(baud));
+    }
 
-	private void select_rate(int pos) {
-		setBaud(rates[pos]);
-	}
+    private void select_rate(int pos) {
+        setBaud(rates[pos]);
+    }
 
-	static final String[] units = {
-		"Metric",
-		"Imperial"
-	};
+    static final String[] units = {
+        "Metric",
+        "Imperial"
+    };
 
-	private int default_units_pos() {
-		boolean	imperial = AltosPreferences.imperial_units();
+    private int default_units_pos() {
+        boolean	imperial = AltosPreferences.imperial_units();
 
-		if (imperial)
-			return 1;
-		return 0;
-	}
+        if (imperial)
+            return 1;
+        return 0;
+    }
 
-	private void set_units(int pos) {
-		switch (pos) {
-		default:
-			set_imperial_units = false;
-			break;
-		case 1:
-			set_imperial_units = true;
-			break;
-		}
-	}
+    private void set_units(int pos) {
+        switch (pos) {
+        default:
+            set_imperial_units = false;
+            break;
+        case 1:
+            set_imperial_units = true;
+            break;
+        }
+    }
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		AltosDebug.init(this);
-		AltosDebug.debug("+++ ON CREATE +++");
+        AltosDebug.init(this);
+        AltosDebug.debug("+++ ON CREATE +++");
 
-		// Initialise preferences
-		AltosDroidPreferences.init(this);
+        // Initialise preferences
+        AltosDroidPreferences.init(this);
 
+        // Setup the window
+        setContentView(R.layout.setup);
 
-		// Setup the window
-		setContentView(R.layout.setup);
+        select_rate = (Spinner) findViewById(R.id.select_rate);
+        add_strings(select_rate, rates, default_rate_pos());
+        select_rate.setOnItemSelectedListener(new OnItemSelectedListener() {
+                public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                    AltosDebug.debug("rate selected pos %d id %d", pos, id);
+                    select_rate(pos);
+                }
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
 
-		select_rate = (Spinner) findViewById(R.id.select_rate);
-		add_strings(select_rate, rates, default_rate_pos());
-		select_rate.setOnItemSelectedListener(new OnItemSelectedListener() {
-				public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-					AltosDebug.debug("rate selected pos %d id %d", pos, id);
-					select_rate(pos);
-				}
-				public void onNothingSelected(AdapterView<?> parent) {
-				}
-			});
+        set_units = (Spinner) findViewById(R.id.set_units);
+        add_strings(set_units, units, default_units_pos());
+        set_units.setOnItemSelectedListener(new OnItemSelectedListener() {
+                public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                    set_units(pos);
+                }
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
 
-		set_units = (Spinner) findViewById(R.id.set_units);
-		add_strings(set_units, units, default_units_pos());
-		set_units.setOnItemSelectedListener(new OnItemSelectedListener() {
-				public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-					set_units(pos);
-				}
-				public void onNothingSelected(AdapterView<?> parent) {
-				}
-			});
+        done = (Button) findViewById(R.id.done);
+        done.setOnClickListener(new OnClickListener() {
+                public void onClick(View v) {
+                    done();
+                }
+            });
 
-		done = (Button) findViewById(R.id.done);
-		done.setOnClickListener(new OnClickListener() {
-				public void onClick(View v) {
-					done();
-				}
-			});
+        String version_name;
+        int version_code;
+        try {
+            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            version_name = pInfo.versionName;
+            version_code = pInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            version_name = "«unknown»";
+            version_code = 0;
+        }
 
-		// Set result for when the user backs out
-		setResult(Activity.RESULT_CANCELED);
-	}
+        TextView version = (TextView) findViewById(R.id.version);
+        version.setText(String.format("Version %s (%d)", version_name, version_code));
 
-	@Override
-	protected void onStart() {
-		super.onStart();
-		doBindService();
-	}
+        // Set result for when the user backs out
+        setResult(Activity.RESULT_CANCELED);
+    }
 
-	@Override
-	protected void onStop() {
-		super.onStop();
-		doUnbindService();
-	}
+    @Override
+    protected void onStart() {
+        super.onStart();
+        doBindService();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        doUnbindService();
+    }
 }
