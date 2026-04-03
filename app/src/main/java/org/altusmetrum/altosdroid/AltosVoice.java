@@ -199,16 +199,31 @@ public class AltosVoice {
 		if (last_flight_tell == TELL_FLIGHT_NONE || last_flight_tell == TELL_FLIGHT_STATE || last_flight_tell == TELL_FLIGHT_TRACK) {
 			last_flight_tell = TELL_FLIGHT_SPEED;
 
+            String value = null;
 			if (state.state() <= AltosLib.ao_flight_coast) {
 				speed = state.speed();
 			} else {
-				speed = state.gps_speed();
+                if (state.state() < AltosLib.ao_flight_invalid) {
+                    speed = state.gps_ascent_rate();
+                } else {
+                    speed = state.gps_speed();
+                    if (speed != AltosLib.MISSING)
+                        value = "speed";
+                }
 				if (speed == AltosLib.MISSING)
 					speed = state.speed();
 			}
 
 			if (speed != AltosLib.MISSING) {
-				speak("speed: %s.", AltosConvert.speed.say_units(speed));
+                if (value == null) {
+                    if (speed >= 0)
+                        value = "ascending at";
+                    else {
+                        value = "descending at";
+                        speed = -speed;
+                    }
+                }
+                speak("%s %s.", value, AltosConvert.speed.say_units(speed));
 				return true;
 			}
 		}
@@ -218,7 +233,7 @@ public class AltosVoice {
 			height = state.height();
 
 			if (height != AltosLib.MISSING) {
-				speak("height: %s.", AltosConvert.height.say_units(height));
+				speak("height %s.", AltosConvert.height.say_units(height));
 				return true;
 			}
 		}
