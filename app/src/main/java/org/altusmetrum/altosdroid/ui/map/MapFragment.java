@@ -117,6 +117,13 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
                 }
             });
 
+        binding.mapSource.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    int source = isChecked ? AltosDroidPreferences.MAP_SOURCE_ONLINE : AltosDroidPreferences.MAP_SOURCE_OFFLINE;
+                    AltosDroidPreferences.set_map_source(source);
+                }
+            });
+
         map_source_changed(AltosDroidPreferences.map_source());
     }
 
