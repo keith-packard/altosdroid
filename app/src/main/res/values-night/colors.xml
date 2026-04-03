@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="age_ok">#33691E</color>
+    <color name="age_ok">#5c9244</color>
     <color name="age_warn">#FBC02D</color>
     <color name="age_error">#D32F2F</color>
 
