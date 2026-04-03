@@ -35,6 +35,7 @@ import androidx.annotation.NonNull;
 import org.altusmetrum.altosdroid.ui.map.MapFragment;
 import org.altusmetrum.altoslib_14.AltosImage;
 import org.altusmetrum.altoslib_14.AltosLatLon;
+import org.altusmetrum.altoslib_14.AltosLaunchSite;
 import org.altusmetrum.altoslib_14.AltosMap;
 import org.altusmetrum.altoslib_14.AltosMapCache;
 import org.altusmetrum.altoslib_14.AltosMapInterface;
@@ -53,6 +54,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 class RocketOffline implements Comparable {
@@ -121,9 +123,11 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
     Paint paint;
     AltosMarker pad_marker;
     AltosMarker here_marker;
+    AltosMarker launch_site_marker;
     Line line = new Line();
     int stroke_width = 20;
     HashMap<Integer, RocketOffline> rockets = new HashMap<>();
+    List<AltosLaunchSite> launch_sites;
     private MainActivity altos_droid;
     class MapTile extends AltosMapTile {
 
@@ -293,6 +297,17 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
             draw_marker(here, here_marker);
     }
 
+    private void draw_launch_sites() {
+        if (launch_sites != null) {
+            for (AltosLaunchSite site : launch_sites) {
+                AltosLatLon lat_lon = new AltosLatLon(site.latitude, site.longitude);
+                AltosPointInt pt = new AltosPointInt(map.transform.screen(lat_lon));
+                launch_site_marker.draw(canvas, (float) pt.x, (float) pt.y);
+                MainActivity.draw_text(context, canvas, site.name, (float) pt.x, (float) pt.y, R.dimen.map_text_missing_size, Paint.Align.LEFT);
+            }
+        }
+    }
+
     @Override
     protected void onDraw(@NonNull Canvas view_canvas) {
         super.onDraw(view_canvas);
@@ -309,6 +324,7 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
         map.paint();
         float y = getResources().getDimension(R.dimen.map_text_size);
         MainActivity.draw_text(context, canvas, String.format("%d", map.get_zoom()), width() - y / 10, y, Paint.Align.RIGHT);
+        draw_launch_sites();
         draw_positions();
         canvas = null;
     }
@@ -476,6 +492,11 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
     public void position_permission() {
     }
 
+    public void set_launch_sites(List<AltosLaunchSite> sites) {
+        launch_sites = sites;
+        repaint();
+    }
+
     public void destroy() {
     }
 
@@ -493,6 +514,8 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
         pad_marker = new PadMarker(context);
 
         here_marker = new HereMarker(context);
+
+        launch_site_marker = new LaunchSiteMarker(context);
 
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setStrokeWidth(stroke_width);

@@ -7,4 +7,5 @@
     <dimen name="map_text_size">10pt</dimen>
     <dimen name="map_text_missing_size">5pt</dimen>
     <dimen name="map_marker_size">40pt</dimen>
+    <dimen name="map_site_size">10pt</dimen>
 </resources>

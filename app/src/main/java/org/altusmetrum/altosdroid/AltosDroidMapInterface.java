@@ -18,6 +18,9 @@
 package org.altusmetrum.altosdroid;
 
 import org.altusmetrum.altoslib_14.AltosLatLon;
+import org.altusmetrum.altoslib_14.AltosLaunchSite;
+
+import java.util.List;
 
 public interface AltosDroidMapInterface {
     void set_altos_droid(MainActivity altos_droid);
@@ -27,5 +30,6 @@ public interface AltosDroidMapInterface {
     void set_here_position(double lat, double lon);
     void set_there_position(double lat, double lon);
     void position_permission();
+    void set_launch_sites(List<AltosLaunchSite> sites);
     void destroy();
 }

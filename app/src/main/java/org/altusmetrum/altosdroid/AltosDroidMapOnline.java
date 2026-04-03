@@ -36,6 +36,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.altusmetrum.altosdroid.ui.map.MapFragment;
 import org.altusmetrum.altoslib_14.AltosLatLon;
+import org.altusmetrum.altoslib_14.AltosLaunchSite;
 import org.altusmetrum.altoslib_14.AltosLib;
 import org.altusmetrum.altoslib_14.AltosMap;
 import org.altusmetrum.altoslib_14.AltosMapTypeListener;
@@ -45,6 +46,7 @@ import org.altusmetrum.altoslib_14.AltosState;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 class RocketOnline implements Comparable {
     Marker marker;
@@ -54,7 +56,7 @@ class RocketOnline implements Comparable {
 
     void set_position(AltosLatLon position, long last_packet, boolean is_target) {
         marker.setPosition(new LatLng(position.lat, position.lon));
-        marker.setZIndex(is_target ? 2 : 1);
+        marker.setZIndex(is_target ? 3 : 2);
         this.last_packet = last_packet;
     }
 
@@ -74,7 +76,7 @@ class RocketOnline implements Comparable {
         return 0;
     }
 
-    RocketOnline(Context context, int serial, GoogleMap map, double lat, double lon, long last_packet, int marker_size) {
+    RocketOnline(Context context, int serial, GoogleMap map, double lat, double lon, long last_packet) {
         this.serial = serial;
         AltosMarker marker = new RocketMarker(context, serial);
         this.width = marker.width;
@@ -83,7 +85,7 @@ class RocketOnline implements Comparable {
                 .icon(BitmapDescriptorFactory.fromBitmap(marker.bitmap))
                 .position(new LatLng(lat, lon))
                 .anchor(marker.off_x, marker.off_y)
-                .zIndex(1)
+                .zIndex(2)
                 .visible(true));
         this.last_packet = last_packet;
     }
@@ -100,6 +102,7 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
     private Marker mPadMarker;
     private Marker mHereMarker;
     private Polyline mPolyline;
+    private List<AltosLaunchSite> launch_sites;
 
     public void map_type_changed(int map_type) {
         if (mMap != null) {
@@ -143,6 +146,7 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
                     new MarkerOptions().icon(BitmapDescriptorFactory.fromBitmap(pad_marker.bitmap))
                             .position(new LatLng(0,0))
                             .anchor(pad_marker.off_x, pad_marker.off_y)
+                            .zIndex(1)
                             .visible(false)
             );
 
@@ -155,6 +159,7 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
                     new MarkerOptions().icon(BitmapDescriptorFactory.fromBitmap(here_marker.bitmap))
                             .position(new LatLng(0, 0))
                             .anchor(here_marker.off_x, here_marker.off_y)
+                            .zIndex(1)
                             .visible(false)
             );
 
@@ -173,6 +178,7 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
             set_pad();
             set_here();
             set_polyline();
+            set_launch_sites();
 
             AltosDroidMapOnline.this.map_type_changed(AltosPreferences.map_type());
             map_fragment.check_permission();
@@ -248,8 +254,7 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
                 rocket = new RocketOnline(altos_droid,
                         serial,
                         mMap, state.gps.lat, state.gps.lon,
-                        state.received_time,
-                        MapFragment.marker_size);
+                        state.received_time);
                 rockets.put(serial, rocket);
             }
         }
@@ -297,6 +302,20 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
         }
     }
 
+    private void set_launch_sites() {
+        if (launch_sites != null && mMap != null) {
+            for (AltosLaunchSite site : launch_sites) {
+                AltosMarker launch_site_marker = new LaunchSiteMarker(context, site.name);
+                Marker marker = mMap.addMarker(
+                    new MarkerOptions().icon(BitmapDescriptorFactory.fromBitmap(launch_site_marker.bitmap))
+                        .position(new LatLng(site.latitude, site.longitude))
+                        .anchor(launch_site_marker.off_x, launch_site_marker.off_y)
+                        .zIndex(0)
+                        .visible(true));
+            }
+        }
+    }
+
     public void set_pad_position(double lat, double lon) {
         pad_position = new LatLng(lat, lon);
         set_pad();
@@ -311,6 +330,13 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
     public void set_there_position(double lat, double lon) {
         there = new LatLng(lat, lon);
         set_polyline();
+    }
+
+    public void set_launch_sites(List<AltosLaunchSite> sites) {
+        if (launch_sites == null) {
+            launch_sites = sites;
+            set_launch_sites();
+        }
     }
 
     public void position_permission() {

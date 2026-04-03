@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.hardware.usb.UsbDevice;
 import android.location.Location;
@@ -1138,6 +1139,15 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
     }
     public static void draw_text(Context context, Canvas canvas, String text, float x, float y, Paint.Align align) {
         draw_text(context, canvas, text, x, y, R.dimen.map_text_size, align);
+    }
+
+    public static void measure_text(Context context, String text, int size_id, Rect bounds) {
+        float size = context.getResources().getDimension(size_id);
+        Paint paint = new Paint();
+        paint.setTextSize(size);
+        paint.setAntiAlias(true);
+        paint.setTypeface(Typeface.DEFAULT_BOLD);
+        paint.getTextBounds(text, 0, text.length(), bounds);
     }
 
 }

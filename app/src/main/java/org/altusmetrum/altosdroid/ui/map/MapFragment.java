@@ -28,16 +28,20 @@ import org.altusmetrum.altoslib_14.AltosCalData;
 import org.altusmetrum.altoslib_14.AltosConvert;
 import org.altusmetrum.altoslib_14.AltosGreatCircle;
 import org.altusmetrum.altoslib_14.AltosLatLon;
+import org.altusmetrum.altoslib_14.AltosLaunchSite;
+import org.altusmetrum.altoslib_14.AltosLaunchSiteListener;
+import org.altusmetrum.altoslib_14.AltosLaunchSites;
 import org.altusmetrum.altoslib_14.AltosLib;
 import org.altusmetrum.altoslib_14.AltosMap;
 import org.altusmetrum.altoslib_14.AltosPreferences;
 import org.altusmetrum.altoslib_14.AltosState;
 
+import java.util.List;
 import java.util.Locale;
 
 
 
-public class MapFragment extends AltosFragment implements AltosDroidMapSourceListener {
+public class MapFragment extends AltosFragment implements AltosDroidMapSourceListener, AltosLaunchSiteListener {
 
     private boolean mapLoaded;
 
@@ -47,6 +51,8 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
     private FragmentMapBinding binding;
 
     private AltosDroidMapInterface mapInterface;
+    public AltosLaunchSites launchSites;
+    List<AltosLaunchSite> sites;
 
     public void check_permission() {
         if (altos_droid == null)
@@ -65,17 +71,6 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
         }
     }
 
-    static int get_marker_size() {
-        Paint paint = new Paint();
-        paint.setTextSize(40);
-        Rect bounds = new Rect();
-        String sampleString = "999999";
-        paint.getTextBounds(sampleString, 0, sampleString.length(), bounds);
-        return (bounds.right - bounds.left) * 11 / 10;
-    }
-
-    public static int marker_size = get_marker_size();
-
     static int[] altos_map_types = { AltosMap.maptype_roadmap, AltosMap.maptype_satellite, AltosMap.maptype_hybrid, AltosMap.maptype_terrain};
 
     @Nullable
@@ -83,6 +78,9 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentMapBinding.inflate(inflater, container, false);
+        if (launchSites == null)
+            launchSites = new AltosLaunchSites(this);
+
         return binding.getRoot();
     }
 
@@ -240,9 +238,18 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
         }
         binding.mapSource.setChecked(map_source == AltosDroidPreferences.MAP_SOURCE_ONLINE);
         mapInterface.set_altos_droid(altos_droid);
+        if (sites != null)
+            mapInterface.set_launch_sites(sites);
         binding.mapView.setDisplayedChild(child);
         if (altos_droid != null)
             altos_droid.update_state(null);
+
+    }
+
+    public void notify_launch_sites(List<AltosLaunchSite> sites) {
+        this.sites = sites;
+        if (mapInterface != null)
+            mapInterface.set_launch_sites(sites);
     }
 
     @Override
