@@ -172,6 +172,10 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
                             .color(Color.BLUE)
                             .visible(false)
             );
+
+            for (RocketOnline rocket : sorted_rockets())
+                rocket.remove();
+
             if (center != null)
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center,14));
 
@@ -351,6 +355,18 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
 
     public void destroy() {
         AltosPreferences.unregister_map_type_listener(this);
+
+        if (mPadMarker != null)
+            mPadMarker.remove();
+
+        if (mHereMarker != null)
+            mHereMarker.remove();
+
+        if (mPolyline != null)
+            mPolyline.remove();
+
+        for (RocketOnline rocket : sorted_rockets())
+            rocket.remove();
     }
 
     public AltosDroidMapOnline(MapFragment map_fragment, Context context) {
