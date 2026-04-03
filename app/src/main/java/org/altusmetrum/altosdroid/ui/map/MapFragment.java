@@ -52,6 +52,7 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
     private FragmentMapBinding binding;
 
     private AltosDroidMapInterface mapInterface;
+    private AltosDroidMapOnline mapOnline;
     public AltosLaunchSites launchSites;
     List<AltosLaunchSite> sites;
 
@@ -234,7 +235,9 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
         mapAccuracy = -1;
         int child = 0;
         if (AltosDroidPreferences.map_source() == AltosDroidPreferences.MAP_SOURCE_ONLINE) {
-            mapInterface = new AltosDroidMapOnline(this, getContext());
+            if (mapOnline == null)
+                mapOnline = new AltosDroidMapOnline(this, getContext());
+            mapInterface = mapOnline;
             child = 0;
         } else {
             mapInterface = binding.mapOffline;
