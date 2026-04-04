@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -13,11 +14,13 @@
         android:animateFirstView="false"
         android:inAnimation="@android:anim/slide_in_left"
         android:outAnimation="@android:anim/slide_out_right"
+        app:layout_constrainedWidth="true"
         app:layout_constrainedHeight="true"
-        app:layout_constraintBottom_toTopOf="@id/map_table_top_line"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/map_table"
+        >
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/map_online"
@@ -33,179 +36,192 @@
 
     </ViewSwitcher>
 
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/map_table_top_line"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="@id/map_view"/>
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/map_table_column_1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="end"
-        app:constraint_referenced_ids="map_distance,map_bearing"/>
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/map_table_column_2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="end"
-        app:constraint_referenced_ids="map_target,map_receiver"/>
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/map_table_column_3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="end"
-        app:constraint_referenced_ids="map_target_position,map_receiver_position"/>
-
-    <TextView
-        android:id="@+id/map_distance"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:gravity="center_vertical"
-        android:text="@string/map_distance"
-        android:layout_marginTop="@dimen/menu_padding_vertical"
-        android:layout_marginBottom="@dimen/menu_padding_vertical"
-        android:paddingStart="@dimen/table_padding_start"
-        android:paddingEnd="0dp"
-        app:layout_constrainedHeight="true"
-        app:layout_constrainedWidth="false"
-        app:layout_constraintBottom_toTopOf="@id/map_table_center_line"
-        app:layout_constraintEnd_toStartOf="@id/map_table_column_1"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/map_table_top_line" />
-
-    <ImageView
-        android:id="@+id/map_target"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:contentDescription="@string/map_target"
-        android:src="@drawable/flight_orange"
-        android:layout_marginTop="@dimen/menu_padding_vertical"
-        android:layout_marginBottom="@dimen/menu_padding_vertical"
-        app:layout_constrainedHeight="true"
-        app:layout_constrainedWidth="false"
-        app:layout_constraintBottom_toTopOf="@id/map_table_center_line"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toStartOf="@id/map_table_column_2"
-        app:layout_constraintStart_toStartOf="@id/map_table_column_1"
-        app:layout_constraintTop_toTopOf="@id/map_table_top_line" />
-
-    <TextView
-        android:id="@+id/map_target_position"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="end|center_vertical"
-        android:text="@string/map_target_position"
-        android:textAppearance="@style/PosText"
-        android:paddingStart="0dp"
-        android:paddingEnd="@dimen/table_padding_start"
-        android:layout_marginTop="@dimen/menu_padding_vertical"
-        android:layout_marginBottom="@dimen/menu_padding_vertical"
-        app:layout_constrainedHeight="false"
-        app:layout_constraintBottom_toTopOf="@id/map_table_center_line"
-        app:layout_constraintEnd_toStartOf="@id/map_table_column_3"
-        app:layout_constraintHorizontal_bias="1"
-        app:layout_constraintStart_toStartOf="@id/map_table_column_2"
-        app:layout_constraintTop_toTopOf="@id/map_table_top_line" />
-
-    <Spinner
-        android:id="@+id/map_type"
-	android:spinnerMode="dropdown"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_marginTop="@dimen/menu_padding_vertical"
-        android:layout_marginBottom="@dimen/menu_padding_vertical"
-        app:layout_constrainedHeight="false"
-        app:layout_constraintBottom_toTopOf="@id/map_table_center_line"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/map_table_column_3"
-        app:layout_constraintTop_toTopOf="@id/map_table_top_line"/>
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/map_table_center_line"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="top" />
-
-    <View
-        android:id="@+id/map_table_line"
+    <HorizontalScrollView
+        android:id="@+id/map_table"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="1dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/map_table_center_line" />
-
-    <TextView
-        android:id="@+id/map_bearing"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_gravity="start"
-        android:gravity="start|center_vertical"
-        android:text="@string/map_bearing"
-        android:paddingStart="@dimen/table_padding_start"
-        android:paddingEnd="0dp"
-        android:layout_marginTop="@dimen/menu_padding_vertical"
-        android:layout_marginBottom="@dimen/menu_padding_vertical"
-        app:layout_constrainedHeight="false"
-        app:layout_constrainedWidth="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/map_table_column_1"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/map_table_line" />
-
-    <ImageView
-        android:id="@+id/map_receiver"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:contentDescription="@string/map_receiver"
-        android:src="@drawable/alien"
-        android:layout_marginTop="@dimen/menu_padding_vertical"
-        android:layout_marginBottom="@dimen/menu_padding_vertical"
-        app:layout_constrainedHeight="true"
-        app:layout_constrainedWidth="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintEnd_toStartOf="@id/map_table_column_2"
-        app:layout_constraintStart_toStartOf="@id/map_table_column_1"
-        app:layout_constraintTop_toBottomOf="@id/map_table_line" />
-
-    <TextView
-        android:id="@+id/map_receiver_position"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="end|center_vertical"
-        android:paddingEnd="@dimen/table_padding_start"
-        android:text="@string/map_receiver_position"
-        android:textAppearance="@style/PosText"
-        android:layout_marginTop="@dimen/menu_padding_vertical"
-        android:layout_marginBottom="@dimen/menu_padding_vertical"
+        app:layout_constrainedWidth="true"
         app:layout_constrainedHeight="false"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/map_table_column_3"
-        app:layout_constraintHorizontal_bias="1"
-        app:layout_constraintStart_toStartOf="@id/map_table_column_2"
-        app:layout_constraintTop_toBottomOf="@id/map_table_line" />
-
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/map_source"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/map_online"
-        android:layout_marginTop="@dimen/menu_padding_vertical"
-        android:layout_marginBottom="@dimen/menu_padding_vertical"
-        app:layout_constrainedHeight="false"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/map_table_column_3"
-        app:layout_constraintTop_toBottomOf="@id/map_table_line" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/map_table_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/map_table_column_1"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:barrierDirection="end"
+                app:constraint_referenced_ids="map_distance,map_bearing"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/map_table_column_2"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:barrierDirection="end"
+                app:constraint_referenced_ids="map_target,map_receiver"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/map_table_column_3"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:barrierDirection="start"
+                app:constraint_referenced_ids="map_type,map_source"/>
+
+            <TextView
+                android:id="@+id/map_distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:text="@string/map_distance"
+                android:layout_marginTop="@dimen/menu_padding_vertical"
+                android:layout_marginBottom="@dimen/menu_padding_vertical"
+                android:paddingStart="@dimen/table_padding_start"
+                android:paddingEnd="0dp"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constrainedHeight="false"
+                app:layout_constrainedWidth="false"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/map_table_column_1"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/map_table_center_line"/>
+
+            <ImageView
+                android:id="@+id/map_target"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:contentDescription="@string/map_target"
+                android:src="@drawable/flight_orange"
+                android:layout_marginTop="@dimen/menu_padding_vertical"
+                android:layout_marginBottom="@dimen/menu_padding_vertical"
+                app:layout_constrainedHeight="true"
+                app:layout_constrainedWidth="false"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toStartOf="@id/map_table_column_1"
+                app:layout_constraintEnd_toStartOf="@id/map_table_column_2"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/map_table_center_line"/>
+
+            <TextView
+                android:id="@+id/map_target_position"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/map_target_position"
+                android:textAppearance="@style/PosText"
+                android:paddingStart="0dp"
+                android:paddingEnd="@dimen/table_padding_start"
+                android:layout_marginTop="@dimen/menu_padding_vertical"
+                android:layout_marginBottom="@dimen/menu_padding_vertical"
+                app:layout_constraintHorizontal_bias="1"
+                app:layout_constrainedHeight="false"
+                app:layout_constrainedWidth="false"
+                app:layout_constraintStart_toStartOf="@id/map_table_column_2"
+                app:layout_constraintEnd_toStartOf="@id/map_table_column_3"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/map_table_center_line"/>
+
+            <Spinner
+                android:id="@+id/map_type"
+	        android:spinnerMode="dropdown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/menu_padding_vertical"
+                android:layout_marginBottom="@dimen/menu_padding_vertical"
+                app:layout_constrainedHeight="false"
+                app:layout_constrainedWidth="false"
+                app:layout_constraintStart_toStartOf="@id/map_table_column_3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/map_table_center_line"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/map_table_center_line"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="top" />
+
+            <View
+                android:id="@+id/map_table_line"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="1dp"
+                android:background="?android:attr/listDivider"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/map_table_center_line" />
+
+            <TextView
+                android:id="@+id/map_bearing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="start|center_vertical"
+                android:text="@string/map_bearing"
+                android:paddingStart="@dimen/table_padding_start"
+                android:paddingEnd="0dp"
+                android:layout_marginTop="@dimen/menu_padding_vertical"
+                android:layout_marginBottom="@dimen/menu_padding_vertical"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constrainedWidth="false"
+                app:layout_constrainedHeight="false"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/map_table_column_1"
+                app:layout_constraintTop_toBottomOf="@id/map_table_line"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <ImageView
+                android:id="@+id/map_receiver"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:contentDescription="@string/map_receiver"
+                android:src="@drawable/alien"
+                android:layout_marginTop="@dimen/menu_padding_vertical"
+                android:layout_marginBottom="@dimen/menu_padding_vertical"
+                app:layout_constrainedHeight="true"
+                app:layout_constrainedWidth="false"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toStartOf="@id/map_table_column_1"
+                app:layout_constraintEnd_toStartOf="@id/map_table_column_2"
+                app:layout_constraintTop_toBottomOf="@id/map_table_line"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <TextView
+                android:id="@+id/map_receiver_position"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end|center_vertical"
+                android:paddingEnd="@dimen/table_padding_start"
+                android:text="@string/map_receiver_position"
+                android:textAppearance="@style/PosText"
+                android:layout_marginTop="@dimen/menu_padding_vertical"
+                android:layout_marginBottom="@dimen/menu_padding_vertical"
+                app:layout_constraintHorizontal_bias="1"
+                app:layout_constrainedWidth="false"
+                app:layout_constrainedHeight="false"
+                app:layout_constraintStart_toStartOf="@id/map_table_column_2"
+                app:layout_constraintEnd_toStartOf="@id/map_table_column_3"
+                app:layout_constraintTop_toBottomOf="@id/map_table_line"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/map_source"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/map_online"
+                android:layout_marginTop="@dimen/menu_padding_vertical"
+                android:layout_marginBottom="@dimen/menu_padding_vertical"
+                app:layout_constrainedWidth="false"
+                app:layout_constrainedHeight="false"
+                app:layout_constraintStart_toStartOf="@id/map_table_column_3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/map_table_line"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </HorizontalScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

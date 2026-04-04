@@ -1,161 +1,188 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                   xmlns:tools="http://schemas.android.com/tools"
+                                                   android:id="@+id/activity_main"
+                                                   android:layout_width="match_parent"
+                                                   android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/col1"
-        android:layout_width="wrap_content"
+    <HorizontalScrollView
+        android:id="@+id/top_bar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintGuide_percent="0.2"
-        android:orientation="vertical"
-        app:constraint_referenced_ids="callsign_label,callsign_value" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/col2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintGuide_percent="0.4"
-        android:orientation="vertical"
-        app:constraint_referenced_ids="serial_label,serial_value"/>
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/col3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:constraint_referenced_ids="rssi_label,rssi_value"
-        app:layout_constraintGuide_percent="0.6" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/col4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:constraint_referenced_ids="age_label,age_value"
-        app:layout_constraintGuide_percent="0.8" />
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/row1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="callsign_label,serial_label,flight_label,rssi_label,age_label"/>
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/row2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="callsign_value,serial_value,flight_value,rssi_value,age_value"/>
-
-    <TextView
-        android:id="@+id/callsign_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/callsign_label"
-        android:textAppearance="@style/LabelText"
+        app:layout_constrainedWidth="true"
+        app:layout_constrainedHeight="false"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/col1"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/row1" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/callsign_value"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/top_bar_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/col1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintGuide_percent="0.2"
+                android:orientation="vertical"
+                app:constraint_referenced_ids="callsign_label,callsign_value" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/col2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintGuide_percent="0.4"
+                android:orientation="vertical"
+                app:constraint_referenced_ids="serial_label,serial_value"/>
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/col3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:constraint_referenced_ids="rssi_label,rssi_value"
+                app:layout_constraintGuide_percent="0.6" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/col4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:constraint_referenced_ids="age_label,age_value"
+                app:layout_constraintGuide_percent="0.8" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/row1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="callsign_label,serial_label,flight_label,rssi_label,age_label"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/row2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="callsign_value,serial_value,flight_value,rssi_value,age_value"/>
+
+            <TextView
+                android:id="@+id/callsign_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/callsign_label"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/col1"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/row1" />
+
+            <TextView
+                android:id="@+id/callsign_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/col1"
+                app:layout_constraintTop_toBottomOf="@id/row1"
+                app:layout_constraintBottom_toTopOf="@id/row2"/>
+
+            <TextView
+                android:id="@+id/serial_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/serial_label"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintStart_toEndOf="@id/col1"
+                app:layout_constraintEnd_toEndOf="@id/col2"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/row1"/>
+
+            <TextView
+                android:id="@+id/serial_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                app:layout_constraintStart_toEndOf="@id/col1"
+                app:layout_constraintEnd_toEndOf="@id/col2"
+                app:layout_constraintTop_toBottomOf="@id/row1"
+                app:layout_constraintBottom_toBottomOf="@id/row2"/>
+
+            <TextView
+                android:id="@+id/flight_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/flight_label"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintBottom_toBottomOf="@id/row1"
+                app:layout_constraintEnd_toEndOf="@id/col3"
+                app:layout_constraintStart_toEndOf="@id/col2"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/flight_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                app:layout_constraintBottom_toBottomOf="@id/row2"
+                app:layout_constraintEnd_toEndOf="@id/col3"
+                app:layout_constraintStart_toEndOf="@id/col2"
+                app:layout_constraintTop_toBottomOf="@id/row1" />
+
+            <TextView
+                android:id="@+id/rssi_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rssi_label"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintBottom_toBottomOf="@id/row1"
+                app:layout_constraintEnd_toEndOf="@id/col4"
+                app:layout_constraintStart_toEndOf="@id/col3"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/rssi_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                app:layout_constraintBottom_toBottomOf="@id/row2"
+                app:layout_constraintEnd_toEndOf="@id/col4"
+                app:layout_constraintStart_toEndOf="@id/col3"
+                app:layout_constraintTop_toBottomOf="@id/row1" />
+
+            <TextView
+                android:id="@+id/age_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/age_label"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintBottom_toBottomOf="@id/row1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/col4"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/age_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                app:layout_constraintBottom_toBottomOf="@id/row2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/col4"
+                app:layout_constraintTop_toBottomOf="@id/row1" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </HorizontalScrollView>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/col1"
-        app:layout_constraintTop_toBottomOf="@id/row1"
-        app:layout_constraintBottom_toTopOf="@id/row2"/>
-
-    <TextView
-        android:id="@+id/serial_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/serial_label"
-        android:textAppearance="@style/LabelText"
-        app:layout_constraintStart_toEndOf="@id/col1"
-        app:layout_constraintEnd_toEndOf="@id/col2"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/row1"/>
-
-    <TextView
-        android:id="@+id/serial_value"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        app:layout_constraintStart_toEndOf="@id/col1"
-        app:layout_constraintEnd_toEndOf="@id/col2"
-        app:layout_constraintTop_toBottomOf="@id/row1"
-        app:layout_constraintBottom_toBottomOf="@id/row2"/>
-
-    <TextView
-        android:id="@+id/flight_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/flight_label"
-        android:textAppearance="@style/LabelText"
-        app:layout_constraintBottom_toBottomOf="@id/row1"
-        app:layout_constraintEnd_toEndOf="@id/col3"
-        app:layout_constraintStart_toEndOf="@id/col2"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/flight_value"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        app:layout_constraintBottom_toBottomOf="@id/row2"
-        app:layout_constraintEnd_toEndOf="@id/col3"
-        app:layout_constraintStart_toEndOf="@id/col2"
-        app:layout_constraintTop_toBottomOf="@id/row1" />
-
-    <TextView
-        android:id="@+id/rssi_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/rssi_label"
-        android:textAppearance="@style/LabelText"
-        app:layout_constraintBottom_toBottomOf="@id/row1"
-        app:layout_constraintEnd_toEndOf="@id/col4"
-        app:layout_constraintStart_toEndOf="@id/col3"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/rssi_value"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        app:layout_constraintBottom_toBottomOf="@id/row2"
-        app:layout_constraintEnd_toEndOf="@id/col4"
-        app:layout_constraintStart_toEndOf="@id/col3"
-        app:layout_constraintTop_toBottomOf="@id/row1" />
-
-    <TextView
-        android:id="@+id/age_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/age_label"
-        android:textAppearance="@style/LabelText"
-        app:layout_constraintBottom_toBottomOf="@id/row1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/col4"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/age_value"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        app:layout_constraintBottom_toBottomOf="@id/row2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/col4"
-        app:layout_constraintTop_toBottomOf="@id/row1" />
+        app:layout_constraintTop_toBottomOf="@id/top_bar"/>
 
     <fragment
         android:id="@+id/nav_host_fragment_activity_main"
@@ -163,11 +190,11 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:defaultNavHost="true"
-        app:layout_constraintBottom_toTopOf="@id/nav_view"
+        app:navGraph="@navigation/mobile_navigation"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/divider"
-        app:navGraph="@navigation/mobile_navigation" />
+        app:layout_constraintBottom_toTopOf="@id/nav_view"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view"
@@ -184,15 +211,5 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:menu="@menu/bottom_nav_menu" />
-
-    <View
-        android:id="@+id/divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/row2"
-        tools:layout_editor_absoluteY="51dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
