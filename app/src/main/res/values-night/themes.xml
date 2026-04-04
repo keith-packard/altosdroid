@@ -32,6 +32,8 @@
         <item name="android:switchStyle">@style/Widget.App.Switch</item>
         <item name="android:textViewStyle">@style/Widget.App.TextView</item>
         <item name="actionBarStyle">@style/Widget.App.ActionBar</item>
+        <item name="spinnerStyle">@style/Widget.App.Spinner</item>
+        <item name="android:spinnerStyle">@style/Widget.App.Spinner</item>
 
         <!-- other settings -->
         <item name="android:windowLightStatusBar">false</item>
@@ -69,6 +71,8 @@
         <item name="android:switchStyle">@style/Widget.App.Switch</item>
         <item name="android:textViewStyle">@style/Widget.App.TextView</item>
         <item name="actionBarStyle">@style/Widget.App.ActionBar</item>
+        <item name="spinnerStyle">@style/Widget.App.Spinner</item>
+        <item name="android:spinnerStyle">@style/Widget.App.Spinner</item>
 
     </style>
 
@@ -94,5 +98,7 @@
         <item name="android:textColor">?attr/colorOnPrimary</item>
         <item name="titleTextStyle">@style/ValueText</item>
     </style>
-
+    <style name="Widget.App.Spinner" parent="Widget.AppCompat.Spinner">
+        <item name="android:backgroundTint">@color/button_switch</item>
+    </style>
 </resources>

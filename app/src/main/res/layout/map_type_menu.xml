@@ -8,4 +8,5 @@
         android:paddingVertical="10dp"
         android:paddingHorizontal="10dp"
         android:textAppearance="@style/ButtonText"
+        android:textColor="@color/button_switch"
         android:text="TextView"/>

@@ -232,6 +232,7 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
         }
         mapInterface.activate(this);
         binding.mapSource.setChecked(map_source == AltosDroidPreferences.MAP_SOURCE_ONLINE);
+        binding.mapType.setEnabled(map_source == AltosDroidPreferences.MAP_SOURCE_ONLINE);
         mapInterface.set_altos_droid(altos_droid);
         if (sites != null)
             mapInterface.set_launch_sites(sites);
