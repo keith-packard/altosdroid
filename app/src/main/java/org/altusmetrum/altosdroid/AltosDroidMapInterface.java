@@ -17,6 +17,7 @@
  */
 package org.altusmetrum.altosdroid;
 
+import org.altusmetrum.altosdroid.ui.map.MapFragment;
 import org.altusmetrum.altoslib_14.AltosLatLon;
 import org.altusmetrum.altoslib_14.AltosLaunchSite;
 
@@ -31,5 +32,6 @@ public interface AltosDroidMapInterface {
     void set_there_position(double lat, double lon);
     void position_permission();
     void set_launch_sites(List<AltosLaunchSite> sites);
-    void destroy();
+    void activate(MapFragment map_fragment);
+    void deactivate();
 }

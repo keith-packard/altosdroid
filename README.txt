@@ -47,10 +47,6 @@ ToDo list
 	Reboot
 	Fire Igniters
 
- * Pop-down menu for frequency in idle mode.
-
-BUGS
-
  ✓ Map type selection breaks after switching away/back
 
  ✓ Select tracker should center map on new target
@@ -60,3 +56,11 @@ BUGS
  ✓ Need scroll view wrappers around three data views for giant font mode
 
  ✓ Make sure telemetry keeps working when the phone sleeps and on app switch
+
+ * Pop-down menu for frequency in idle mode.
+
+ * Round most spoken numbers to two digits.
+
+ * Center on current tracker, allowing the user to pan around but
+   reset after 'a while'? with a button?
+

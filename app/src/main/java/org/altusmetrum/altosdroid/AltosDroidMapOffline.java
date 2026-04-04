@@ -497,12 +497,12 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
         repaint();
     }
 
-    public void destroy() {
-    }
-
-    public void set_map_fragment(MapFragment map_fragment) {
+    public void activate(MapFragment map_fragment) {
         this.map_fragment = map_fragment;
     }
+
+    public void deactivate() {}
+
 
     public AltosDroidMapOffline(Context context, AttributeSet attrs) {
         super(context, attrs);

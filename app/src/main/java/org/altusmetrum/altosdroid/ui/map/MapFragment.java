@@ -131,7 +131,7 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
     public void onDestroy() {
         super.onDestroy();
         if (mapInterface != null)
-            mapInterface.destroy();
+            mapInterface.deactivate();
         AltosDroidPreferences.unregister_map_source_listener(this);
         mapLoaded = false;
         binding = null;
@@ -217,7 +217,7 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
 
     public void map_source_changed(int map_source) {
         if (mapInterface != null)
-            mapInterface.destroy();
+            mapInterface.deactivate();
         mapInterface = null;
         mapAccuracy = -1;
         int child = 0;
@@ -228,9 +228,9 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
             child = 0;
         } else {
             mapInterface = binding.mapOffline;
-            binding.mapOffline.set_map_fragment(this);
             child = 1;
         }
+        mapInterface.activate(this);
         binding.mapSource.setChecked(map_source == AltosDroidPreferences.MAP_SOURCE_ONLINE);
         mapInterface.set_altos_droid(altos_droid);
         if (sites != null)

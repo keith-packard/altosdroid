@@ -367,14 +367,17 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
         }
     }
 
-    public void destroy() {
+    public void activate(MapFragment map_fragment) {
+        AltosPreferences.register_map_type_listener(this);
+    }
+
+    public void deactivate() {
         AltosPreferences.unregister_map_type_listener(this);
     }
 
     public AltosDroidMapOnline(MapFragment map_fragment, Context context) {
         this.map_fragment = map_fragment;
         this.context = context;
-        AltosPreferences.register_map_type_listener(this);
         SupportMapFragment mapFragment = (SupportMapFragment) map_fragment.getChildFragmentManager().findFragmentById(R.id.map_online);
         mapFragment.getMapAsync(callback);
     }
