@@ -282,6 +282,8 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         AltosDebug.init(this);
         AltosDebug.debug("+++ ON CREATE +++");
 
+        AltosDroidPreferences.init(this);
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         ActivityLayouts.applyEdgeToEdge(this, R.id.activity_main);
@@ -1004,6 +1006,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         super.setTitle(title);
         getSupportActionBar().setTitle(title);
     }
+
     void update_title(TelemetryState telemetry_state, AltosState state) {
         String state_name = null;
         if (state != null && state.state() != AltosLib.ao_flight_stateless) {
