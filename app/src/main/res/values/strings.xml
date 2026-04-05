@@ -73,6 +73,9 @@
     <!-- Tab fields -->
     <string name="height_label">Height</string>
     <string name="altitude_label">Altitude</string>
+    <string name="gps_speed_label">GPS Speed</string>
+    <string name="gps_height_label">GPS Height</string>
+    <string name="gps_altitude_label">GPS Altitude</string>
     <string name="speed_label">Speed</string>
     <string name="accel_label">Acceleration</string>
     <string name="tilt_label">Tilt</string>
@@ -86,6 +89,9 @@
     <string name="max_altitude_label">Max Altitude</string>
     <string name="max_speed_label">Max Speed</string>
     <string name="max_accel_label">Max Accel</string>
+    <string name="max_gps_speed_label">Max GPS Speed</string>
+    <string name="max_gps_height_label">Max GPS Height</string>
+    <string name="max_gps_altitude_label">Max GPS Altitude</string>
     <string name="battery_voltage_label">Battery</string>
     <string name="receiver_voltage_label">Receiver Battery</string>
     <string name="apogee_voltage_label">Apogee Igniter</string>

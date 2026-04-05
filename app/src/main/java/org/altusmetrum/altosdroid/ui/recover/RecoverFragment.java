@@ -18,6 +18,7 @@ import org.altusmetrum.altosdroid.TelemetryState;
 import org.altusmetrum.altosdroid.databinding.FragmentRecoverBinding;
 import org.altusmetrum.altoslib_14.AltosConvert;
 import org.altusmetrum.altoslib_14.AltosGreatCircle;
+import org.altusmetrum.altoslib_14.AltosLib;
 import org.altusmetrum.altoslib_14.AltosState;
 
 import java.util.Locale;
@@ -55,10 +56,32 @@ public class RecoverFragment extends AltosFragment {
 			binding.receiverLonValue.setText(AltosValue.pos(receiver_location.getLongitude(), "E", "W"));
 		}
 
+                binding.maxGpsSpeedView.setVisibility(View.GONE);
+                binding.maxGpsHeightView.setVisibility(View.GONE);
+                binding.maxGpsAltitudeView.setVisibility(View.GONE);
 		if (state != null) {
 			set_value(binding.maxHeightValue, AltosConvert.height, 1, state.max_height());
-            set_value(binding.maxSpeedValue, AltosConvert.speed, 1, state.max_speed());
-            set_value(binding.maxAccelValue, AltosConvert.accel, 1, state.max_acceleration());
+                        set_value(binding.maxSpeedValue, AltosConvert.speed, 1, state.max_speed());
+                        set_value(binding.maxAccelValue, AltosConvert.accel, 1, state.max_acceleration());
+			if (state.gps != null) {
+				binding.maxGpsSpeedView.setVisibility(View.VISIBLE);
+				binding.maxGpsHeightView.setVisibility(View.VISIBLE);
+				binding.maxGpsAltitudeView.setVisibility(View.VISIBLE);
+				double max_gps_altitude = AltosLib.MISSING;
+				double max_gps_height = AltosLib.MISSING;
+				double max_gps_speed = AltosLib.MISSING;
+				max_gps_altitude = state.max_gps_altitude();
+				max_gps_height = state.max_gps_height();
+				max_gps_speed = state.max_gps_speed();
+				if (state.gps.locked) {
+					max_gps_altitude = state.max_gps_altitude();
+					max_gps_height = state.max_gps_height();
+					max_gps_speed = state.max_gps_speed();
+				}
+				set_value(binding.maxGpsSpeedValue, AltosConvert.speed, 1, max_gps_speed);
+				set_value(binding.maxGpsHeightValue, AltosConvert.height, 1, max_gps_height);
+				set_value(binding.maxGpsAltitudeValue, AltosConvert.height, 1, max_gps_altitude);
+                        }
 		}
 	}
 

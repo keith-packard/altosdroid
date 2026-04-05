@@ -68,6 +68,29 @@ public class FlightFragment extends AltosFragment {
 			set_value(binding.speedValue, AltosConvert.speed, 1, state.speed());
 			set_value(binding.heightValue, AltosConvert.height, 1, state.height());
 			set_value(binding.altitudeValue, AltosConvert.height, 1, state.altitude());
+			if (state.gps == null) {
+				binding.gpsSpeedView.setVisibility(View.GONE);
+				binding.gpsHeightView.setVisibility(View.GONE);
+				binding.gpsAltitudeView.setVisibility(View.GONE);
+			} else {
+				binding.gpsSpeedView.setVisibility(View.VISIBLE);
+				binding.gpsHeightView.setVisibility(View.VISIBLE);
+				binding.gpsAltitudeView.setVisibility(View.VISIBLE);
+				double gps_altitude = AltosLib.MISSING;
+				double gps_height = AltosLib.MISSING;
+				double gps_speed = AltosLib.MISSING;
+				gps_altitude = state.gps_altitude();
+				gps_height = state.gps_height();
+				gps_speed = state.gps_speed();
+				if (state.gps.locked) {
+					gps_altitude = state.gps_altitude();
+					gps_height = state.gps_height();
+					gps_speed = state.gps_speed();
+				}
+				set_value(binding.gpsSpeedValue, AltosConvert.speed, 1, gps_speed);
+				set_value(binding.gpsHeightValue, AltosConvert.height, 1, gps_height);
+				set_value(binding.gpsAltitudeValue, AltosConvert.height, 1, gps_altitude);
+			}
 			double orient = state.orient();
 			if (orient == AltosLib.MISSING) {
 				binding.tiltView.setVisibility(View.GONE);

@@ -369,5 +369,119 @@
             app:barrierDirection="bottom"
             app:constraint_referenced_ids="max_accel_label,max_accel_value"/>
 
+	<androidx.constraintlayout.widget.Group
+            android:id="@+id/max_gps_height_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="max_gps_height_label,max_gps_height_value"/>
+
+	<TextView
+            android:id="@+id/max_gps_height_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/LabelText"
+            android:text="@string/max_gps_height_label"
+            android:paddingStart="@dimen/table_padding_start"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/max_accel_row"
+            app:layout_constraintBottom_toTopOf="@id/max_gps_height_row" />
+
+	<TextView
+            android:id="@+id/max_gps_height_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/max_accel_row"
+            app:layout_constraintBottom_toTopOf="@id/max_gps_height_row" />
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/max_gps_height_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="max_gps_height_label,max_gps_height_value"/>
+
+	<androidx.constraintlayout.widget.Group
+            android:id="@+id/max_gps_speed_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="max_gps_speed_label,max_gps_speed_value"/>
+
+	<TextView
+            android:id="@+id/max_gps_speed_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/LabelText"
+            android:text="@string/max_gps_speed_label"
+            android:paddingStart="@dimen/table_padding_start"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/max_gps_height_row"
+            app:layout_constraintBottom_toTopOf="@id/max_gps_speed_row" />
+
+	<TextView
+            android:id="@+id/max_gps_speed_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/max_gps_height_row"
+            app:layout_constraintBottom_toTopOf="@id/max_gps_speed_row" />
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/max_gps_speed_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="max_gps_speed_label,max_gps_speed_value"/>
+
+	<androidx.constraintlayout.widget.Group
+            android:id="@+id/max_gps_altitude_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="max_gps_altitude_label,max_gps_altitude_value"/>
+
+	<TextView
+            android:id="@+id/max_gps_altitude_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/LabelText"
+            android:text="@string/max_gps_altitude_label"
+            android:paddingStart="@dimen/table_padding_start"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/max_gps_speed_row"
+            app:layout_constraintBottom_toTopOf="@id/max_gps_altitude_row" />
+
+	<TextView
+            android:id="@+id/max_gps_altitude_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/max_gps_speed_row"
+            app:layout_constraintBottom_toTopOf="@id/max_gps_altitude_row" />
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/max_gps_altitude_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="max_gps_altitude_label,max_gps_altitude_value"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
