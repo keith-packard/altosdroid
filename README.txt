@@ -61,18 +61,18 @@ ToDo list
 
  * Round most spoken numbers to two digits.
 
- * Center on current tracker, allowing the user to pan around but
+ ✓ Center on current tracker, allowing the user to pan around but
    reset after 'a while'? with a button?
 
- * When to pin to a specific tracker and when to auto-select most
+ ✓ When to pin to a specific tracker and when to auto-select most
    recent?
 
- * How to indicate which tracker selection mode you're in?
+ ✓ How to indicate which tracker selection mode you're in?
 
     - Move flight state to Flight view
     - Add (auto) or (serial) to title bar
 
- * Sometimes the map moves back to current phone position
+ ✓ the map moves back to current phone position
 
  * Add a voice on/off button
 

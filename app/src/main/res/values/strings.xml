@@ -154,7 +154,8 @@
 
     <!-- setup -->
     <string name="telemetry_rate">Telemetry Rate</string>
-    <string name="set_units">Units</string>
+    <string name="select_units">Units</string>
+    <string name="select_voice">Voice</string>
     <!-- <string name="map_type">Map Type</string> -->
     <!-- <string name="map_source">Map Source</string> -->
     <!-- <string name="preload_maps">Preload Maps</string> -->

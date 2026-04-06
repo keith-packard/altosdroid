@@ -34,7 +34,8 @@ import org.altusmetrum.altoslib_14.*;
 
 public class SetupActivity extends AppCompatActivity {
     private Spinner select_rate;
-    private Spinner set_units;
+    private Spinner select_units;
+    private Spinner select_voice;
     private Button done;
 
     private boolean is_bound;
@@ -77,6 +78,7 @@ public class SetupActivity extends AppCompatActivity {
 
     private int	set_telemetry_rate;
     private boolean	set_imperial_units;
+    private boolean     set_voice;
 
     private void done() {
         int	changes = 0;
@@ -89,6 +91,10 @@ public class SetupActivity extends AppCompatActivity {
         if (set_imperial_units != AltosPreferences.imperial_units()) {
             changes |= MainActivity.SETUP_UNITS;
             AltosPreferences.set_imperial_units(set_imperial_units);
+        }
+        if (set_voice != AltosPreferences.voice()) {
+            changes |= MainActivity.SETUP_VOICE;
+            AltosPreferences.set_voice(set_voice);
         }
         intent.putExtra(EXTRA_SETUP_CHANGES, changes);
         setResult(Activity.RESULT_OK, intent);
@@ -163,13 +169,37 @@ public class SetupActivity extends AppCompatActivity {
         return 0;
     }
 
-    private void set_units(int pos) {
+    private void select_units(int pos) {
         switch (pos) {
         default:
             set_imperial_units = false;
             break;
         case 1:
             set_imperial_units = true;
+            break;
+        }
+    }
+
+    static final String[] voice = {
+        "Off",
+        "On"
+    };
+
+    private int default_voice_pos() {
+        boolean	voice = AltosPreferences.voice();
+
+        if (voice)
+            return 1;
+        return 0;
+    }
+
+    private void select_voice(int pos) {
+        switch (pos) {
+        default:
+            set_voice = false;
+            break;
+        case 1:
+            set_voice = true;
             break;
         }
     }
@@ -198,11 +228,21 @@ public class SetupActivity extends AppCompatActivity {
                 }
             });
 
-        set_units = (Spinner) findViewById(R.id.set_units);
-        add_strings(set_units, units, default_units_pos());
-        set_units.setOnItemSelectedListener(new OnItemSelectedListener() {
+        select_units = (Spinner) findViewById(R.id.select_units);
+        add_strings(select_units, units, default_units_pos());
+        select_units.setOnItemSelectedListener(new OnItemSelectedListener() {
                 public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                    set_units(pos);
+                    select_units(pos);
+                }
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
+
+        select_voice = (Spinner) findViewById(R.id.select_voice);
+        add_strings(select_voice, voice, default_voice_pos());
+        select_voice.setOnItemSelectedListener(new OnItemSelectedListener() {
+                public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                    select_voice(pos);
                 }
                 public void onNothingSelected(AdapterView<?> parent) {
                 }

@@ -169,9 +169,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
     // Setup result bits
     public static final int SETUP_BAUD = 1;
     public static final int SETUP_UNITS = 2;
-    public static final int SETUP_MAP_SOURCE = 4;
-    public static final int SETUP_MAP_TYPE = 8;
-    public static final int SETUP_FONT_SIZE = 16;
+    public static final int SETUP_VOICE = 4;
 
     public static FragmentManager fm;
     NavController nav_controller;
@@ -561,18 +559,11 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         if ((changes & SETUP_UNITS) != 0) {
             /* nothing to do here */
         }
-        if ((changes & SETUP_MAP_SOURCE) != 0) {
-            /* nothing to do here */
-        }
-        if ((changes & SETUP_MAP_TYPE) != 0) {
-            /* nothing to do here */
+        if ((changes & SETUP_VOICE) != 0) {
+            if (altos_voice != null)
+                altos_voice.set_enable(AltosPreferences.voice());
         }
         set_switch_time();
-        if ((changes & SETUP_FONT_SIZE) != 0) {
-            AltosDebug.debug(" ==== Recreate to switch font sizes ==== ");
-            //finish();
-            //startActivity(getIntent());
-        }
     }
 
     private void enable_location_updates(boolean do_update) {
@@ -1054,10 +1045,6 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
     }
 
     void update_title(TelemetryState telemetry_state, AltosState state) {
-        String state_name = null;
-        if (state != null && state.state() != AltosLib.ao_flight_stateless) {
-            state_name = state.state_name();
-        }
         String title;
         switch (telemetry_state.connect) {
         case TelemetryState.CONNECT_CONNECTED:

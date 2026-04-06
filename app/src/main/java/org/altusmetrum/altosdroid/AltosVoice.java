@@ -33,7 +33,8 @@ import java.util.Locale;
 public class AltosVoice {
 
 	private TextToSpeech tts         = null;
-	private boolean      tts_enabled = false;
+	private boolean      tts_enabled = true;
+        private boolean      tts_running = false;
 
 	static final int TELL_MODE_NONE = 0;
 	static final int TELL_MODE_PAD = 1;
@@ -73,7 +74,7 @@ public class AltosVoice {
 	public AltosVoice(MainActivity a) {
 		tts = new TextToSpeech(a, new TextToSpeech.OnInitListener() {
 			public void onInit(int status) {
-				if (status == TextToSpeech.SUCCESS) tts_enabled = true;
+				if (status == TextToSpeech.SUCCESS) tts_running = true;
 			}
 		});
 		reset_last();
@@ -81,10 +82,12 @@ public class AltosVoice {
 
 	public synchronized void set_enable(boolean enable) {
 		tts_enabled = enable;
+                if (tts_running)
+                        tts.stop();
 	}
 
 	public synchronized void speak(String s) {
-		if (!tts_enabled) return;
+		if (!tts_enabled || !tts_running) return;
 		last_speak_time = now();
 		if (!quiet)
 			tts.speak(s, TextToSpeech.QUEUE_ADD, null, null);
@@ -303,7 +306,7 @@ public class AltosVoice {
 
 		boolean	spoken = false;
 
-		if (!tts_enabled) return;
+		if (!tts_enabled || !tts_running) return;
 
 		if (is_speaking()) return;
 
