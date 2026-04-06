@@ -57,10 +57,6 @@ ToDo list
 
  ✓ Make sure telemetry keeps working when the phone sleeps and on app switch
 
- * Pop-down menu for frequency in idle mode.
-
- * Round most spoken numbers to two digits.
-
  ✓ Center on current tracker, allowing the user to pan around but
    reset after 'a while'? with a button?
 
@@ -74,7 +70,11 @@ ToDo list
 
  ✓ the map moves back to current phone position
 
- * Add a voice on/off button
+ ✓ Add a voice on/off button
+
+ * Pop-down menu for frequency in idle mode.
+
+ * Round most spoken numbers to two digits.
 
  * Add auto callsign mode to wait for a tracker with the specified
    callsign
