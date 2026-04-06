@@ -34,6 +34,7 @@ import androidx.annotation.Nullable;
 
 import org.altusmetrum.altosdroid.AltosDroidMapSourceListener;
 import org.altusmetrum.altosdroid.AltosDroidPreferences;
+import org.altusmetrum.altosdroid.AltosDroidSelectedSerialListener;
 import org.altusmetrum.altosdroid.AltosFragment;
 import org.altusmetrum.altosdroid.AltosDroidMapInterface;
 import org.altusmetrum.altosdroid.AltosDroidMapOnline;
@@ -59,7 +60,11 @@ import java.util.Locale;
 
 
 
-public class MapFragment extends AltosFragment implements AltosDroidMapSourceListener, AltosLaunchSiteListener {
+public class MapFragment extends AltosFragment
+    implements AltosDroidMapSourceListener,
+    AltosLaunchSiteListener,
+    AltosDroidSelectedSerialListener
+{
 
     private boolean mapLoaded;
     private boolean launch_sites_set;
@@ -109,6 +114,7 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
         super.onViewCreated(view, savedInstanceState);
         check_permission();
         AltosDroidPreferences.register_map_source_listener(this);
+        AltosDroidPreferences.register_selected_serial_listener(this);
 
         String[] map_types = getResources().getStringArray(R.array.map_types);
 
@@ -151,6 +157,7 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
         if (mapInterface != null)
             mapInterface.deactivate();
         AltosDroidPreferences.unregister_map_source_listener(this);
+        AltosDroidPreferences.unregister_selected_serial_listener(this);
         mapLoaded = false;
         binding = null;
     }
@@ -162,17 +169,22 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
 
     double mapAccuracy = -1;
 
-    void center(double lat, double lon, double accuracy) {
+    boolean center(double lat, double lon, double accuracy) {
         if (mapInterface != null) {
             if (mapAccuracy < 0 || accuracy < mapAccuracy/10) {
                 mapInterface.center(lat, lon, accuracy);
                 mapAccuracy = accuracy;
+                return true;
             }
         }
+        return false;
     }
-
-    public void select_tracker(int serial) {
+    
+    int selected_serial = AltosDroidPreferences.SELECT_AUTO;
+    int center_serial = AltosDroidPreferences.SELECT_AUTO;
+    public void selected_serial_changed(int serial, long time) {
         mapAccuracy = -1;
+        selected_serial = serial;
     }
 
     public void show(TelemetryState telem_state, AltosState state, AltosGreatCircle from_receiver, Location receiver_location) {
@@ -195,8 +207,12 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
                     binding.mapTargetPosition.setText(lat_text + "\n" + lon_text);
                 }
                 target_position = new AltosLatLon(state.gps.lat, state.gps.lon);
-                if (state.gps.locked && state.gps.nsat >= 4)
-                    center (state.gps.lat, state.gps.lon, 10);
+                if (state.gps.locked && state.gps.nsat >= 4) {
+                    if (center_serial != selected_serial && target_serial == selected_serial)
+                        mapAccuracy = -1;
+                    if (center(state.gps.lat, state.gps.lon, 10))
+                        center_serial = target_serial;
+                }
             }
         }
 

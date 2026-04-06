@@ -958,8 +958,11 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         if (telemetry_state == null)
             return;
 
-        if (selected_serial == SELECT_AUTO)
+        if (selected_serial == SELECT_AUTO) {
             selected_serial = auto_select_tracker();
+            if (selected_serial != SELECT_AUTO)
+                AltosDroidPreferences.set_selected_serial(selected_serial);
+        }
 
         if (selected_serial != SELECT_AUTO && telemetry_state.get(selected_serial) == null)
             selected_serial = SELECT_AUTO;
