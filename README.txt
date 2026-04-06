@@ -72,11 +72,15 @@ ToDo list
 
  ✓ Add a voice on/off button
 
- * Pop-down menu for frequency in idle mode.
+ * Add pop-down menu for frequency in idle mode.
 
  * Round most spoken numbers to two digits.
 
  * Add auto callsign mode to wait for a tracker with the specified
    callsign
 
- 
+ * Add target configuration to Idle mode
+
+ * Support multiple receivers
+
+ * Support USB connected receivers
