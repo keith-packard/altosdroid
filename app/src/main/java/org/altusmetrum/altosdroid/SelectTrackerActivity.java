@@ -191,7 +191,7 @@ public class SelectTrackerActivity extends AppCompatActivity implements OnTouchL
         TableRow row = (TableRow) getLayoutInflater().inflate(R.layout.tracker_ent, null);
 
         ((TextView) row.findViewById(R.id.call_view)).setText(tracker.call);
-        if (tracker.serial == 0)
+        if (tracker.serial == AltosDroidPreferences.SELECT_AUTO)
             ((TextView) row.findViewById(R.id.serial_view)).setText("");
         else
             ((TextView) row.findViewById(R.id.serial_view)).setText(String.format(Locale.getDefault(), "%d", tracker.serial));

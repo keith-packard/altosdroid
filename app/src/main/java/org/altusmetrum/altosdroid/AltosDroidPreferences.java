@@ -41,6 +41,15 @@ public class AltosDroidPreferences extends AltosPreferences {
 
 	static DeviceAddress	active_device_address;
 
+        /* Selected serial preference name */
+        final static String selectedSerialPreference = "SELECTED-SERIAL";
+        final static String selectedSerialTimePreference = "SELECTED-SERIAL-TIME";
+
+        public static final int SELECT_AUTO = -1;
+
+        static int selected_serial = SELECT_AUTO;
+        static long selected_serial_time = 0;
+
 	/* Map source preference name */
 	final static String mapSourcePreference = "MAP-SOURCE";
 
@@ -71,6 +80,9 @@ public class AltosDroidPreferences extends AltosPreferences {
 		map_source = backend.getInt(mapSourcePreference, MAP_SOURCE_ONLINE);
 
 		tracker_sort = backend.getInt(trackerSortPreference, 0);
+
+        selected_serial = backend.getInt(selectedSerialPreference, SELECT_AUTO);
+        selected_serial_time = backend.getLong(selectedSerialTimePreference, 0);
 	}
 
 	public static void set_active_device(DeviceAddress address) {
@@ -95,6 +107,60 @@ public class AltosDroidPreferences extends AltosPreferences {
 
 		synchronized(backend) {
 			return active_device_address;
+		}
+	}
+
+	static LinkedList<AltosDroidSelectedSerialListener> selected_serial_listeners;
+
+        public static void set_selected_serial(int serial) {
+                if (backend == null)
+                        return;
+                synchronized(backend) {
+                        selected_serial = serial;
+                        selected_serial_time = System.currentTimeMillis();
+                        backend.putInt(selectedSerialPreference, selected_serial);
+                        backend.putLong(selectedSerialTimePreference, selected_serial_time);
+                        flush_preferences();
+                }
+		if (selected_serial_listeners != null) {
+			for (AltosDroidSelectedSerialListener l : selected_serial_listeners) {
+				l.selected_serial_changed(selected_serial, selected_serial_time);
+			}
+		}
+        }
+
+	public static int selected_serial() {
+		if (backend == null)
+			return SELECT_AUTO;
+		synchronized(backend) {
+			return selected_serial;
+		}
+	}
+
+	public static long selected_serial_time() {
+		if (backend == null)
+			return SELECT_AUTO;
+		synchronized(backend) {
+			return selected_serial_time;
+		}
+	}
+
+	public static void register_selected_serial_listener(AltosDroidSelectedSerialListener l) {
+		if (backend == null)
+			return;
+
+		synchronized(backend) {
+			if (selected_serial_listeners == null)
+				selected_serial_listeners = new LinkedList<>();
+			selected_serial_listeners.add(l);
+		}
+	}
+
+	public static void unregister_selected_serial_listener(AltosDroidSelectedSerialListener l) {
+		if (backend == null)
+			return;
+		synchronized(backend) {
+			selected_serial_listeners.remove(l);
 		}
 	}
 

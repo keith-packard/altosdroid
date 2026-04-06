@@ -95,7 +95,9 @@ class SavedState {
 }
 
 public class    MainActivity extends AppCompatActivity implements LocationListener,
-                                                       ActivityCompat.OnRequestPermissionsResultCallback, AltosUnitsListener {
+                                                       ActivityCompat.OnRequestPermissionsResultCallback,
+                                                       AltosUnitsListener,
+                                                       AltosDroidSelectedSerialListener {
 
     // Actions sent to the telemetry server at startup time
 
@@ -163,16 +165,17 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 
     public Location location = null;
     TelemetryState telemetry_state = null;
-    Tracker[] trackers;
     double telem_frequency = 434.550;
     double selected_frequency = AltosLib.MISSING;
-    int selected_serial = 0;
+
+    public static final int SELECT_AUTO = AltosDroidPreferences.SELECT_AUTO;
+    int selected_serial = SELECT_AUTO;
+    long selected_serial_time = 0;
+
     long switch_time;
     AltosState state = null;
     SavedState saved_state = null;
     Timer timer = null;
-
-    boolean registered_units_listener;
 
     private BluetoothAdapter mBluetoothAdapter = null;
 
@@ -275,6 +278,13 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         }
     }
 
+    public void selected_serial_changed(int serial, long time) {
+        selected_serial_time = time;
+        if (serial != selected_serial) {
+            selected_serial = serial;
+            update_state(null);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -283,6 +293,12 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         AltosDebug.debug("+++ ON CREATE +++");
 
         AltosDroidPreferences.init(this);
+
+        AltosDroidPreferences.register_selected_serial_listener(this);
+        AltosPreferences.register_units_listener(this);
+
+        selected_serial = AltosDroidPreferences.selected_serial();
+        selected_serial_time = AltosDroidPreferences.selected_serial_time();
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -375,6 +391,34 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         }
     }
 
+    Tracker[] current_trackers(boolean include_auto) {
+        int	num_trackers = 0;
+
+        if (include_auto)
+            num_trackers++;
+
+        if (telemetry_state != null) {
+            for (AltosState s : telemetry_state.values()) {
+                num_trackers++;
+            }
+        }
+
+        Tracker[] trackers = new Tracker[num_trackers];
+
+        int n = 0;
+
+        if (include_auto)
+            trackers[n++] = new Tracker(SELECT_AUTO, "auto", 0.0);
+
+        if (telemetry_state != null) {
+            for (AltosState s : telemetry_state.values())
+                trackers[n++] = new Tracker(s);
+        }
+
+        Arrays.sort(trackers);
+        return trackers;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent serverIntent = null;
@@ -427,12 +471,11 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
             return true;
         }
         if (itemId == R.id.select_tracker) {
-            start_select_tracker(trackers);
+            start_select_tracker(current_trackers(true));
             return true;
         }
         if (itemId == R.id.delete_track) {
-            if (trackers != null && trackers.length > 0)
-                start_select_tracker(trackers, R.string.delete_track, REQUEST_DELETE_TRACKER);
+            start_select_tracker(current_trackers(false), R.string.delete_track, REQUEST_DELETE_TRACKER);
             return true;
         }
         if (itemId == R.id.load_maps) {
@@ -872,6 +915,24 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         }
     }
 
+    int auto_select_tracker() {
+
+        int earliest_serial = SELECT_AUTO;
+        long earliest_time = 0;
+
+        for (AltosState s : telemetry_state.values()) {
+            if (s.received_time != AltosLib.MISSING && s.cal_data() != null) {
+                if (s.received_time >= selected_serial_time) {
+                    if (earliest_serial == SELECT_AUTO || s.received_time < earliest_time) {
+                        earliest_serial = s.cal_data().serial;
+                        earliest_time = s.received_time;
+                    }
+                }
+            }
+        }
+        return earliest_serial;
+    }
+
     public void update_state(TelemetryState new_telemetry_state) {
         if (new_telemetry_state != null)
             telemetry_state = new_telemetry_state;
@@ -879,52 +940,16 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         if (telemetry_state == null)
             return;
 
-        if (selected_frequency != AltosLib.MISSING) {
-            AltosState selected_state = telemetry_state.get(selected_serial);
-            AltosState latest_state = telemetry_state.get(telemetry_state.latest_serial);
+        if (selected_serial == SELECT_AUTO)
+            selected_serial = auto_select_tracker();
 
-            if (selected_state != null && selected_state.frequency == selected_frequency) {
-                selected_frequency = AltosLib.MISSING;
-            } else if ((selected_state == null || selected_state.frequency != selected_frequency) &&
-                       (latest_state != null && latest_state.frequency == selected_frequency))
-            {
-                selected_frequency = AltosLib.MISSING;
-                selected_serial = telemetry_state.latest_serial;
-            }
-        }
-
-        if (!telemetry_state.containsKey(selected_serial)) {
-            selected_serial = telemetry_state.latest_serial;
-        }
+        if (selected_serial != SELECT_AUTO && telemetry_state.get(selected_serial) == null)
+            selected_serial = SELECT_AUTO;
 
         int shown_serial = selected_serial;
 
         if (telemetry_state.idle_mode)
             shown_serial = telemetry_state.latest_serial;
-
-        if (!registered_units_listener) {
-            registered_units_listener = true;
-            AltosPreferences.register_units_listener(this);
-        }
-
-        int	num_trackers = 0;
-
-        for (AltosState s : telemetry_state.values()) {
-            num_trackers++;
-        }
-
-        trackers = new Tracker[num_trackers + 1];
-
-        int n = 0;
-        trackers[n++] = new Tracker(0, "auto", 0.0);
-
-        for (AltosState s : telemetry_state.values())
-            trackers[n++] = new Tracker(s);
-
-        Arrays.sort(trackers);
-
-        if (telemetry_state.frequency != AltosLib.MISSING)
-            telem_frequency = telemetry_state.frequency;
 
         AltosState	state = telemetry_state.get(shown_serial);
         update_title(telemetry_state, state);
@@ -1039,8 +1064,10 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
             title = getString(R.string.title_not_connected);
             break;
         }
-        if (state_name != null)
-            title = title.concat(String.format(Locale.getDefault(), " (%s)", state_name));
+        if (selected_serial == SELECT_AUTO)
+            title = title.concat(String.format(Locale.getDefault(), " (auto)"));
+        else
+            title = title.concat(String.format(Locale.getDefault(), " (%d)", selected_serial));
         setTitle(title);
     }
 
@@ -1090,27 +1117,16 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 
         AltosDebug.debug("select tracker %d %7.3f\n", serial, frequency);
 
-        if (serial != selected_serial) {
-            if (serial != 0) {
-                int i;
-                for (i = 0; i < trackers.length; i++)
-                    if (trackers[i].serial == serial)
-                        break;
-
-                if (i == trackers.length) {
-                    AltosDebug.debug("attempt to select unknown tracker %d\n", serial);
-                    return;
-                }
-                if (frequency != 0.0 && frequency != AltosLib.MISSING)
-                    setFrequency(frequency);
-            }
-
-            selected_serial = serial;
+        if (serial != SELECT_AUTO) {
+            if (frequency != 0.0 && frequency != AltosLib.MISSING)
+                setFrequency(frequency);
         }
+
         if (active_fragment != null)
             active_fragment.select_tracker(serial);
 
-        update_state(null);
+        /* This will eventually call update_state() */
+        AltosDroidPreferences.set_selected_serial(serial);
     }
 
     void select_tracker(Intent data) {

@@ -75,6 +75,10 @@ public class AltosDroidPreferencesBackend extends AltosPreferencesBackend {
 		return prefs.getInt(key, def);
 	}
 
+	public long getLong(String key, long def) {
+		return prefs.getLong(key, def);
+	}
+
 	public String getString(String key, String def) {
 		String	ret;
 		if (key.equals(AltosPreferences.logdirPreference))
@@ -116,6 +120,12 @@ public class AltosDroidPreferencesBackend extends AltosPreferencesBackend {
 	public void putInt(String key, int value) {
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.putInt(key, value);
+		editor.apply();
+	}
+
+	public void putLong(String key, long value) {
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putLong(key, value);
 		editor.apply();
 	}
 
