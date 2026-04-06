@@ -33,6 +33,43 @@
 	    android:orientation="vertical"
             app:layout_constraintGuide_percent=".50"/>
 
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/state_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="state_label,state_value" />
+
+	<TextView
+            android:id="@+id/state_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/LabelText"
+            android:text="@string/state_label"
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/state_row" />
+
+	<TextView
+            android:id="@+id/state_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+	    android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/state_row"/>
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/state_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="state_label,state_value"/>
+
 	<TextView
             android:id="@+id/speed_label"
             android:layout_width="0dp"
@@ -42,7 +79,7 @@
 	    android:paddingVertical="@dimen/table_padding_vertical"
             app:layout_constraintStart_toStartOf="@id/column_good"
             app:layout_constraintEnd_toStartOf="@id/column_name"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/state_row"
             app:layout_constraintBottom_toTopOf="@id/speed_row" />
 
 	<TextView
@@ -53,7 +90,7 @@
 	    android:paddingVertical="@dimen/table_padding_vertical"
             app:layout_constraintStart_toStartOf="@id/column_name"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/state_row"
             app:layout_constraintBottom_toTopOf="@id/speed_row"/>
 
 	<androidx.constraintlayout.widget.Barrier
@@ -272,6 +309,7 @@
             app:barrierDirection="bottom"
             app:constraint_referenced_ids="tilt_label,tilt_value"/>
 
+<!--
 	<TextView
             android:id="@+id/max_speed_label"
             android:layout_width="0dp"
@@ -365,6 +403,8 @@
             app:barrierDirection="bottom"
             app:constraint_referenced_ids="max_altitude_label,max_altitude_value"/>
 
+-->
+
 	<TextView
             android:id="@+id/elevation_label"
             android:layout_width="0dp"
@@ -375,7 +415,7 @@
 	    android:paddingVertical="@dimen/table_padding_vertical"
             app:layout_constraintStart_toStartOf="@id/column_good"
             app:layout_constraintEnd_toStartOf="@id/column_name"
-            app:layout_constraintTop_toTopOf="@id/max_altitude_row"
+            app:layout_constraintTop_toTopOf="@id/tilt_row"
             app:layout_constraintBottom_toTopOf="@id/elevation_row" />
 
 	<TextView
@@ -386,7 +426,7 @@
 	    android:paddingVertical="@dimen/table_padding_vertical"
             app:layout_constraintStart_toStartOf="@id/column_name"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/max_altitude_row"
+            app:layout_constraintTop_toTopOf="@id/tilt_row"
             app:layout_constraintBottom_toTopOf="@id/elevation_row" />
 
 	<androidx.constraintlayout.widget.Barrier

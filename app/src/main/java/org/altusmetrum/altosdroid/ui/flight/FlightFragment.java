@@ -83,6 +83,14 @@ public class FlightFragment extends AltosFragment {
 	@Override
 	public void show(TelemetryState telem_state, AltosState state, AltosGreatCircle from_receiver, Location receiver_location) {
 		if (state != null) {
+			String state_name = null;
+			if (state.state() == AltosLib.ao_flight_stateless) {
+				binding.stateView.setVisibility(View.GONE);
+			} else {
+				state_name = state.state_name();
+				binding.stateValue.setText(state_name);
+				binding.stateView.setVisibility(View.VISIBLE);
+			}
 			set_value(binding.speedValue, AltosConvert.speed, 1, state.speed());
 			set_value(binding.heightValue, AltosConvert.height, 1, state.height());
 			set_value(binding.altitudeValue, AltosConvert.height, 1, state.altitude());
@@ -116,9 +124,11 @@ public class FlightFragment extends AltosFragment {
 				binding.tiltValue.setText(AltosValue.number("%1.0f°", orient));
 				binding.tiltView.setVisibility(View.VISIBLE);
 			}
+			/*
 			set_value(binding.maxSpeedValue, AltosConvert.speed, 1, state.max_speed());
 			set_value(binding.maxHeightValue, AltosConvert.height, 1, state.max_height());
 			set_value(binding.maxAltitudeValue, AltosConvert.height, 1, state.max_altitude());
+			*/
 			if (from_receiver != null) {
 				binding.elevationValue.setText(AltosValue.number("%1.0f°", from_receiver.elevation));
 				set_value(binding.rangeValue, AltosConvert.distance, 1, from_receiver.range);

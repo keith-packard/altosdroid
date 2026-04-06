@@ -179,7 +179,7 @@ public class MapFragment extends AltosFragment
         }
         return false;
     }
-    
+
     int selected_serial = AltosDroidPreferences.SELECT_AUTO;
     int center_serial = AltosDroidPreferences.SELECT_AUTO;
     public void selected_serial_changed(int serial, long time) {
