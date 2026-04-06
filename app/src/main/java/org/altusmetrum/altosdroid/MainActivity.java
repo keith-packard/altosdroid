@@ -1049,11 +1049,17 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         switch (telemetry_state.connect) {
         case TelemetryState.CONNECT_CONNECTED:
             if (telemetry_state.config != null) {
-                title= String.format(Locale.getDefault(), "S/N %d %6.3f MHz%s", telemetry_state.config.serial,
-                                     telemetry_state.frequency, telemetry_state.idle_mode ? " (idle)" : "");
+                title= String.format(Locale.getDefault(), "S/N %d %6.3f MHz", telemetry_state.config.serial,
+                                     telemetry_state.frequency);
                 if (telemetry_state.telemetry_rate != AltosLib.ao_telemetry_rate_38400)
                     title = title.concat(String.format(Locale.getDefault(), " %d bps",
                                                        AltosLib.ao_telemetry_rate_values[telemetry_state.telemetry_rate]));
+                if (telemetry_state.idle_mode)
+                    title = title.concat(" (idle)");
+                else if (selected_serial == SELECT_AUTO)
+                    title = title.concat(" (auto)");
+                else
+                    title = title.concat(String.format(Locale.getDefault(), " (%d)", selected_serial));
             } else {
                 title = getString(R.string.title_connected_to);
             }
@@ -1072,10 +1078,6 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
             title = getString(R.string.title_not_connected);
             break;
         }
-        if (selected_serial == SELECT_AUTO)
-            title = title.concat(String.format(Locale.getDefault(), " (auto)"));
-        else
-            title = title.concat(String.format(Locale.getDefault(), " (%d)", selected_serial));
         setTitle(title);
     }
 

@@ -61,6 +61,7 @@
             android:autofillHints=""
             android:hint="@string/set_callsign_label"
             android:padding="@dimen/menu_padding_vertical"
+            android:minHeight="48dp"
             app:layout_constraintStart_toStartOf="@id/center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
