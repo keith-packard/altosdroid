@@ -191,7 +191,9 @@ public class MapFragment extends AltosFragment implements AltosDroidMapSourceLis
                 accuracy = 1000;
 
             my_position = new AltosLatLon(receiver_location.getLatitude(), receiver_location.getLongitude());
-            center (my_position.lat, my_position.lon, accuracy);
+            if (target_position == null)
+                center (my_position.lat, my_position.lon, accuracy);
+
             if (binding != null) {
                 String lat_text = AltosValue.pos(receiver_location.getLatitude(), "N", "S");
                 String lon_text = AltosValue.pos(receiver_location.getLongitude(), "E", "W");
