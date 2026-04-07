@@ -83,4 +83,4 @@ ToDo list
 
  * Support multiple receivers
 
- * Support USB connected receivers
+ ✓ Support USB connected receivers

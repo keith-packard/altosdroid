@@ -20,6 +20,7 @@ package org.altusmetrum.altosdroid;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.content.ComponentName;
 import android.content.Context;
@@ -32,6 +33,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -356,6 +358,31 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         }
     }
 
+    private boolean check_usb() {
+        UsbDevice	device = AltosUsb.find_device(this, AltosLib.product_basestation);
+
+        if (device != null) {
+            Intent		i = new Intent(this, MainActivity.class);
+            int		flag;
+
+            if (android.os.Build.VERSION.SDK_INT >= 31) // android.os.Build.VERSION_CODES.S
+                flag = 33554432; // PendingIntent.FLAG_MUTABLE
+            else
+                flag = 0;
+            PendingIntent pi = PendingIntent.getActivity(this, 0, new Intent("hello world", null, this, MainActivity.class), flag);
+
+            if (AltosUsb.request_permission(this, device, pi)) {
+                connectUsb(device);
+            }
+            start_with_usb = true;
+            return true;
+        }
+
+        start_with_usb = false;
+
+        return false;
+    }
+
     MapFragment map_online;
 
     public void tell_map_permission(MapFragment map_online) {
@@ -363,7 +390,50 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
     }
 
     private void noticeIntent(Intent intent) {
-        ensureBluetooth();
+        /* Ok, this is pretty convenient.
+         *
+         * When a USB device is plugged in, and our 'hotplug'
+         * intent registration fires, we get an Intent with
+         * EXTRA_DEVICE set.
+         *
+         * When we start up and see a usb device and request
+         * permission to access it, that queues a
+         * PendingIntent, which has the EXTRA_DEVICE added in,
+         * along with the EXTRA_PERMISSION_GRANTED field as
+         * well.
+         *
+         * So, in both cases, we get the device name using the
+         * same call. We check to see if access was granted,
+         * in which case we ignore the device field and do our
+         * usual startup thing.
+         */
+
+        UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+        boolean granted = intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, true);
+
+        AltosDebug.debug("intent %s device %s granted %s", intent, device, granted);
+
+        if (!granted)
+            device = null;
+
+        if (device != null) {
+            AltosDebug.debug("intent has usb device " + device.toString());
+            connectUsb(device);
+        } else {
+
+            /* 'granted' is only false if this intent came
+             * from the request_permission call and
+             * permission was denied. In which case, we
+             * don't want to loop forever...
+             */
+            if (granted) {
+                AltosDebug.debug("check for a USB device at startup");
+                if (check_usb())
+                    return;
+            }
+            AltosDebug.debug("Starting by looking for bluetooth devices");
+            ensureBluetooth();
+        }
     }
 
     @Override
@@ -527,7 +597,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
             break;
         case REQUEST_SETUP:
             if (resultCode == Activity.RESULT_OK)
-				note_setup_changes(data);
+                note_setup_changes(data);
             break;
 
         case REQUEST_SELECT_TRACKER:
@@ -564,6 +634,20 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
                 altos_voice.set_enable(AltosPreferences.voice());
         }
         set_switch_time();
+    }
+
+    private void connectUsb(UsbDevice device) {
+        if (mService == null)
+            pending_usb_device = device;
+        else {
+            // Attempt to connect to the device
+            try {
+                mService.send(Message.obtain(null, TelemetryService.MSG_OPEN_USB, device));
+                AltosDebug.debug("Sent OPEN_USB message");
+            } catch (RemoteException e) {
+                AltosDebug.debug("connect device message failed");
+            }
+        }
     }
 
     private void enable_location_updates(boolean do_update) {
@@ -1054,7 +1138,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
                 if (telemetry_state.telemetry_rate != AltosLib.ao_telemetry_rate_38400)
                     title = title.concat(String.format(Locale.getDefault(), " %d bps",
                                                        AltosLib.ao_telemetry_rate_values[telemetry_state.telemetry_rate]));
-                if (telemetry_state.idle_mode)
+                if (idle_mode)
                     title = title.concat(" (idle)");
                 else if (selected_serial == SELECT_AUTO)
                     title = title.concat(" (auto)");
