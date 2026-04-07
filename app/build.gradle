@@ -12,8 +12,6 @@ android {
         targetSdk 36
         versionCode 40
         versionName "1.9.22.3"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
