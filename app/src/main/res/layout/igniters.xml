@@ -32,7 +32,6 @@
 	android:choiceMode="singleChoice"
         android:paddingHorizontal="@dimen/table_padding_start"
         android:paddingVertical="@dimen/table_padding_vertical"
-        android:background="@color/altos_list_background"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

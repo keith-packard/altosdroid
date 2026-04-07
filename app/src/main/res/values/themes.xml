@@ -8,15 +8,15 @@
         <item name="backgroundColor">@color/background</item>
         <item name="colorPrimary">@color/altus_orange</item>
         <item name="colorPrimaryVariant">@color/altus_orange_light</item>
-        <item name="colorOnPrimary">@color/background</item>
+        <item name="colorOnPrimary">@color/foreground</item>
 
         <item name="android:textColorPrimaryDisableOnly">@color/foreground</item>
         <item name="colorSecondary">@color/altus_purple</item>
         <item name="colorSecondaryVariant">@color/altus_purple_dark</item>
-        <item name="colorOnSecondary">@color/foreground</item>
+        <item name="colorOnSecondary">@color/background</item>
 
         <item name="colorSurface">@color/altus_orange</item>
-        <item name="colorOnSurface">@color/background</item>
+        <item name="colorOnSurface">@color/foreground</item>
         <item name="colorOnSurfaceVariant">@color/variant</item>
         <item name="colorSurfaceContainerHighest">@color/disabledVariant</item>
 
@@ -48,15 +48,15 @@
         <item name="backgroundColor">@color/background</item>
         <item name="colorPrimary">@color/altus_orange</item>
         <item name="colorPrimaryVariant">@color/altus_orange_light</item>
-        <item name="colorOnPrimary">@color/background</item>
+        <item name="colorOnPrimary">@color/foreground</item>
 
         <item name="android:textColorPrimaryDisableOnly">@color/foreground</item>
         <item name="colorSecondary">@color/altus_purple</item>
         <item name="colorSecondaryVariant">@color/altus_purple_dark</item>
-        <item name="colorOnSecondary">@color/foreground</item>
+        <item name="colorOnSecondary">@color/background</item>
 
         <item name="colorSurface">@color/altus_orange</item>
-        <item name="colorOnSurface">@color/background</item>
+        <item name="colorOnSurface">@color/foreground</item>
         <item name="colorOnSurfaceVariant">@color/variant</item>
         <item name="colorSurfaceContainerHighest">@color/disabledVariant</item>
 
@@ -96,7 +96,6 @@
     </style>
     <style name="Widget.App.ActionBar" parent="Widget.AppCompat.Light.ActionBar">
         <item name="background">?attr/colorPrimary</item>
-        <item name="colorControlNormal">?attr/colorOnPrimary</item>
         <item name="titleTextStyle">@style/ValueText</item>
     </style>
     <style name="Widget.App.Spinner" parent="Widget.AppCompat.Spinner">
