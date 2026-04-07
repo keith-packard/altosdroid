@@ -183,22 +183,11 @@ public class AltosBluetooth extends AltosDroidLink {
 		}
 	}
 
-	private synchronized void wait_connected() throws InterruptedException, IOException {
-		AltosDebug.check_ui("wait_connected\n");
-		if (input == null && socket != null) {
-			AltosDebug.debug("wait_connected...");
-			wait();
-			AltosDebug.debug("wait_connected done");
-		}
-		if (socket == null)
-			throw new IOException();
-	}
-
-	int write(byte[] buffer, int len) {
+	int write(byte[] buffer, int start, int len) {
 		if (output == null)
 			return -1;
 		try {
-			output.write(buffer, 0, len);
+			output.write(buffer, start, len);
 		} catch (IOException ie) {
 			return -1;
 		}

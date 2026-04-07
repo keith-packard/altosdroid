@@ -23,193 +23,214 @@ import android.os.Handler;
 import org.altusmetrum.altoslib_14.AltosLink;
 import org.altusmetrum.altoslib_14.AltosPreferences;
 
+import java.util.concurrent.LinkedBlockingQueue;
+
 public abstract class AltosDroidLink extends AltosLink {
 
-	Handler handler;
+    Handler handler;
 
-	Thread          input_thread   = null;
+    Thread              input_thread   = null;
+    Thread              output_thread = null;
 
-	public double frequency() {
-		return frequency;
-	}
+    LinkedBlockingQueue<byte[]> write_queue = new LinkedBlockingQueue<byte[]>();
 
-	public int telemetry_rate() {
-		return telemetry_rate;
-	}
+    class OutputThread implements Runnable {
 
-	public void save_frequency() {
-		AltosPreferences.set_frequency(0, frequency);
-	}
+        public void run() {
+            try {
+                for (;;) {
+                    byte[] bytes = write_queue.take();
+                    int start = 0;
+                    int len = bytes.length;
+                    while (start < len) {
+                        int sent = write(bytes, start, len);
+                        if (sent < 0)
+                            break;
+                        start += sent;
+                    }
+                }
+            } catch (InterruptedException ie) {
+            }
+        }
+    }
 
-	public void save_telemetry_rate() {
-		AltosPreferences.set_telemetry_rate(0, telemetry_rate);
-	}
+    public double frequency() {
+        return frequency;
+    }
 
-	Object closed_lock = new Object();
-	boolean closing = false;
-	boolean closed = false;
+    public int telemetry_rate() {
+        return telemetry_rate;
+    }
 
-	public boolean closed() {
-		synchronized(closed_lock) {
-			return closing;
-		}
-	}
+    public void save_frequency() {
+        AltosPreferences.set_frequency(0, frequency);
+    }
 
-	void connected() throws InterruptedException {
-		input_thread = new Thread(this);
-		input_thread.start();
+    public void save_telemetry_rate() {
+        AltosPreferences.set_telemetry_rate(0, telemetry_rate);
+    }
 
-		// Configure the newly connected device for telemetry
-		print("~\nE 0\n");
-		set_monitor(false);
-		AltosDebug.debug("ConnectThread: connected");
+    Object closed_lock = new Object();
+    boolean closing = false;
+    boolean closed = false;
 
-		/* Let TelemetryService know we're connected
-		 */
-		handler.obtainMessage(TelemetryService.MSG_CONNECTED, this).sendToTarget();
+    public boolean closed() {
+        synchronized(closed_lock) {
+            return closing;
+        }
+    }
 
-		/* Notify other waiting threads that we're connected now
-		 */
-		notifyAll();
-	}
+    void connected() throws InterruptedException {
+        input_thread = new Thread(this);
+        input_thread.start();
+        output_thread = new Thread(new OutputThread());
+        output_thread.start();
 
-	public void closing() {
-		synchronized(closed_lock) {
-			AltosDebug.debug("Marked closing true");
-			closing = true;
-		}
-	}
+        // Configure the newly connected device for telemetry
+        print("~\nE 0\n");
+        set_monitor(false);
+        AltosDebug.debug("ConnectThread: connected");
 
-	private boolean actually_closed() {
-		synchronized(closed_lock) {
-			return closed;
-		}
-	}
+        /* Let TelemetryService know we're connected
+         */
+        handler.obtainMessage(TelemetryService.MSG_CONNECTED, this).sendToTarget();
 
-	abstract void close_device();
+        /* Notify other waiting threads that we're connected now
+         */
+        notifyAll();
+    }
 
-	public void close() {
-		AltosDebug.debug("close(): begin");
+    public void closing() {
+        synchronized(closed_lock) {
+            AltosDebug.debug("Marked closing true");
+            closing = true;
+        }
+    }
 
-		closing();
+    private boolean actually_closed() {
+        synchronized(closed_lock) {
+            return closed;
+        }
+    }
 
-		flush_output();
+    abstract void close_device();
 
-		synchronized (closed_lock) {
-			AltosDebug.debug("Marked closed true");
-			closed = true;
-		}
+    public void close() {
+        AltosDebug.debug("close(): begin");
 
-		close_device();
+        closing();
 
-		synchronized(this) {
+        flush_output();
 
-			if (input_thread != null) {
-				AltosDebug.debug("close(): stopping input_thread");
-				try {
-					AltosDebug.debug("close(): input_thread.interrupt().....");
-					input_thread.interrupt();
-					AltosDebug.debug("close(): input_thread.join().....");
-					input_thread.join();
-				} catch (Exception e) {}
-				input_thread = null;
-			}
-			notifyAll();
-		}
-	}
+        synchronized (closed_lock) {
+            AltosDebug.debug("Marked closed true");
+            closed = true;
+        }
 
-	abstract int write(byte[] buffer, int len);
+        close_device();
 
-	abstract int read(byte[] buffer, int len);
+        synchronized(this) {
 
-	private static final int buffer_size = 64;
+            if (input_thread != null) {
+                AltosDebug.debug("close(): stopping input_thread");
+                try {
+                    AltosDebug.debug("close(): input_thread.interrupt().....");
+                    input_thread.interrupt();
+                    AltosDebug.debug("close(): input_thread.join().....");
+                    input_thread.join();
+                } catch (Exception e) {}
+                input_thread = null;
+            }
+            notifyAll();
+        }
+    }
 
-	private final byte[] in_buffer = new byte[buffer_size];
-	private final byte[] out_buffer = new byte[buffer_size];
-	private int buffer_len = 0;
-	private int buffer_off = 0;
-	private int out_buffer_off = 0;
+    abstract int write(byte[] buffer, int start, int len);
 
-	private final byte[] debug_chars = new byte[buffer_size];
-	private int debug_off;
+    abstract int read(byte[] buffer, int len);
 
-	private void debug_input(byte b) {
-		if (b == '\n') {
-			AltosDebug.debug("            " + new String(debug_chars, 0, debug_off));
-			debug_off = 0;
-		} else {
-			if (debug_off < buffer_size)
-				debug_chars[debug_off++] = b;
-		}
-	}
+    private static final int buffer_size = 64;
 
-	private void disconnected() {
-		if (closed()) {
-			AltosDebug.debug("disconnected after closed");
-			return;
-		}
+    private final byte[] in_buffer = new byte[buffer_size];
+    private final byte[] out_buffer = new byte[buffer_size];
+    private int buffer_len = 0;
+    private int buffer_off = 0;
+    private int out_buffer_off = 0;
 
-		AltosDebug.debug("Sending disconnected message");
-		handler.obtainMessage(TelemetryService.MSG_DISCONNECTED, this).sendToTarget();
-	}
+    private final byte[] debug_chars = new byte[buffer_size];
+    private int debug_off;
 
-	public int getchar() {
+    private void debug_input(byte b) {
+        if (b == '\n') {
+            AltosDebug.debug("            " + new String(debug_chars, 0, debug_off));
+            debug_off = 0;
+        } else {
+            if (debug_off < buffer_size)
+                debug_chars[debug_off++] = b;
+        }
+    }
 
-		if (actually_closed())
-			return ERROR;
+    private void disconnected() {
+        if (closed()) {
+            AltosDebug.debug("disconnected after closed");
+            return;
+        }
 
-		while (buffer_off == buffer_len) {
-			buffer_len = read(in_buffer, buffer_size);
-			if (buffer_len < 0) {
-				AltosDebug.debug("ERROR returned from getchar()");
-				disconnected();
-				return ERROR;
-			}
-			buffer_off = 0;
-		}
+        AltosDebug.debug("Sending disconnected message");
+        handler.obtainMessage(TelemetryService.MSG_DISCONNECTED, this).sendToTarget();
+    }
+
+    public int getchar() {
+
+        if (actually_closed())
+            return ERROR;
+
+        while (buffer_off == buffer_len) {
+            buffer_len = read(in_buffer, buffer_size);
+            if (buffer_len < 0) {
+                AltosDebug.debug("ERROR returned from getchar()");
+                disconnected();
+                return ERROR;
+            }
+            buffer_off = 0;
+        }
 //		if (AltosDebug.D)
 //			debug_input(in_buffer[buffer_off]);
-		return in_buffer[buffer_off++];
-	}
+        return in_buffer[buffer_off++];
+    }
 
-	public void flush_output() {
-		super.flush_output();
+    public synchronized void flush_output() {
+        super.flush_output();
 
-		if (actually_closed()) {
-			out_buffer_off = 0;
-			return;
-		}
+        if (actually_closed()) {
+            out_buffer_off = 0;
+            return;
+        }
 
-		while (out_buffer_off != 0) {
-			int	sent = write(out_buffer, out_buffer_off);
+        byte[] copy = new byte[out_buffer_off];
+        for (int i = 0; i < out_buffer_off; i++)
+            copy[i] = out_buffer[i];
+        try {
+            write_queue.put(copy);
+        } catch (InterruptedException ie) {
+        }
+        out_buffer_off = 0;
+    }
 
-			if (sent <= 0) {
-				AltosDebug.debug("flush_output() failed");
-				out_buffer_off = 0;
-				break;
-			}
+    public void putchar(byte c) {
+        out_buffer[out_buffer_off++] = c;
+        if (out_buffer_off == buffer_size)
+            flush_output();
+    }
 
-			if (sent < out_buffer_off)
-				System.arraycopy(out_buffer, 0, out_buffer, sent, out_buffer_off - sent);
-
-			out_buffer_off -= sent;
-		}
-	}
-
-	public void putchar(byte c) {
-		out_buffer[out_buffer_off++] = c;
-		if (out_buffer_off == buffer_size)
-			flush_output();
-	}
-
-	public void print(String data) {
-		byte[] bytes = data.getBytes();
+    public void print(String data) {
+        byte[] bytes = data.getBytes();
 //		AltosDebug.debug(data.replace('\n', '\\'));
-		for (byte b : bytes)
-			putchar(b);
-	}
+        for (byte b : bytes)
+            putchar(b);
+    }
 
-	public AltosDroidLink(Handler handler) {
-		this.handler = handler;
-	}
+    public AltosDroidLink(Handler handler) {
+        this.handler = handler;
+    }
 }

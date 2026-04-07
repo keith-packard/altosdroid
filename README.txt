@@ -84,3 +84,7 @@ ToDo list
  * Support multiple receivers
 
  ✓ Support USB connected receivers
+
+ * Fire Igniters background color is wrong
+
+ * Fire Igniters causes ANR issues
