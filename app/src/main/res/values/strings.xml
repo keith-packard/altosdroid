@@ -171,5 +171,8 @@
     <string name="frequency">Frequency</string>
     <string name="description">Description</string>
 
+    <!-- Bluetooth access denied -->
+    <string name="bt_unavailable">Bluetooth Unavailable</string>
+    <string name="bt_denied">Access to Bluetooth devices denied</string>
 
 </resources>

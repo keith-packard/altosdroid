@@ -128,7 +128,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 
     public static final int MSG_STATE           = 1;
     public static final int MSG_UPDATE_AGE      = 2;
-    public static final int	MSG_IDLE_MODE	    = 3;
+    public static final int MSG_IDLE_MODE       = 3;
     public static final int MSG_IGNITER_STATUS  = 4;
     public static final int MSG_FILE_FAILED     = 5;
 
@@ -150,11 +150,9 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
     public boolean have_bluetooth_permission = false;
     public boolean have_bluetooth_connect_permission = false;
     public boolean have_bluetooth_scan_permission = false;
+    public boolean have_bluetooth_admin_permission = false;
     public boolean have_notification_permission = false;
     public boolean asked_permission = false;
-
-    static final String BLUETOOTH_CONNECT = "android.permission.BLUETOOTH_CONNECT";
-    static final String BLUETOOTH_SCAN = "android.permission.BLUETOOTH_SCAN";
 
     public static final String EXTRA_IDLE_MODE = "idle_mode";
     public static final String EXTRA_IDLE_RESULT = "idle_result";
@@ -315,6 +313,8 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         AltosDroidPreferences.register_selected_serial_listener(this);
         AltosPreferences.register_units_listener(this);
 
+        checkPermissions();
+
         selected_serial = AltosDroidPreferences.selected_serial();
         selected_serial_time = AltosDroidPreferences.selected_serial_time();
 
@@ -345,7 +345,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         update_ui(telemetry_state, state, false);
     }
 
-    private void ensureBluetooth() {
+    private boolean ensureBluetooth() {
         // Get local Bluetooth adapter
         if (checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
             mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -355,7 +355,9 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
                 Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
             }
+            return true;
         }
+        return false;
     }
 
     private boolean check_usb() {
@@ -510,10 +512,18 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         Intent serverIntent = null;
         int itemId = item.getItemId();
         if (itemId == R.id.connect_scan) {
-            ensureBluetooth();
-            // Launch the DeviceListActivity to see devices and do scan
-            serverIntent = new Intent(this, DeviceListActivity.class);
-            startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+            if (!ensureBluetooth()) {
+                AlertDialog.Builder builder_nobt = new AlertDialog.Builder(this);
+                builder_nobt.setTitle(R.string.bt_unavailable);
+                builder_nobt.setMessage(R.string.bt_denied);
+                builder_nobt.setNegativeButton(android.R.string.ok, null);
+                builder_nobt.setIconAttribute(android.R.attr.alertDialogIcon);
+                builder_nobt.show();
+            } else {
+                // Launch the DeviceListActivity to see devices and do scan
+                serverIntent = new Intent(this, DeviceListActivity.class);
+                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+            }
             return true;
         }
         if (itemId == R.id.disconnect) {
@@ -659,7 +669,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
             try {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
                 location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            } catch (SecurityException e) {
+            } catch (SecurityException|IllegalArgumentException e) {
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, this);
                 location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             }
@@ -687,11 +697,14 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
                     if (permissions[i].equals(Manifest.permission.BLUETOOTH)) {
                         have_bluetooth_permission = true;
                     }
-                    if (permissions[i].equals(BLUETOOTH_CONNECT)) {
+                    if (permissions[i].equals(Manifest.permission.BLUETOOTH_CONNECT)) {
                         have_bluetooth_connect_permission = true;
                     }
-                    if (permissions[i].equals(BLUETOOTH_SCAN)) {
+                    if (permissions[i].equals(Manifest.permission.BLUETOOTH_SCAN)) {
                         have_bluetooth_scan_permission = true;
+                    }
+                    if (permissions[i].equals(Manifest.permission.BLUETOOTH_ADMIN)) {
+                        have_bluetooth_admin_permission = true;
                     }
                     if (permissions[i].equals(Manifest.permission.POST_NOTIFICATIONS)) {
                         have_notification_permission = true;
@@ -702,44 +715,40 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
+    private void checkPermissions() {
         if (!asked_permission) {
             asked_permission = true;
-            if (ActivityCompat.checkSelfPermission(this,
-                                                   Manifest.permission.ACCESS_FINE_LOCATION)
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED)
             {
                 have_location_permission = true;
             }
-            if (ActivityCompat.checkSelfPermission(this,
-                                                   Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED)
             {
                 have_storage_permission = true;
             }
-            if (ActivityCompat.checkSelfPermission(this,
-                                                   Manifest.permission.BLUETOOTH)
+            if (checkSelfPermission(Manifest.permission.BLUETOOTH)
                 == PackageManager.PERMISSION_GRANTED)
             {
                 have_bluetooth_permission = true;
             }
-            if (ActivityCompat.checkSelfPermission(this,
-                                                   BLUETOOTH_CONNECT)
+            if (checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)
                 == PackageManager.PERMISSION_GRANTED)
             {
                 have_bluetooth_connect_permission = true;
             }
-            if (ActivityCompat.checkSelfPermission(this,
-                                                   BLUETOOTH_SCAN)
+            if (checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN)
                 == PackageManager.PERMISSION_GRANTED)
             {
                 have_bluetooth_scan_permission = true;
             }
-            if (ActivityCompat.checkSelfPermission(this,
-                                                   Manifest.permission.POST_NOTIFICATIONS)
+            if (checkSelfPermission(Manifest.permission.BLUETOOTH_ADMIN)
+                == PackageManager.PERMISSION_GRANTED)
+            {
+                have_bluetooth_admin_permission = true;
+            }
+            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
                 == PackageManager.PERMISSION_GRANTED) {
                 have_notification_permission = true;
             }
@@ -754,6 +763,8 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
                 count += 1;
             if (!have_bluetooth_scan_permission)
                 count += 1;
+            if (!have_bluetooth_admin_permission)
+                count += 1;
             if (!have_notification_permission)
                 count += 1;
             if (count > 0)
@@ -767,14 +778,23 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
                 if (!have_bluetooth_permission)
                     permissions[i++] = Manifest.permission.BLUETOOTH;
                 if (!have_bluetooth_connect_permission)
-                    permissions[i++] = BLUETOOTH_CONNECT;
+                    permissions[i++] = Manifest.permission.BLUETOOTH_CONNECT;
                 if (!have_bluetooth_scan_permission)
-                    permissions[i++] = BLUETOOTH_SCAN;
+                    permissions[i++] = Manifest.permission.BLUETOOTH_SCAN;
+                if (!have_bluetooth_admin_permission)
+                    permissions[i++] = Manifest.permission.BLUETOOTH_ADMIN;
                 if (!have_notification_permission)
                     permissions[i++] = Manifest.permission.POST_NOTIFICATIONS;
-                ActivityCompat.requestPermissions(this, permissions, MY_PERMISSION_REQUEST);
+                requestPermissions(permissions, MY_PERMISSION_REQUEST);
             }
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        checkPermissions();
         if (have_location_permission)
             enable_location_updates(false);
     }
