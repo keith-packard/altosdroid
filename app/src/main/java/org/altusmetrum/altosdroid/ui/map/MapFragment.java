@@ -82,7 +82,7 @@ public class MapFragment extends AltosFragment
     public void check_permission() {
         if (altos_droid == null)
             return;
-        if (altos_droid.have_location_permission)
+        if (altos_droid.perm_access_fine_location.have)
             position_permission();
         else
             altos_droid.tell_map_permission(this);

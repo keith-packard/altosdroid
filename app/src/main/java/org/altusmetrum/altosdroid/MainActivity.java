@@ -114,10 +114,10 @@ class SavedState {
     }
 }
 
-public class    MainActivity extends AppCompatActivity implements LocationListener,
-                                                       ActivityCompat.OnRequestPermissionsResultCallback,
-                                                       AltosUnitsListener,
-                                                       AltosDroidSelectedSerialListener {
+public class MainActivity extends AppCompatActivity implements LocationListener,
+                                                    ActivityCompat.OnRequestPermissionsResultCallback,
+                                                    AltosUnitsListener,
+                                                    AltosDroidSelectedSerialListener {
 
     // Actions sent to the telemetry server at startup time
 
@@ -145,13 +145,39 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
 
     static final int MY_PERMISSION_REQUEST = 1001;
 
-    public boolean have_location_permission = false;
-    public boolean have_storage_permission = false;
-    public boolean have_bluetooth_permission = false;
-    public boolean have_bluetooth_connect_permission = false;
-    public boolean have_bluetooth_scan_permission = false;
-    public boolean have_bluetooth_admin_permission = false;
-    public boolean have_notification_permission = false;
+    static final String MAPS_RECEIVE = "org.altusmetrum.AltosDroid.permission.MAPS_RECEIVE";
+    static final String READ_GSERVICES = "com.google.android.providers.gsf.permission.READ_GSERVICES";
+
+    public AltosPermission perm_foreground_service = new AltosPermission(Manifest.permission.FOREGROUND_SERVICE);
+    public AltosPermission perm_bluetooth_connect = new AltosPermission(Manifest.permission.BLUETOOTH_CONNECT);
+    public AltosPermission perm_bluetooth_scan = new AltosPermission(Manifest.permission.BLUETOOTH_SCAN);
+    public AltosPermission perm_bluetooth_admin = new AltosPermission(Manifest.permission.BLUETOOTH_ADMIN);
+    public AltosPermission perm_bluetooth = new AltosPermission(Manifest.permission.BLUETOOTH);
+    public AltosPermission perm_post_notifications = new AltosPermission(Manifest.permission.POST_NOTIFICATIONS);
+    public AltosPermission perm_write_external_storage = new AltosPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    public AltosPermission perm_internet = new AltosPermission(Manifest.permission.INTERNET);
+    public AltosPermission perm_read_gservices = new AltosPermission(READ_GSERVICES);
+    public AltosPermission perm_access_fine_location = new AltosPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+    public AltosPermission perm_access_coarse_location = new AltosPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
+    public AltosPermission perm_access_network_state = new AltosPermission(Manifest.permission.ACCESS_NETWORK_STATE);
+    public AltosPermission perm_maps_receive = new AltosPermission(MAPS_RECEIVE);
+
+    AltosPermission[] permissions = {
+        perm_foreground_service,
+        perm_bluetooth_connect,
+        perm_bluetooth_scan,
+        perm_bluetooth_admin,
+        perm_bluetooth,
+        perm_post_notifications,
+        perm_write_external_storage,
+        perm_internet,
+        perm_read_gservices,
+        perm_access_fine_location,
+        perm_access_coarse_location,
+        perm_access_network_state,
+        perm_maps_receive,
+    };
+
     public boolean asked_permission = false;
 
     public static final String EXTRA_IDLE_MODE = "idle_mode";
@@ -258,7 +284,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
                     } catch (RemoteException e) {
                     }
                 }
-                if (have_notification_permission)
+                if (perm_post_notifications.have)
                     postNotification();
             }
 
@@ -680,35 +706,24 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] new_permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, new_permissions, grantResults);
         if (requestCode == MY_PERMISSION_REQUEST) {
             for (int i = 0; i < grantResults.length; i++) {
-                if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                    if (permissions[i].equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                        have_location_permission = true;
-                        enable_location_updates(true);
-                        if (map_online != null)
-                            map_online.position_permission();
-                    }
-                    if (permissions[i].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                        have_storage_permission = true;
-                    }
-                    if (permissions[i].equals(Manifest.permission.BLUETOOTH)) {
-                        have_bluetooth_permission = true;
-                    }
-                    if (permissions[i].equals(Manifest.permission.BLUETOOTH_CONNECT)) {
-                        have_bluetooth_connect_permission = true;
-                    }
-                    if (permissions[i].equals(Manifest.permission.BLUETOOTH_SCAN)) {
-                        have_bluetooth_scan_permission = true;
-                    }
-                    if (permissions[i].equals(Manifest.permission.BLUETOOTH_ADMIN)) {
-                        have_bluetooth_admin_permission = true;
-                    }
-                    if (permissions[i].equals(Manifest.permission.POST_NOTIFICATIONS)) {
-                        have_notification_permission = true;
-                        postNotification();
+                for (int j = 0; j < permissions.length; j++) {
+                    if (new_permissions[i].equals(permissions[j].name)) {
+                        if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                            permissions[j].have = true;
+                            if (permissions[j] == perm_access_fine_location) {
+                                enable_location_updates(true);
+                                if (map_online != null)
+                                    map_online.position_permission();
+                            } else if (permissions[j] == perm_post_notifications) {
+                                postNotification();
+                            }
+                        } else {
+                            permissions[j].have = false;
+                        }
                     }
                 }
             }
@@ -718,74 +733,24 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
     private void checkPermissions() {
         if (!asked_permission) {
             asked_permission = true;
-            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED)
-            {
-                have_location_permission = true;
+            int missing = 0;
+            for (int i = 0; i < permissions.length; i++) {
+                if (checkSelfPermission(permissions[i].name) == PackageManager.PERMISSION_GRANTED) {
+                    permissions[i].have = true;
+                } else {
+                    permissions[i].have = false;
+                    missing++;
+                }
             }
-            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED)
+            if (missing > 0)
             {
-                have_storage_permission = true;
-            }
-            if (checkSelfPermission(Manifest.permission.BLUETOOTH)
-                == PackageManager.PERMISSION_GRANTED)
-            {
-                have_bluetooth_permission = true;
-            }
-            if (checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT)
-                == PackageManager.PERMISSION_GRANTED)
-            {
-                have_bluetooth_connect_permission = true;
-            }
-            if (checkSelfPermission(Manifest.permission.BLUETOOTH_SCAN)
-                == PackageManager.PERMISSION_GRANTED)
-            {
-                have_bluetooth_scan_permission = true;
-            }
-            if (checkSelfPermission(Manifest.permission.BLUETOOTH_ADMIN)
-                == PackageManager.PERMISSION_GRANTED)
-            {
-                have_bluetooth_admin_permission = true;
-            }
-            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
-                == PackageManager.PERMISSION_GRANTED) {
-                have_notification_permission = true;
-            }
-            int count = 0;
-            if (!have_location_permission)
-                count += 1;
-            if (!have_storage_permission)
-                count += 1;
-            if (!have_bluetooth_permission)
-                count += 1;
-            if (!have_bluetooth_connect_permission)
-                count += 1;
-            if (!have_bluetooth_scan_permission)
-                count += 1;
-            if (!have_bluetooth_admin_permission)
-                count += 1;
-            if (!have_notification_permission)
-                count += 1;
-            if (count > 0)
-            {
-                String[] permissions = new String[count];
-                int i = 0;
-                if (!have_location_permission)
-                    permissions[i++] = Manifest.permission.ACCESS_FINE_LOCATION;
-                if (!have_storage_permission)
-                    permissions[i++] = Manifest.permission.WRITE_EXTERNAL_STORAGE;
-                if (!have_bluetooth_permission)
-                    permissions[i++] = Manifest.permission.BLUETOOTH;
-                if (!have_bluetooth_connect_permission)
-                    permissions[i++] = Manifest.permission.BLUETOOTH_CONNECT;
-                if (!have_bluetooth_scan_permission)
-                    permissions[i++] = Manifest.permission.BLUETOOTH_SCAN;
-                if (!have_bluetooth_admin_permission)
-                    permissions[i++] = Manifest.permission.BLUETOOTH_ADMIN;
-                if (!have_notification_permission)
-                    permissions[i++] = Manifest.permission.POST_NOTIFICATIONS;
-                requestPermissions(permissions, MY_PERMISSION_REQUEST);
+                String[] new_permissions = new String[missing];
+                int count = 0;
+                for (int i = 0; i < permissions.length; i++) {
+                    if (!permissions[i].have)
+                        new_permissions[count++] = permissions[i].name;
+                }
+                requestPermissions(new_permissions, MY_PERMISSION_REQUEST);
             }
         }
     }
@@ -795,7 +760,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         super.onResume();
 
         checkPermissions();
-        if (have_location_permission)
+        if (perm_access_fine_location.have)
             enable_location_updates(false);
     }
 
@@ -806,7 +771,7 @@ public class    MainActivity extends AppCompatActivity implements LocationListen
         super.onPause();
 
         // Stop listening for location updates
-        if (have_location_permission)
+        if (perm_access_fine_location.have)
             ((LocationManager) getSystemService(Context.LOCATION_SERVICE)).removeUpdates(this);
     }
 
