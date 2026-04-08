@@ -711,7 +711,6 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
 
     private void connected() throws InterruptedException {
         AltosDebug.debug("connected top");
-        AltosDebug.check_ui("connected\n");
         try {
             if (altos_link == null)
                 throw new InterruptedException("no bluetooth");
