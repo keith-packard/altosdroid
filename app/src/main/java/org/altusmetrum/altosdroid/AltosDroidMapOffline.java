@@ -53,6 +53,7 @@ import org.altusmetrum.altoslib_14.AltosState;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -237,7 +238,7 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
         if (map.transform == null) return;
         ArrayList<Integer> near = new ArrayList<Integer>();
 
-        for (RocketOffline rocket : sorted_rockets()) {
+        for (RocketOffline rocket : sorted_rockets(true)) {
             if (rocket.position == null) {
                 debug("rocket %d has no position\n", rocket.serial);
                 continue;
@@ -267,10 +268,13 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
         }
     }
 
-    private RocketOffline[] sorted_rockets() {
+    private RocketOffline[] sorted_rockets(boolean forward) {
         RocketOffline[] rocket_array = rockets.values().toArray(new RocketOffline[0]);
 
-        Arrays.sort(rocket_array);
+        if (forward)
+            Arrays.sort(rocket_array);
+        else
+            Arrays.sort(rocket_array, Collections.reverseOrder());
         return rocket_array;
     }
 
@@ -285,7 +289,7 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
 
         RocketOffline target_rocket = null;
 
-        for (RocketOffline rocket : Arrays.asList(sorted_rockets()).reversed()) {
+        for (RocketOffline rocket : Arrays.asList(sorted_rockets(false))) {
             if (rocket.serial == map_fragment.target_serial)
                 target_rocket = rocket;
             else
