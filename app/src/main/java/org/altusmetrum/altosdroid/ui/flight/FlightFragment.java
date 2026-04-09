@@ -82,6 +82,8 @@ public class FlightFragment extends AltosFragment {
 
 	@Override
 	public void show(TelemetryState telem_state, AltosState state, AltosGreatCircle from_receiver, Location receiver_location) {
+                if (binding == null)
+                        return;
 		if (state != null) {
 			String state_name = null;
 			if (state.state() == AltosLib.ao_flight_stateless) {

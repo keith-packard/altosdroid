@@ -213,6 +213,8 @@ public class MapFragment extends AltosFragment
         AltosLatLon new_center = null;
         boolean reset_zoom = true;
 
+        if (binding == null)
+            return;
         if (telem_state != null && mapInterface != null) {
             mapInterface.set_telem_state(telem_state);
         }

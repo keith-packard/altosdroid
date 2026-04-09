@@ -101,6 +101,8 @@ public class PadFragment extends AltosFragment {
 
 	@Override
 	public void show(TelemetryState telem_state, AltosState state, AltosGreatCircle from_receiver, Location receiver_location) {
+                if (binding == null)
+                        return;
 		if (state != null) {
 			// battery voltage
 			battery_meter.set(state.battery_voltage);

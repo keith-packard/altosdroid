@@ -55,6 +55,8 @@ public class RecoverFragment extends AltosFragment {
 	}
     @Override
     public void show(TelemetryState telem_state, AltosState state, AltosGreatCircle from_receiver, Location receiver_location) {
+                if (binding == null)
+                        return;
 		if (from_receiver != null) {
 			binding.bearingValue.setText(String.format(Locale.getDefault(), "%1.0f°", from_receiver.bearing));
 			set_value(binding.distanceValue, AltosConvert.distance, 1, from_receiver.distance);
