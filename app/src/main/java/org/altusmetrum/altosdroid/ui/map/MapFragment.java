@@ -18,6 +18,7 @@
 
 package org.altusmetrum.altosdroid.ui.map;
 
+import android.content.pm.PackageManager;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.location.Location;
@@ -118,12 +119,20 @@ public class MapFragment extends AltosFragment
         return binding.getRoot();
     }
 
+    boolean have_google_maps() {
+        PackageManager pm = getContext().getPackageManager();
+        try {
+            pm.getPackageInfo("com.google.android.gms", PackageManager.GET_ACTIVITIES);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         check_permission();
-        AltosDroidPreferences.register_map_source_listener(this);
-        AltosDroidPreferences.register_selected_serial_listener(this);
 
         String[] map_types = getResources().getStringArray(R.array.map_types);
 
@@ -156,6 +165,16 @@ public class MapFragment extends AltosFragment
                     AltosDroidPreferences.set_map_source(source);
                 }
             });
+
+        if (!have_google_maps())
+        {
+            if (AltosDroidPreferences.map_source() == AltosDroidPreferences.MAP_SOURCE_ONLINE)
+                AltosDroidPreferences.set_map_source(AltosDroidPreferences.MAP_SOURCE_OFFLINE);
+            binding.mapSource.setEnabled(false);
+        }
+
+        AltosDroidPreferences.register_map_source_listener(this);
+        AltosDroidPreferences.register_selected_serial_listener(this);
 
         map_source_changed(AltosDroidPreferences.map_source());
     }
