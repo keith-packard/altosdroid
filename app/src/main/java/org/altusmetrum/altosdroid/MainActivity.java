@@ -356,6 +356,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         Menu menu = binding.navView.getMenu();
         MenuItem pad_item = menu.findItem(R.id.navigation_pad);
 
+        binding.navView.setOnApplyWindowInsetsListener(null);
+        binding.navView.setPadding(0,0,0,0);
+
+
         fm = getSupportFragmentManager();
         NavHostFragment navHostFragment = (NavHostFragment) fm.findFragmentById(R.id.nav_host_fragment_activity_main);
         nav_controller = navHostFragment.getNavController();
