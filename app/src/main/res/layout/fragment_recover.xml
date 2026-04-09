@@ -144,7 +144,7 @@
 
 	<ImageView
             android:id="@+id/target_icon"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:scaleType="centerInside"
             android:paddingStart="0dp"
@@ -153,7 +153,6 @@
             android:src="@drawable/flight_orange"
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
-            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/column_icon"
             app:layout_constraintTop_toTopOf="@id/distance_row"
@@ -205,7 +204,7 @@
 
 	<ImageView
             android:id="@+id/receiver_icon"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:scaleType="centerInside"
             android:paddingStart="0dp"
@@ -213,8 +212,7 @@
             android:contentDescription="Receiver Position"
             android:src="@drawable/alien"
             app:layout_constrainedHeight="true"
-            app:layout_constrainedWidth="true"
-            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constrainedWidth="false"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/column_icon"
             app:layout_constraintTop_toTopOf="@id/target_lon_row"

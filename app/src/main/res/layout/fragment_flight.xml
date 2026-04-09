@@ -549,7 +549,7 @@
 
 	<ImageView
             android:id="@+id/target_pos_icon"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:scaleType="centerInside"
             android:paddingStart="@dimen/table_padding_start"
@@ -558,7 +558,6 @@
             android:src="@drawable/flight_orange"
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
-            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/column_good"
             app:layout_constraintTop_toTopOf="@id/distance_row"
@@ -637,7 +636,7 @@
 
 	<ImageView
             android:id="@+id/apogee_redled"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:scaleType="centerInside"
             android:paddingStart="0dp"
@@ -646,7 +645,6 @@
             android:src="@drawable/grayled"
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
-            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/column_bad"
             app:layout_constraintTop_toTopOf="@id/lon_row"
@@ -654,7 +652,7 @@
 
 	<ImageView
             android:id="@+id/apogee_greenled"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:scaleType="centerInside"
             android:paddingStart="0dp"
@@ -663,7 +661,6 @@
             android:src="@drawable/grayled"
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
-            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="@id/column_bad"
             app:layout_constraintEnd_toStartOf="@id/column_good"
             app:layout_constraintTop_toTopOf="@id/lon_row"
@@ -708,7 +705,7 @@
 
 	<ImageView
             android:id="@+id/main_redled"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:scaleType="centerInside"
             android:paddingStart="0dp"
@@ -717,7 +714,6 @@
             android:src="@drawable/grayled"
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
-            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/column_bad"
             app:layout_constraintTop_toTopOf="@id/apogee_row"
@@ -725,7 +721,7 @@
 
 	<ImageView
             android:id="@+id/main_greenled"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:scaleType="centerInside"
             android:paddingStart="0dp"
@@ -734,7 +730,6 @@
             android:src="@drawable/grayled"
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
-            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="@id/column_bad"
             app:layout_constraintEnd_toStartOf="@id/column_good"
             app:layout_constraintTop_toTopOf="@id/apogee_row"
@@ -779,7 +774,7 @@
 
 	<ImageView
             android:id="@+id/ignite_a_redled"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:scaleType="centerInside"
             android:paddingStart="0dp"
@@ -788,7 +783,6 @@
             android:src="@drawable/grayled"
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
-            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/column_bad"
             app:layout_constraintTop_toTopOf="@id/main_row"
@@ -796,7 +790,7 @@
 
 	<ImageView
             android:id="@+id/ignite_a_greenled"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:scaleType="centerInside"
             android:paddingStart="0dp"
@@ -805,7 +799,6 @@
             android:src="@drawable/grayled"
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
-            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="@id/column_bad"
             app:layout_constraintEnd_toStartOf="@id/column_good"
             app:layout_constraintTop_toTopOf="@id/main_row"
@@ -850,7 +843,7 @@
 
 	<ImageView
             android:id="@+id/ignite_b_redled"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:scaleType="centerInside"
             android:paddingStart="0dp"
@@ -859,7 +852,6 @@
             android:src="@drawable/grayled"
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
-            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/column_bad"
             app:layout_constraintTop_toTopOf="@id/ignite_a_row"
@@ -867,7 +859,7 @@
 
 	<ImageView
             android:id="@+id/ignite_b_greenled"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:scaleType="centerInside"
             android:paddingStart="0dp"
@@ -876,7 +868,6 @@
             android:src="@drawable/grayled"
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
-            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="@id/column_bad"
             app:layout_constraintEnd_toStartOf="@id/column_good"
             app:layout_constraintTop_toTopOf="@id/ignite_a_row"
@@ -922,7 +913,7 @@
 
 	<ImageView
             android:id="@+id/ignite_c_redled"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:scaleType="centerInside"
             android:paddingStart="0dp"
@@ -931,7 +922,6 @@
             android:src="@drawable/grayled"
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
-            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/column_bad"
             app:layout_constraintTop_toTopOf="@id/ignite_b_row"
@@ -939,7 +929,7 @@
 
 	<ImageView
             android:id="@+id/ignite_c_greenled"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:scaleType="centerInside"
             android:paddingStart="0dp"
@@ -948,7 +938,6 @@
             android:src="@drawable/grayled" 
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
-            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="@id/column_bad"
             app:layout_constraintEnd_toStartOf="@id/column_good"
             app:layout_constraintTop_toTopOf="@id/ignite_b_row"
@@ -993,7 +982,7 @@
 
 	<ImageView
             android:id="@+id/ignite_d_redled"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:scaleType="centerInside"
             android:paddingStart="0dp"
@@ -1002,7 +991,6 @@
             android:src="@drawable/grayled"
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
-            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/column_bad"
             app:layout_constraintTop_toTopOf="@id/ignite_c_row"
@@ -1010,7 +998,7 @@
 
 	<ImageView
             android:id="@+id/ignite_d_greenled"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:scaleType="centerInside"
             android:paddingStart="0dp"
@@ -1019,7 +1007,6 @@
             android:src="@drawable/grayled"
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
-            app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="@id/column_bad"
             app:layout_constraintEnd_toStartOf="@id/column_good"
             app:layout_constraintTop_toTopOf="@id/ignite_c_row"
