@@ -34,6 +34,9 @@
     <!-- Permissions needed to access USB OTG -->
     <uses-feature android:name="android.hardware.usb.host" android:required="false" />
 
+    <!-- We sure like having GPS, but can survive without it -->
+    <uses-feature android:name="android.hardware.location.gps" android:required="false"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
