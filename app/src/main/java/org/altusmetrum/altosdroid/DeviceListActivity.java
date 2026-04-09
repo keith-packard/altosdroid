@@ -89,10 +89,8 @@ public class DeviceListActivity extends AppCompatActivity {
         // Initialize the button to perform device discovery
         Button scanButton = findViewById(R.id.button_scan);
         scanButton.setOnClickListener(v -> {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
                 doDiscovery();
-            }
-            v.setVisibility(View.GONE);
+                v.setVisibility(View.GONE);
         });
 
         // Initialize array adapters. One for already paired devices and
@@ -123,9 +121,6 @@ public class DeviceListActivity extends AppCompatActivity {
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // Get a set of currently paired devices
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
         Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
 
         // If there are paired devices, add each one to the ArrayAdapter
@@ -148,9 +143,7 @@ public class DeviceListActivity extends AppCompatActivity {
 
         // Make sure we're not doing discovery anymore
         if (mBtAdapter != null) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
-                mBtAdapter.cancelDiscovery();
-            }
+            mBtAdapter.cancelDiscovery();
         }
 
         // Unregister broadcast listeners
@@ -169,17 +162,6 @@ public class DeviceListActivity extends AppCompatActivity {
         // Turn on sub-title for new devices
         findViewById(R.id.title_new_devices).setVisibility(View.VISIBLE);
 
-        // If we're already discovering, stop it
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
         if (mBtAdapter.isDiscovering()) {
             mBtAdapter.cancelDiscovery();
         }

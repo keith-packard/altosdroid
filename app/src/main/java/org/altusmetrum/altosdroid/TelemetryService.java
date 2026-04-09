@@ -583,9 +583,6 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
         if (bluetooth_adapter == null || !bluetooth_adapter.isEnabled() || address.address == null) {
             return;
         }
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
         disconnect(false);
         // Get the BluetoothDevice object
         BluetoothDevice device = bluetooth_adapter.getRemoteDevice(address.address);

@@ -371,9 +371,18 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         update_ui(telemetry_state, state, false);
     }
 
+    public boolean can_bluetooth() {
+        checkPermissions();
+        /* Allow either old or new permission values */
+        if ((perm_bluetooth_connect.have||perm_bluetooth.have) &&
+            (perm_bluetooth_scan.have || perm_bluetooth_admin.have))
+            return true;
+        return false;
+    }
+
     private boolean ensureBluetooth() {
         // Get local Bluetooth adapter
-        if (checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+        if (can_bluetooth()) {
             mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
             /* if there is a BT adapter and it isn't turned on, then turn it on */
@@ -713,6 +722,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 for (int j = 0; j < permissions.length; j++) {
                     if (new_permissions[i].equals(permissions[j].name)) {
                         if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                            AltosDebug.debug("permission %s now granted\n", permissions[j].name);
                             permissions[j].have = true;
                             if (permissions[j] == perm_access_fine_location) {
                                 enable_location_updates(true);
@@ -722,6 +732,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                                 postNotification();
                             }
                         } else {
+                            AltosDebug.debug("permission %s still denied\n", permissions[j].name);
                             permissions[j].have = false;
                         }
                     }
@@ -736,8 +747,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             int missing = 0;
             for (int i = 0; i < permissions.length; i++) {
                 if (checkSelfPermission(permissions[i].name) == PackageManager.PERMISSION_GRANTED) {
+                    AltosDebug.debug("permission %s already granted\n", permissions[i].name);
                     permissions[i].have = true;
                 } else {
+                    AltosDebug.debug("permission %s not yet granted\n", permissions[i].name);
                     permissions[i].have = false;
                     missing++;
                 }
@@ -747,8 +760,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 String[] new_permissions = new String[missing];
                 int count = 0;
                 for (int i = 0; i < permissions.length; i++) {
-                    if (!permissions[i].have)
+                    if (!permissions[i].have) {
+                        AltosDebug.debug("Requesting permission %s\n", permissions[i].name);
                         new_permissions[count++] = permissions[i].name;
+                    }
                 }
                 requestPermissions(new_permissions, MY_PERMISSION_REQUEST);
             }
