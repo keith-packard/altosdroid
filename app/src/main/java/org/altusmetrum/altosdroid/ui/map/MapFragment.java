@@ -71,8 +71,17 @@ public class MapFragment extends AltosFragment
 
     private AltosLatLon my_position = null;
     private AltosLatLon target_position = null;
-    public int target_serial = -1;
+    private AltosLatLon center_position = null;
+    private int center_serial = AltosDroidPreferences.SELECT_AUTO;     /* when not SELECT_AUTO, center on this the first time we can */
+    public int target_serial = AltosDroidPreferences.SELECT_AUTO;
     private FragmentMapBinding binding;
+
+    private final static int CENTER_NONE = 0;
+    private final static int CENTER_PASTURE = 1;
+    private final static int CENTER_RECEIVER = 2;
+    private final static int CENTER_TARGET = 3;
+
+    private int center_priority = CENTER_NONE;
 
     private AltosDroidMapInterface mapInterface;
     private AltosDroidMapOnline mapOnline;
@@ -162,32 +171,29 @@ public class MapFragment extends AltosFragment
         binding = null;
     }
 
+    long last_user_input;
+
+    public void user_motion() {
+        last_user_input = System.currentTimeMillis();
+    }
+
+    public long time_since_user_motion() {
+        return System.currentTimeMillis() - last_user_input;
+    }
+
     public void position_permission() {
         if (mapInterface != null)
             mapInterface.position_permission();
     }
 
-    double mapAccuracy = -1;
-
-    boolean center(double lat, double lon, double accuracy) {
-        if (mapInterface != null) {
-            if (mapAccuracy < 0 || accuracy < mapAccuracy/10) {
-                mapInterface.center(lat, lon, accuracy);
-                mapAccuracy = accuracy;
-                return true;
-            }
-        }
-        return false;
-    }
-
-    int selected_serial = AltosDroidPreferences.SELECT_AUTO;
-    int center_serial = AltosDroidPreferences.SELECT_AUTO;
     public void selected_serial_changed(int serial, long time) {
-        mapAccuracy = -1;
-        selected_serial = serial;
+        center_priority = CENTER_NONE;
     }
 
     public void show(TelemetryState telem_state, AltosState state, AltosGreatCircle from_receiver, Location receiver_location) {
+        AltosLatLon new_center = null;
+        boolean reset_zoom = true;
+
         if (telem_state != null && mapInterface != null) {
             mapInterface.set_telem_state(telem_state);
         }
@@ -195,10 +201,23 @@ public class MapFragment extends AltosFragment
         if (state != null) {
             AltosCalData cal_data = state.cal_data();
 
-            if (cal_data != null && cal_data.serial != AltosLib.MISSING)
-                target_serial = cal_data.serial;
             if (state.pad_lat != AltosLib.MISSING && mapInterface != null)
                 mapInterface.set_pad_position(state.pad_lat, state.pad_lon);
+
+            if (cal_data != null) {
+                target_serial = cal_data.serial;
+                if (state.gps != null && state.gps.locked && state.gps.nsat >= 4 && state.gps.lat != AltosLib.MISSING) {
+                    long time_since_motion = time_since_user_motion();
+                    if (center_priority < CENTER_TARGET || center_serial != target_serial) {
+                        new_center = new AltosLatLon(state.gps.lat, state.gps.lon);
+                        center_priority = CENTER_TARGET;
+                        center_serial = target_serial;
+                    } else if (time_since_motion > 30000) {
+                        reset_zoom = false;
+                        new_center = new AltosLatLon(state.gps.lat, state.gps.lon);
+                    }
+                }
+            }
 
             if (state.gps != null && state.gps.lat != AltosLib.MISSING) {
                 if (binding != null) {
@@ -207,12 +226,6 @@ public class MapFragment extends AltosFragment
                     binding.mapTargetPosition.setText(lat_text + "\n" + lon_text);
                 }
                 target_position = new AltosLatLon(state.gps.lat, state.gps.lon);
-                if (state.gps.locked && state.gps.nsat >= 4) {
-                    if (center_serial != selected_serial && target_serial == selected_serial)
-                        mapAccuracy = -1;
-                    if (center(state.gps.lat, state.gps.lon, 10))
-                        center_serial = target_serial;
-                }
             }
         }
 
@@ -225,14 +238,28 @@ public class MapFragment extends AltosFragment
                 accuracy = 1000;
 
             my_position = new AltosLatLon(receiver_location.getLatitude(), receiver_location.getLongitude());
-            if (target_position == null)
-                center (my_position.lat, my_position.lon, accuracy);
 
             if (binding != null) {
                 String lat_text = AltosValue.pos(receiver_location.getLatitude(), "N", "S");
                 String lon_text = AltosValue.pos(receiver_location.getLongitude(), "E", "W");
                 binding.mapReceiverPosition.setText(lat_text + "\n" + lon_text);
             }
+
+            if (center_priority < CENTER_RECEIVER) {
+                center_priority = CENTER_RECEIVER;
+                new_center = my_position;
+            }
+        }
+
+        if (center_priority < CENTER_PASTURE) {
+            center_priority = CENTER_PASTURE;
+            new_center = new AltosLatLon(37.167833333, -97.73975);
+        }
+
+        if (new_center != null && mapInterface != null) {
+            mapInterface.center(new_center.lat, new_center.lon, reset_zoom);
+            center_position = new_center;
+            user_motion();
         }
 
         if (my_position != null && mapInterface != null)
@@ -255,7 +282,6 @@ public class MapFragment extends AltosFragment
         if (mapInterface != null)
             mapInterface.deactivate();
         mapInterface = null;
-        mapAccuracy = -1;
         int child = 0;
         if (AltosDroidPreferences.map_source() == AltosDroidPreferences.MAP_SOURCE_ONLINE) {
             if (mapOnline == null)
@@ -267,6 +293,7 @@ public class MapFragment extends AltosFragment
             child = 1;
         }
         mapInterface.activate(this);
+        center_serial = AltosDroidPreferences.SELECT_AUTO;
         binding.mapSource.setChecked(map_source == AltosDroidPreferences.MAP_SOURCE_ONLINE);
         binding.mapType.setEnabled(map_source == AltosDroidPreferences.MAP_SOURCE_ONLINE);
         mapInterface.set_altos_droid(altos_droid);

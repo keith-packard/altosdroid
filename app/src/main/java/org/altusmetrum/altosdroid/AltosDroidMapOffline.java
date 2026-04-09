@@ -178,7 +178,9 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
                         float x = pt.x + px_size / 2.0f;
                         float y = pt.y + px_size / 2.0f;
 
-                        MainActivity.draw_text(context, canvas, message, x, y, R.dimen.map_text_missing_size, Paint.Align.CENTER);
+                        MainActivity.draw_text(context, canvas,
+                                               String.format("%.6f,%.6f %s", center.lat, center.lon, message),
+                                               x, y, R.dimen.map_text_missing_size, Paint.Align.CENTER);
                     }
                 }
             }
@@ -358,6 +360,9 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
     public boolean dispatchTouchEvent(MotionEvent event) {
         scale_detector.onTouchEvent(event);
 
+        if (map_fragment != null)
+            map_fragment.user_motion();
+
         if (scale_detector.isInProgress()) {
             scaling = true;
         }
@@ -379,9 +384,12 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
         return true;
     }
 
-    public void center(double lat, double lon, double accuracy) {
-        if (map != null)
-            map.maybe_centre(lat, lon);
+    public void center(double lat, double lon, boolean reset_zoom) {
+        if (map != null) {
+            map.centre(lat, lon);
+            if (reset_zoom)
+                map.set_zoom(14);
+        }
     }
 
     public void set_visible(boolean visible) {

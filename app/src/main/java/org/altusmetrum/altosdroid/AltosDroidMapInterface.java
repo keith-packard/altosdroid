@@ -26,7 +26,7 @@ import java.util.List;
 public interface AltosDroidMapInterface {
     void set_altos_droid(MainActivity altos_droid);
     void set_telem_state(TelemetryState telem_state);
-    void center(double lat, double lon, double accuracy);
+    void center(double lat, double lon, boolean reset_zoom);
     void set_pad_position(double lat, double lon);
     void set_here_position(double lat, double lon);
     void set_there_position(double lat, double lon);

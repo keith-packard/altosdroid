@@ -23,6 +23,12 @@ import android.graphics.Point;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
+import com.google.android.gms.maps.GoogleMap.OnCameraIdleListener;
+import com.google.android.gms.maps.GoogleMap.OnCameraMoveCanceledListener;
+import com.google.android.gms.maps.GoogleMap.OnCameraMoveListener;
+import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -109,7 +115,14 @@ class RocketOnline implements Comparable {
     }
 }
 
-public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener, AltosDroidMapInterface, AltosMapTypeListener {
+public class AltosDroidMapOnline implements
+                                 OnMarkerClickListener,
+                                 OnMapClickListener,
+                                 OnCameraMoveStartedListener,
+                                 OnCameraIdleListener,
+                                 AltosDroidMapInterface,
+                                 AltosMapTypeListener {
+
     private final HashMap<Integer,RocketOnline> rockets = new HashMap<Integer,RocketOnline>();
 
     private GoogleMap mMap;
@@ -136,6 +149,18 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
         }
     }
 
+    private int move_reason;
+
+    public void onCameraMoveStarted(int reason) {
+        move_reason = reason;
+    }
+
+    public void onCameraIdle() {
+        if (move_reason == OnCameraMoveStartedListener.REASON_GESTURE)
+            if (map_fragment != null)
+                map_fragment.user_motion();
+    }
+
     private final OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         /**
@@ -154,6 +179,8 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
             mMap.getUiSettings().setZoomControlsEnabled(false);
             mMap.setOnMarkerClickListener(AltosDroidMapOnline.this);
             mMap.setOnMapClickListener(AltosDroidMapOnline.this);
+            mMap.setOnCameraMoveStartedListener(AltosDroidMapOnline.this);
+            mMap.setOnCameraIdleListener(AltosDroidMapOnline.this);
             mMap.setMapColorScheme(MapColorScheme.FOLLOW_SYSTEM);
 
             AltosMarker pad_marker = new PadMarker(context);
@@ -242,10 +269,14 @@ public class AltosDroidMapOnline implements GoogleMap.OnMarkerClickListener, Goo
         this.altos_droid = altos_droid;
     }
 
-    public void center(double lat, double lon, double accuracy) {
+    public void center(double lat, double lon, boolean reset_zoom) {
         center = new LatLng(lat, lon);
-        if (mMap != null)
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(center,14));
+        if (mMap != null) {
+            if (reset_zoom)
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(center,14));
+            else
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(center));
+        }
     }
 
     private void set_rocket(int serial, AltosState state, boolean is_target) {
