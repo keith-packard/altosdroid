@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.map.MapFragment">
+
+    <ViewSwitcher
+        android:id="@+id/map_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateFirstView="false"
+        android:inAnimation="@android:anim/slide_in_left"
+        android:outAnimation="@android:anim/slide_out_right"
+        app:layout_constrainedWidth="true"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/map_table_land"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        >
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/map_online"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".MapsFragment" />
+
+        <org.altusmetrum.altosdroid.AltosDroidMapOffline
+            android:id="@+id/map_offline"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </ViewSwitcher>
+
+    <ScrollView
+        android:id="@+id/map_table_land"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_constrainedWidth="false"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/map_table_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/map_table_row_1"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="map_distance,map_bearing"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/map_table_row_2"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:barrierDirection="top"
+                app:constraint_referenced_ids="map_target_position,map_receiver_position"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/map_table_row_3"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="map_target_position,map_receiver_position"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/map_table_row_4"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:barrierDirection="top"
+                app:constraint_referenced_ids="map_type,map_source"/>
+
+            <TextView
+                android:id="@+id/map_distance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end|center_vertical"
+                android:text="@string/map_distance"
+                android:paddingHorizontal="@dimen/table_padding_start"
+                android:paddingVertical="@dimen/menu_padding_vertical"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constrainedWidth="false"
+                app:layout_constrainedHeight="false"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <TextView
+                android:id="@+id/map_bearing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end|center_vertical"
+                android:text="@string/map_bearing"
+                android:paddingHorizontal="@dimen/table_padding_start"
+                android:paddingVertical="@dimen/menu_padding_vertical"
+                app:layout_constraintHorizontal_bias="1"
+                app:layout_constrainedWidth="false"
+                app:layout_constrainedHeight="false"
+                app:layout_constraintStart_toEndOf="@id/map_distance"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <ImageView
+                android:id="@+id/map_target"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:contentDescription="@string/map_target"
+                android:src="@drawable/flight_orange"
+                android:paddingHorizontal="@dimen/table_padding_start"
+                android:paddingVertical="@dimen/menu_padding_vertical"
+                app:layout_constraintHeight_max="48dp"
+                app:layout_constrainedHeight="true"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/map_target_position"
+                app:layout_constraintBottom_toBottomOf="@id/map_target_position"
+                app:layout_wrapBehaviorInParent="skipped" />
+
+            <TextView
+                android:id="@+id/map_target_position"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/map_target_position"
+                android:textAppearance="@style/PosText"
+                android:gravity="end|center_vertical"
+                android:paddingHorizontal="@dimen/table_padding_start"
+                android:paddingVertical="@dimen/menu_padding_vertical"
+                app:layout_constraintHorizontal_bias="1"
+                app:layout_constrainedHeight="false"
+                app:layout_constrainedWidth="false"
+                app:layout_constraintStart_toEndOf="@id/map_target"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/map_bearing"/>
+
+            <ImageView
+                android:id="@+id/map_receiver"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:contentDescription="@string/map_receiver"
+                android:src="@drawable/alien"
+                android:paddingHorizontal="@dimen/table_padding_start"
+                android:paddingVertical="@dimen/menu_padding_vertical"
+                app:layout_constraintHeight_max="48dp"
+                app:layout_constrainedHeight="true"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/map_receiver_position"
+                app:layout_constraintTop_toTopOf="@id/map_receiver_position"
+                app:layout_constraintBottom_toBottomOf="@id/map_receiver_position"
+                app:layout_wrapBehaviorInParent="skipped" />
+
+            <TextView
+                android:id="@+id/map_receiver_position"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end|center_vertical"
+                android:paddingHorizontal="@dimen/table_padding_start"
+                android:paddingVertical="@dimen/menu_padding_vertical"
+                android:text="@string/map_receiver_position"
+                android:textAppearance="@style/PosText"
+                app:layout_constraintHorizontal_bias="1"
+                app:layout_constrainedWidth="false"
+                app:layout_constrainedHeight="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/map_target_position"/>
+
+            <View
+                android:id="@+id/map_table_spacer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constrainedHeight="true"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/map_receiver_position"
+                app:layout_constraintBottom_toTopOf="@id/map_type"/>
+
+            <Spinner
+                android:id="@+id/map_type"
+	        android:spinnerMode="dropdown"
+                android:gravity="start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:paddingVertical="@dimen/menu_padding_vertical"
+                android:paddingStart="@dimen/table_padding_start"
+                android:paddingEnd="20sp"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constrainedWidth="false"
+                app:layout_constrainedHeight="false"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/map_source"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/map_table_center_line"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="top" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/map_source"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/map_online"
+                android:textAppearance="@style/ValueText"
+                android:paddingHorizontal="@dimen/table_padding_start"
+                android:paddingVertical="@dimen/menu_padding_vertical"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constrainedWidth="false"
+                app:layout_constrainedHeight="false"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
