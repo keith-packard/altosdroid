@@ -4,7 +4,9 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="table_padding_vertical">2dp</dimen>
     <dimen name="menu_padding_vertical">10dp</dimen>
+    <dimen name="menu_padding_landscape">15dp</dimen>
     <dimen name="table_padding_start">2dp</dimen>
+    <dimen name="nav_bar_padding">4dp</dimen>
     <dimen name="map_text_size">10pt</dimen>
     <dimen name="map_text_missing_size">5pt</dimen>
     <dimen name="map_marker_size">40pt</dimen>

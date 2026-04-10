@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:fillViewport="true"
-        android:paddingHorizontal="@dimen/table_padding_start"
+        android:paddingHorizontal="@dimen/menu_padding_landscape"
         app:layout_constrainedWidth="false"
         app:layout_constrainedHeight="true"
         app:layout_constraintStart_toStartOf="parent"
@@ -76,6 +76,15 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/callsign_label"
+                app:layout_constraintBottom_toTopOf="@id/callsign_pad"/>
+
+            <View
+                android:id="@+id/callsign_pad"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/callsign_value"
                 app:layout_constraintBottom_toTopOf="@id/row1"/>
 
             <TextView
@@ -99,6 +108,15 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/serial_label"
+                app:layout_constraintBottom_toTopOf="@id/serial_pad"/>
+
+            <View
+                android:id="@+id/serial_pad"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/serial_value"
                 app:layout_constraintBottom_toTopOf="@id/row2"/>
 
             <TextView
@@ -122,7 +140,16 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/flight_label"
-                app:layout_constraintBottom_toTopOf="@id/row3" />
+                app:layout_constraintBottom_toTopOf="@id/flight_pad" />
+
+            <View
+                android:id="@+id/flight_pad"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/flight_value"
+                app:layout_constraintBottom_toTopOf="@id/row3"/>
 
             <TextView
                 android:id="@+id/rssi_label"
@@ -145,6 +172,15 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/rssi_label"
+                app:layout_constraintBottom_toTopOf="@id/rssi_pad"/>
+
+            <View
+                android:id="@+id/rssi_pad"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/rssi_value"
                 app:layout_constraintBottom_toTopOf="@id/row4"/>
 
             <TextView
@@ -168,6 +204,15 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/age_label"
+                app:layout_constraintBottom_toTopOf="@id/age_pad"/>
+
+            <View
+                android:id="@+id/age_pad"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/age_value"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -178,7 +223,6 @@
         android:layout_width="1dp"
         android:layout_height="match_parent"
         android:background="?android:attr/listDivider"
-        android:paddingHorizontal="@dimen/table_padding_start"
         app:layout_constraintStart_toEndOf="@id/left_bar"
         app:layout_constraintEnd_toStartOf="@id/nav_host_fragment_activity_main"
         app:layout_constraintTop_toTopOf="parent"
