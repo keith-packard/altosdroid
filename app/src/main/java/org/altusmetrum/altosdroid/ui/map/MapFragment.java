@@ -119,6 +119,12 @@ public class MapFragment extends AltosFragment
         return binding.getRoot();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
     boolean have_google_maps() {
         PackageManager pm = getContext().getPackageManager();
         try {
