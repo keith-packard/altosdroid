@@ -30,12 +30,12 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent=".25"/>
 
-    <androidx.constraintlayout.widget.Guideline
+    <androidx.constraintlayout.widget.Barrier
         android:id="@+id/center"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent=".5"/>
+        android:layout_height="0dp"
+        app:barrierDirection="end"
+        app:constraint_referenced_ids="set_callsign_label,frequency_label"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/right"
@@ -45,24 +45,27 @@
         app:layout_constraintGuide_percent=".75"/>
 
 	<TextView android:id="@+id/set_callsign_label"
-		  android:layout_width="0dp"
+		  android:layout_width="wrap_content"
 		  android:layout_height="wrap_content"
 		  android:text="@string/set_callsign_label"
             android:textAppearance="@style/LabelText"
             android:padding="@dimen/menu_padding_vertical"
+            app:layout_constraintHorizontal_bias="0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/center"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/set_callsign_row"/>
 
 	<EditText android:id="@+id/set_callsign"
-		  android:layout_width="0dp"
+		  android:layout_width="wrap_content"
 		  android:layout_height="wrap_content"
+                  android:text="callsign"
             android:autofillHints=""
             android:hint="@string/set_callsign_label"
             android:padding="@dimen/menu_padding_vertical"
             android:minHeight="48dp"
-            app:layout_constraintStart_toStartOf="@id/center"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toEndOf="@id/center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/set_callsign_row"/>
@@ -75,21 +78,25 @@
         app:constraint_referenced_ids="set_callsign_label,set_callsign"/>
 
     <TextView android:id="@+id/frequency_label"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/frequency"
         android:textAppearance="@style/LabelText"
         android:padding="@dimen/menu_padding_vertical"
+        app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/center"
         app:layout_constraintTop_toBottomOf="@id/set_callsign_row"
         app:layout_constraintBottom_toTopOf="@id/frequency_row"/>
 
-    <TextView android:id="@+id/frequency"
-        android:layout_width="0dp"
+    <Spinner android:id="@+id/frequency"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/frequency"
         android:padding="@dimen/menu_padding_vertical"
+        android:minHeight="48dp"
+        android:spinnerMode="dropdown"
+        app:layout_constraintHorizontal_bias="0"
         app:layout_constraintStart_toEndOf="@id/center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/set_callsign_row"

@@ -857,13 +857,20 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         update_state(null);
     }
 
+    private void idle_frequency(double frequency) {
+        if (frequency != AltosLib.MISSING && frequency != 0.0 && frequency != telem_frequency)
+            setFrequency(frequency);
+    }
+
     private void idle_mode(Intent data) {
         int type = data.getIntExtra(IdleModeActivity.EXTRA_IDLE_RESULT, -1);
+        double frequency = data.getDoubleExtra(IdleModeActivity.EXTRA_IDLE_FREQUENCY, AltosLib.MISSING);
         Message msg;
 
         AltosDebug.debug("intent idle_mode %d", type);
         switch (type) {
             case IdleModeActivity.IDLE_MODE_CONNECT:
+                idle_frequency(frequency);
                 msg = Message.obtain(null, TelemetryService.MSG_MONITOR_IDLE_START);
                 try {
                     mService.send(msg);
@@ -878,6 +885,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 }
                 break;
             case IdleModeActivity.IDLE_MODE_REBOOT:
+                idle_frequency(frequency);
                 msg = Message.obtain(null, TelemetryService.MSG_REBOOT);
                 try {
                     mService.send(msg);
@@ -885,6 +893,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 }
                 break;
             case IdleModeActivity.IDLE_MODE_IGNITERS:
+                idle_frequency(frequency);
                 Intent serverIntent = new Intent(this, IgniterActivity.class);
                 startActivityForResult(serverIntent, REQUEST_IGNITERS);
                 break;

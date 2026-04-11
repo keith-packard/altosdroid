@@ -72,19 +72,41 @@ ToDo list
 
  ✓ Add a voice on/off button
 
- * Add pop-down menu for frequency in idle mode.
+ ✓ Support USB connected receivers
+
+ ✓ Fire Igniters background color is wrong
+
+ ✓ Fire Igniters causes ANR issues
+
+ ✓ Add pop-down menu for frequency in idle mode.
+
+ * Add target configuration to Idle mode
+
+	• Main deploy altitude
+	• Apogee delay
+	• Apogee lockout
+	• Igniter firing mode
+	• Pad orientation
+	• Pyro configuration
+
+	• Beeper Frequency
+	• Maximum flight log size
+	• Accel calibration
+	• Beep units
+
+	• Callsign
+	• Frequency
+	• Radio enable
+	• Telemetry baud rate
+	• APRS interval
+	• APRS SSID
+	• APRS format
+	• APRS offset
 
  * Round most spoken numbers to two digits.
 
  * Add auto callsign mode to wait for a tracker with the specified
    callsign
 
- * Add target configuration to Idle mode
-
  * Support multiple receivers
 
- ✓ Support USB connected receivers
-
- * Fire Igniters background color is wrong
-
- * Fire Igniters causes ANR issues

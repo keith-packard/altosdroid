@@ -34,15 +34,17 @@ import org.altusmetrum.altoslib_14.*;
 
 public class IdleModeActivity extends AppCompatActivity {
     private EditText callsignText;
-    private TextView frequencyView;
+    private Spinner frequencyView;
     private Button connect;
     private Button disconnect;
     private Button reboot;
     private Button igniters;
     private double frequency;
+    private AltosFrequency[] frequencies;
 
     public static final String EXTRA_IDLE_MODE = "idle_mode";
     public static final String EXTRA_IDLE_RESULT = "idle_result";
+    public static final String EXTRA_IDLE_FREQUENCY = "idle_frequency";
 
     public static final int IDLE_MODE_CONNECT = 1;
     public static final int IDLE_MODE_REBOOT = 2;
@@ -53,6 +55,7 @@ public class IdleModeActivity extends AppCompatActivity {
         AltosPreferences.set_callsign(callsign());
         Intent intent = new Intent();
         intent.putExtra(EXTRA_IDLE_RESULT, type);
+        intent.putExtra(EXTRA_IDLE_FREQUENCY, frequency);
         setResult(Activity.RESULT_OK, intent);
         finish();
     }
@@ -89,6 +92,37 @@ public class IdleModeActivity extends AppCompatActivity {
         getWindow().setAttributes(lp);
     }
 
+    int frequency_pos(double frequency, String description) {
+        for (int i = 0; i < frequencies.length; i++) {
+            if (frequencies[i].frequency == frequency)
+                return i;
+        }
+        AltosFrequency[] new_frequencies = new AltosFrequency[frequencies.length + 1];
+        for (int i = 0; i < frequencies.length; i++)
+            new_frequencies[i] = frequencies[i];
+        int pos = frequencies.length;
+        new_frequencies[pos] = new AltosFrequency(frequency, description);
+        frequencies = new_frequencies;
+        return pos;
+    }
+
+    private void add_frequencies(Spinner spinner, AltosFrequency[] frequencies, int def) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner);
+
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+
+        for (int i = 0; i < frequencies.length; i++)
+            adapter.add(frequencies[i].toShortString());
+
+        spinner.setAdapter(adapter);
+        if (def >= 0)
+            spinner.setSelection(def);
+    }
+
+    void select_frequency(int pos) {
+        frequency = frequencies[pos].frequency;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // setTheme(MainActivity.dialog_themes[AltosDroidPreferences.font_size()]);
@@ -100,9 +134,20 @@ public class IdleModeActivity extends AppCompatActivity {
         callsignText = (EditText) findViewById(R.id.set_callsign);
         callsignText.setText(new StringBuffer(AltosPreferences.callsign()));
 
+        frequencies = AltosPreferences.common_frequencies();
         frequency = getIntent().getDoubleExtra(MainActivity.EXTRA_FREQUENCY, 0.0);
-        frequencyView = (TextView) findViewById(R.id.frequency);
-        frequencyView.setText(String.format(Locale.getDefault(), "%7.3f MHz", frequency));
+        int pos = frequency_pos(frequency, "current");
+
+        frequencyView = (Spinner) findViewById(R.id.frequency);
+        add_frequencies(frequencyView, frequencies, pos);
+
+        frequencyView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                    select_frequency(pos);
+                }
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
 
         connect = (Button) findViewById(R.id.connect_idle);
         connect.setOnClickListener(new OnClickListener() {
