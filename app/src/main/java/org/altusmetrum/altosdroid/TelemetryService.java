@@ -31,6 +31,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.hardware.usb.UsbDevice;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -333,7 +334,7 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
     private void post_notification() {
         int		flag;
 
-        if (android.os.Build.VERSION.SDK_INT >= 31) // android.os.Build.VERSION_CODES.S
+        if (Build.VERSION.SDK_INT >= 31) // android.os.Build.VERSION_CODES.S
             flag = 33554432; // PendingIntent.FLAG_MUTABLE
         else
             flag = 0;

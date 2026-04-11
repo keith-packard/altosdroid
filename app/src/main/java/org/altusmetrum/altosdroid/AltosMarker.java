@@ -24,7 +24,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 
+import androidx.core.content.ContextCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 public class AltosMarker {
@@ -43,7 +45,7 @@ public class AltosMarker {
         this.off_x = off_x;
         this.off_y = off_y;
         canvas = new Canvas(bitmap);
-        Drawable drawable = VectorDrawableCompat.create(context.getResources(), drawable_id, context.getTheme());
+        Drawable drawable = ContextCompat.getDrawable(context, drawable_id);
         if (drawable != null) {
             drawable.setBounds(0, 0, width, height);
             drawable.draw(canvas);

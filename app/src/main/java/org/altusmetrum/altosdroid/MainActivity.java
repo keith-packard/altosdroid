@@ -37,6 +37,7 @@ import android.hardware.usb.UsbManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.Activity;
 
@@ -368,6 +369,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         NavigationUI.setupWithNavController(binding.navView, nav_controller);
 
         fm.registerFragmentLifecycleCallbacks(new FragmentCallbacks(this), true);
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
     }
 
     @Override
@@ -751,7 +756,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             asked_permission = true;
             int missing = 0;
             for (int i = 0; i < permissions.length; i++) {
-                if (checkSelfPermission(permissions[i].name) == PackageManager.PERMISSION_GRANTED) {
+                if (Build.VERSION.SDK_INT < 23 || checkSelfPermission(permissions[i].name) == PackageManager.PERMISSION_GRANTED) {
                     AltosDebug.debug("permission %s already granted\n", permissions[i].name);
                     permissions[i].have = true;
                 } else {

@@ -25,6 +25,4 @@ public class PadMarker extends AltosMarker {
     public PadMarker(Context context) {
         super(context, R.drawable.pad_purple_light, 0.5f, 1.0f);
     }
-
-
 }
