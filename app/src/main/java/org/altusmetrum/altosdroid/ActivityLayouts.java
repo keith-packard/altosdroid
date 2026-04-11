@@ -22,6 +22,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.activity.ComponentActivity;
+import androidx.activity.EdgeToEdge;
+import androidx.activity.SystemBarStyle;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
@@ -36,6 +39,12 @@ public class ActivityLayouts {
         WindowCompat.setDecorFitsSystemWindows(activity.getWindow(), false);
 
         View view = activity.findViewById(viewId);
+
+        /* We use the same color in both light and dark themes and for both top and bottom bars */
+        int bar = ContextCompat.getColor(activity, R.color.altus_orange);
+        EdgeToEdge.enable(activity,
+            SystemBarStyle.auto(bar, bar),
+            SystemBarStyle.auto(bar, bar));
 
         ViewCompat.setOnApplyWindowInsetsListener(view, (v, windowInsets) -> {
             Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
