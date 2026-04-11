@@ -321,6 +321,7 @@ public class MapFragment extends AltosFragment
         }
         mapInterface.activate(this);
         center_serial = AltosDroidPreferences.SELECT_AUTO;
+        center_priority = CENTER_NONE;
         binding.mapSource.setChecked(map_source == AltosDroidPreferences.MAP_SOURCE_ONLINE);
         binding.mapType.setEnabled(map_source == AltosDroidPreferences.MAP_SOURCE_ONLINE);
         mapInterface.set_altos_droid(altos_droid);
