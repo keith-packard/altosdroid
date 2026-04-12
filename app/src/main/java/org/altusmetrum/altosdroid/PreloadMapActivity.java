@@ -23,6 +23,7 @@ import java.text.*;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -41,262 +42,252 @@ import org.altusmetrum.altoslib_14.*;
 /**
  *
  */
-public class PreloadMapActivity extends AppCompatActivity implements AltosLaunchSiteListener, AltosMapLoaderListener, LocationListener {
+public class PreloadMapActivity extends AppCompatActivity implements AltosLaunchSiteListener, AltosMapLoaderListener {
 
-	private ArrayAdapter<AltosLaunchSite> known_sites_adapter;
+    private ArrayAdapter<AltosLaunchSite> known_sites_adapter;
 
-/*
-	private CheckBox	hybrid;
-	private CheckBox	satellite;
-	private CheckBox	roadmap;
-	private CheckBox	terrain;
-*/
+    private Spinner		known_sites_spinner;
+    private Spinner		min_zoom;
+    private Spinner		max_zoom;
+    private TextView	radius_label;
+    private Spinner		radius;
 
-	private Spinner		known_sites_spinner;
-	private Spinner		min_zoom;
-	private Spinner		max_zoom;
-	private TextView	radius_label;
-	private Spinner		radius;
+    private EditText	latitude;
+    private EditText	longitude;
 
-	private EditText	latitude;
-	private EditText	longitude;
+    private ProgressBar	progress;
 
-	private ProgressBar	progress;
+    private AltosMapLoader	loader;
 
-	private AltosMapLoader	loader;
+    long	loader_notify_time;
 
-	long	loader_notify_time;
+    public static final String EXTRA_LATITUDE = "latitude";
+    public static final String EXTRA_LONGITUDE = "longitude";
 
-	/* AltosMapLoaderListener interfaces */
-	public void loader_start(final int max) {
-		loader_notify_time = System.currentTimeMillis();
+    /* AltosMapLoaderListener interfaces */
+    public void loader_start(final int max) {
+        loader_notify_time = System.currentTimeMillis();
 
-		this.runOnUiThread(new Runnable() {
-				public void run() {
-					progress.setMax(max);
-					progress.setProgress(0);
-				}
-			});
-	}
+        this.runOnUiThread(new Runnable() {
+                public void run() {
+                    progress.setMax(max);
+                    progress.setProgress(0);
+                }
+            });
+    }
 
-	public void loader_notify(final int cur, final int max, final String name) {
-		long	now = System.currentTimeMillis();
+    public void loader_notify(final int cur, final int max, final String name) {
+        long	now = System.currentTimeMillis();
 
-		if (now - loader_notify_time < 100)
-			return;
+        if (now - loader_notify_time < 100)
+            return;
 
-		loader_notify_time = now;
+        loader_notify_time = now;
 
-		this.runOnUiThread(new Runnable() {
-				public void run() {
-					progress.setProgress(cur);
-				}
-			});
-	}
+        this.runOnUiThread(new Runnable() {
+                public void run() {
+                    progress.setProgress(cur);
+                }
+            });
+    }
 
-	public void loader_done(int max) {
-		loader = null;
-		this.runOnUiThread(new Runnable() {
-				public void run() {
-					progress.setProgress(0);
-					finish();
-				}
-			});
-	}
+    public void loader_done(int max) {
+        loader = null;
+        this.runOnUiThread(new Runnable() {
+                public void run() {
+                    progress.setProgress(0);
+                    finish();
+                }
+            });
+    }
 
-	public void debug(String format, Object ... arguments) {
-		AltosDebug.debug(format, arguments);
-	}
+    public void debug(String format, Object ... arguments) {
+        AltosDebug.debug(format, arguments);
+    }
 
-	/* AltosLaunchSiteListener interface */
+    /* AltosLaunchSiteListener interface */
 
-	public void notify_launch_sites(final List<AltosLaunchSite> sites) {
-		this.runOnUiThread(new Runnable() {
-				public void run() {
-					for (AltosLaunchSite site : sites)
-						known_sites_adapter.add(site);
-				}
-			});
-	}
+    public void notify_launch_sites(final List<AltosLaunchSite> sites) {
+        this.runOnUiThread(new Runnable() {
+                public void run() {
+                    for (AltosLaunchSite site : sites)
+                        known_sites_adapter.add(site);
+                }
+            });
+    }
 
-	/* LocationProvider interface */
+    /* LocationProvider interface */
 
-	AltosLaunchSite	current_location_site;
+    AltosLaunchSite	current_location_site;
 
-	public void onLocationChanged(Location location) {
-		AltosDebug.debug("location changed");
-		if (current_location_site == null) {
-			AltosLaunchSite selected_item = (AltosLaunchSite) known_sites_spinner.getSelectedItem();
+    void add_current_location(double current_latitude, double current_longitude) {
+        AltosLaunchSite selected_item = (AltosLaunchSite) known_sites_spinner.getSelectedItem();
 
-			current_location_site = new AltosLaunchSite("Current Location", location.getLatitude(), location.getLongitude());
-			known_sites_adapter.insert(current_location_site, 0);
+        current_location_site = new AltosLaunchSite("Current Location", current_latitude, current_longitude);
+        known_sites_adapter.insert(current_location_site, 0);
 
-			if (selected_item != null)
-				known_sites_spinner.setSelection(known_sites_adapter.getPosition(selected_item));
-			else {
-				latitude.setText(new StringBuffer(String.format(Locale.getDefault(), "%12.6f", current_location_site.latitude)));
-				longitude.setText(new StringBuffer(String.format(Locale.getDefault(), "%12.6f", current_location_site.longitude)));
-			}
-		} else {
-			current_location_site.latitude = location.getLatitude();
-			current_location_site.longitude = location.getLongitude();
-		}
-	}
+        if (selected_item != null)
+            known_sites_spinner.setSelection(known_sites_adapter.getPosition(selected_item));
+        else {
+            latitude.setText(new StringBuffer(String.format(Locale.getDefault(), "%12.6f", current_location_site.latitude)));
+            longitude.setText(new StringBuffer(String.format(Locale.getDefault(), "%12.6f", current_location_site.longitude)));
+        }
+    }
 
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-	}
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+    }
 
-	public void onProviderEnabled(String provider) {
-	}
+    public void onProviderEnabled(String provider) {
+    }
 
-	public void onProviderDisabled(String provider) {
-	}
+    public void onProviderDisabled(String provider) {
+    }
 
-	private double text(EditText view) throws ParseException {
-		return AltosParse.parse_double_locale(view.getEditableText().toString());
-	}
+    private double text(EditText view) throws ParseException {
+        return AltosParse.parse_double_locale(view.getEditableText().toString());
+    }
 
-	private double latitude() throws ParseException {
-		return text(latitude);
-	}
+    private double latitude() throws ParseException {
+        return text(latitude);
+    }
 
-	private double longitude() throws ParseException {
-		return text(longitude);
-	}
+    private double longitude() throws ParseException {
+        return text(longitude);
+    }
 
-	private int value(Spinner spinner) {
-		return (Integer) spinner.getSelectedItem();
-	}
+    private int value(Spinner spinner) {
+        return (Integer) spinner.getSelectedItem();
+    }
 
-	private int min_z() {
-		return value(min_zoom) - AltosMap.default_zoom;
-	}
+    private int min_z() {
+        return value(min_zoom) - AltosMap.default_zoom;
+    }
 
-	private int max_z() {
-		return value(max_zoom) - AltosMap.default_zoom;
-	}
+    private int max_z() {
+        return value(max_zoom) - AltosMap.default_zoom;
+    }
 
-	private double value_distance(Spinner spinner) {
-		return (Double) spinner.getSelectedItem();
-	}
+    private double value_distance(Spinner spinner) {
+        return (Double) spinner.getSelectedItem();
+    }
 
-	private double radius() {
-		double r = value_distance(radius);
-		if (AltosPreferences.imperial_units())
-			r = AltosConvert.miles_to_meters(r);
-		else
-			r = r * 1000;
-		return r;
-	}
+    private double radius() {
+        double r = value_distance(radius);
+        if (AltosPreferences.imperial_units())
+            r = AltosConvert.miles_to_meters(r);
+        else
+            r = r * 1000;
+        return r;
+    }
 
 /*
-	private int bit(CheckBox box, int value) {
-		if (box.isChecked())
-			return 1 << value;
-		return 0;
-	}
+  private int bit(CheckBox box, int value) {
+  if (box.isChecked())
+  return 1 << value;
+  return 0;
+  }
 */
 
-	private int types() {
+    private int types() {
 /*
-		return (bit(hybrid, AltosMap.maptype_hybrid) |
-			bit(satellite, AltosMap.maptype_satellite) |
-			bit(roadmap, AltosMap.maptype_roadmap) |
-			bit(terrain, AltosMap.maptype_terrain));
+  return (bit(hybrid, AltosMap.maptype_hybrid) |
+  bit(satellite, AltosMap.maptype_satellite) |
+  bit(roadmap, AltosMap.maptype_roadmap) |
+  bit(terrain, AltosMap.maptype_terrain));
 */
-		return 1 << AltosMap.maptype_hybrid;
-	}
+        return 1 << AltosMap.maptype_hybrid;
+    }
 
-	private void load() {
-		if (loader != null)
-			return;
+    private void load() {
+        if (loader != null)
+            return;
 
-		try {
-			double	lat = latitude();
-			double	lon = longitude();
-			int	min = min_z();
-			int	max = max_z();
-			double	r = radius();
-			int	t = types();
+        try {
+            double	lat = latitude();
+            double	lon = longitude();
+            int	min = min_z();
+            int	max = max_z();
+            double	r = radius();
+            int	t = types();
 
-			AltosDebug.debug("PreloadMap load %f %f %d %d %f %d\n",
-					 lat, lon, min, max, r, t);
-			loader = new AltosMapLoader(this, lat, lon, min, max, r, t, AltosDroidMapOffline.scale);
-		} catch (ParseException e) {
-			AltosDebug.debug("PreloadMap load raised exception %s", e.toString());
-		}
-	}
+            AltosDebug.debug("PreloadMap load %f %f %d %d %f %d\n",
+                             lat, lon, min, max, r, t);
+            loader = new AltosMapLoader(this, lat, lon, min, max, r, t, AltosDroidMapOffline.scale);
+        } catch (ParseException e) {
+            AltosDebug.debug("PreloadMap load raised exception %s", e.toString());
+        }
+    }
 
-	private void add_numbers(Spinner spinner, int min, int max, int def) {
+    private void add_numbers(Spinner spinner, int min, int max, int def) {
 
-		ArrayAdapter<Integer> adapter = new ArrayAdapter<Integer>(this, R.layout.spinner);
+        ArrayAdapter<Integer> adapter = new ArrayAdapter<Integer>(this, R.layout.spinner);
 
-                adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
 
-		int	spinner_def = 0;
-		int	pos = 0;
+        int	spinner_def = 0;
+        int	pos = 0;
 
-		for (int i = min; i <= max; i++) {
-			adapter.add(new Integer(i));
-			if (i == def)
-				spinner_def = pos;
-			pos++;
-		}
+        for (int i = min; i <= max; i++) {
+            adapter.add(new Integer(i));
+            if (i == def)
+                spinner_def = pos;
+            pos++;
+        }
 
-		spinner.setAdapter(adapter);
-		spinner.setSelection(spinner_def);
-	}
-
-
-	private void add_distance(Spinner spinner, double[] distances_km, double def_km, double[] distances_mi, double def_mi) {
-
-                ArrayAdapter<Double> adapter = new ArrayAdapter<Double>(this, R.layout.spinner);
-
-                adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
-
-		int	spinner_def = 0;
-		int	pos = 0;
-
-		double[] distances;
-		double	def;
-		if (AltosPreferences.imperial_units()) {
-			distances = distances_mi;
-			def = def_mi;
-		} else {
-			distances = distances_km;
-			def = def_km;
-		}
-
-		for (int i = 0; i < distances.length; i++) {
-			adapter.add(distances[i]);
-			if (distances[i] == def)
-				spinner_def = pos;
-			pos++;
-		}
-
-		spinner.setAdapter(adapter);
-		spinner.setSelection(spinner_def);
-	}
+        spinner.setAdapter(adapter);
+        spinner.setSelection(spinner_def);
+    }
 
 
+    private void add_distance(Spinner spinner, double[] distances_km, double def_km, double[] distances_mi, double def_mi) {
 
-	class SiteListListener implements OnItemSelectedListener {
-		public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-			AltosLaunchSite	site = (AltosLaunchSite) parent.getItemAtPosition(pos);
-			latitude.setText(new StringBuffer(String.format(Locale.getDefault(), "%12.6f", site.latitude)));
-			longitude.setText(new StringBuffer(String.format(Locale.getDefault(), "%12.6f", site.longitude)));
-		}
-		public void onNothingSelected(AdapterView<?> parent) {
-		}
+        ArrayAdapter<Double> adapter = new ArrayAdapter<Double>(this, R.layout.spinner);
 
-		public SiteListListener() {
-		}
-	}
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
 
-	double[]	radius_mi = { 1, 2, 5, 10, 20 };
-	double		radius_def_mi = 2;
-	double[]	radius_km = { 1, 2, 5, 10, 20, 30 };
-	double		radius_def_km = 2;
+        int	spinner_def = 0;
+        int	pos = 0;
+
+        double[] distances;
+        double	def;
+        if (AltosPreferences.imperial_units()) {
+            distances = distances_mi;
+            def = def_mi;
+        } else {
+            distances = distances_km;
+            def = def_km;
+        }
+
+        for (int i = 0; i < distances.length; i++) {
+            adapter.add(distances[i]);
+            if (distances[i] == def)
+                spinner_def = pos;
+            pos++;
+        }
+
+        spinner.setAdapter(adapter);
+        spinner.setSelection(spinner_def);
+    }
+
+
+
+    class SiteListListener implements OnItemSelectedListener {
+        public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+            AltosLaunchSite	site = (AltosLaunchSite) parent.getItemAtPosition(pos);
+            latitude.setText(new StringBuffer(String.format(Locale.getDefault(), "%12.6f", site.latitude)));
+            longitude.setText(new StringBuffer(String.format(Locale.getDefault(), "%12.6f", site.longitude)));
+        }
+        public void onNothingSelected(AdapterView<?> parent) {
+        }
+
+        public SiteListListener() {
+        }
+    }
+
+    double[]	radius_mi = { 1, 2, 5, 10, 20 };
+    double		radius_def_mi = 2;
+    double[]	radius_km = { 1, 2, 5, 10, 20, 30 };
+    double		radius_def_km = 2;
 
     @Override
     protected void onResume() {
@@ -308,88 +299,82 @@ public class PreloadMapActivity extends AppCompatActivity implements AltosLaunch
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
         getWindow().setAttributes(lp);
     }
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		//setTheme(AltosDroid.dialog_themes[AltosDroidPreferences.font_size()]);
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        //setTheme(AltosDroid.dialog_themes[AltosDroidPreferences.font_size()]);
+        super.onCreate(savedInstanceState);
 
-		// Setup the window
-		setContentView(R.layout.map_preload);
+        Intent intent = getIntent();
 
-		// Set result CANCELED incase the user backs out
-		setResult(Activity.RESULT_CANCELED);
+        // Setup the window
+        setContentView(R.layout.map_preload);
 
-		// Initialize the button to perform device discovery
-		Button loadButton = (Button) findViewById(R.id.preload_load);
-		loadButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				load();
-			}
-		});
+        // Set result CANCELED incase the user backs out
+        setResult(Activity.RESULT_CANCELED);
 
-		latitude = (EditText) findViewById(R.id.preload_latitude);
-		longitude = (EditText) findViewById(R.id.preload_longitude);
+        // Initialize the button to perform device discovery
+        Button loadButton = (Button) findViewById(R.id.preload_load);
+        loadButton.setOnClickListener(new OnClickListener() {
+                public void onClick(View v) {
+                    load();
+                }
+            });
+
+        latitude = (EditText) findViewById(R.id.preload_latitude);
+        longitude = (EditText) findViewById(R.id.preload_longitude);
 
 /*
-		hybrid = (CheckBox) findViewById(R.id.preload_hybrid);
-		satellite = (CheckBox) findViewById(R.id.preload_satellite);
-		roadmap = (CheckBox) findViewById(R.id.preload_roadmap);
-		terrain = (CheckBox) findViewById(R.id.preload_terrain);
+  hybrid = (CheckBox) findViewById(R.id.preload_hybrid);
+  satellite = (CheckBox) findViewById(R.id.preload_satellite);
+  roadmap = (CheckBox) findViewById(R.id.preload_roadmap);
+  terrain = (CheckBox) findViewById(R.id.preload_terrain);
 
-		hybrid.setChecked(true);
+  hybrid.setChecked(true);
 */
 
-		min_zoom = (Spinner) findViewById(R.id.preload_min_zoom);
-		add_numbers(min_zoom,
-			    AltosMap.min_zoom,
-			    AltosMap.max_zoom, AltosMap.default_zoom - 2);
-		max_zoom = (Spinner) findViewById(R.id.preload_max_zoom);
-		add_numbers(max_zoom,
-			    AltosMap.min_zoom,
-			    AltosMap.max_zoom, AltosMap.default_zoom + 2);
-		radius_label = (TextView) findViewById(R.id.preload_radius_label);
-		radius = (Spinner) findViewById(R.id.preload_radius);
-		if (AltosPreferences.imperial_units())
-			radius_label.setText("Radius (miles)");
-		else
-			radius_label.setText("Radius (km)");
-		add_distance(radius, radius_km, radius_def_km, radius_mi, radius_def_mi);
+        min_zoom = (Spinner) findViewById(R.id.preload_min_zoom);
+        add_numbers(min_zoom,
+                    AltosMap.min_zoom,
+                    AltosMap.max_zoom, AltosMap.default_zoom - 2);
+        max_zoom = (Spinner) findViewById(R.id.preload_max_zoom);
+        add_numbers(max_zoom,
+                    AltosMap.min_zoom,
+                    AltosMap.max_zoom, AltosMap.default_zoom + 2);
+        radius_label = (TextView) findViewById(R.id.preload_radius_label);
+        radius = (Spinner) findViewById(R.id.preload_radius);
+        if (AltosPreferences.imperial_units())
+            radius_label.setText("Radius (miles)");
+        else
+            radius_label.setText("Radius (km)");
+        add_distance(radius, radius_km, radius_def_km, radius_mi, radius_def_mi);
 
-		progress = (ProgressBar) findViewById(R.id.preload_progress);
+        progress = (ProgressBar) findViewById(R.id.preload_progress);
 
-		// Initialize array adapters. One for already paired devices and
-		// one for newly discovered devices
-		known_sites_spinner = (Spinner) findViewById(R.id.preload_site_list);
+        // Initialize array adapters. One for already paired devices and
+        // one for newly discovered devices
+        known_sites_spinner = (Spinner) findViewById(R.id.preload_site_list);
 
-		known_sites_adapter = new ArrayAdapter<AltosLaunchSite>(this, R.layout.spinner);
+        known_sites_adapter = new ArrayAdapter<AltosLaunchSite>(this, R.layout.spinner);
 
-		known_sites_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        known_sites_adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
 
-		known_sites_spinner.setAdapter(known_sites_adapter);
-		known_sites_spinner.setOnItemSelectedListener(new SiteListListener());
+        known_sites_spinner.setAdapter(known_sites_adapter);
+        known_sites_spinner.setOnItemSelectedListener(new SiteListListener());
 
-		// Listen for GPS and Network position updates
-		LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-		try {
-			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
-		} catch (SecurityException e) {
-			try {
-				locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, this);
-			} catch (SecurityException se) {
-			}
-		}
+        double current_latitude = intent.getDoubleExtra(EXTRA_LATITUDE, AltosLib.MISSING);
+        double current_longitude = intent.getDoubleExtra(EXTRA_LONGITUDE, AltosLib.MISSING);
 
-		new AltosLaunchSites(this);
-	}
+        if (current_latitude != AltosLib.MISSING && current_longitude != AltosLib.MISSING)
+            add_current_location(current_latitude, current_longitude);
 
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
+        new AltosLaunchSites(this);
+    }
 
-		if (loader != null)
-			loader.abort();
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
-		// Stop listening for location updates
-		((LocationManager) getSystemService(Context.LOCATION_SERVICE)).removeUpdates(this);
-	}
+        if (loader != null)
+            loader.abort();
+    }
 }

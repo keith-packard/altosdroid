@@ -72,6 +72,7 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -205,6 +206,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     ActivityMainBinding binding;
     boolean idle_mode = false;
     AltosVoice altos_voice;
+
+    static final String[] preferredLocationProviders = {
+        LocationManager.FUSED_PROVIDER,
+        LocationManager.GPS_PROVIDER,
+        LocationManager.NETWORK_PROVIDER,
+        LocationManager.PASSIVE_PROVIDER,
+        null
+    };
 
     public Location location = null;
     TelemetryState telemetry_state = null;
@@ -711,12 +720,28 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         if (locationManager != null)
         {
-            try {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
-                location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            } catch (SecurityException|IllegalArgumentException e) {
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 1, this);
-                location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            List<String> locationProviders = locationManager.getAllProviders();
+
+            String selectedLocationProvider = null;
+
+            for (String pref : preferredLocationProviders) {
+                for (String locationProvider : locationProviders) {
+                    if (pref == null || pref.equals(locationProvider)) {
+                        selectedLocationProvider = locationProvider;
+                        break;
+                    }
+                }
+                if (selectedLocationProvider != null)
+                    break;
+            }
+
+            if (selectedLocationProvider != null) {
+                AltosDebug.debug("Using location provider %s\n", selectedLocationProvider);
+                try {
+                    locationManager.requestLocationUpdates(selectedLocationProvider, 1000, 1, this);
+                    location = locationManager.getLastKnownLocation(selectedLocationProvider);
+                } catch (SecurityException|IllegalArgumentException e) {
+                }
             }
         }
 
@@ -1280,6 +1305,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     void start_preload_maps() {
         Intent intent = new Intent(this, PreloadMapActivity.class);
+        double latitude = AltosLib.MISSING;
+        double longitude = AltosLib.MISSING;
+        if (location != null) {
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+        }
+        intent.putExtra(PreloadMapActivity.EXTRA_LATITUDE, latitude);
+        intent.putExtra(PreloadMapActivity.EXTRA_LONGITUDE, longitude);
         startActivityForResult(intent, REQUEST_PRELOAD_MAPS);
     }
     public void touch_trackers(Integer[] serials) {
