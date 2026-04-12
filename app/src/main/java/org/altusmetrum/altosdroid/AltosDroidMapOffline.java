@@ -31,6 +31,7 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import org.altusmetrum.altosdroid.ui.map.MapFragment;
 import org.altusmetrum.altoslib_14.AltosImage;
@@ -119,6 +120,7 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
     AltosLatLon here;
     AltosLatLon there;
     AltosLatLon pad;
+    int line_color;
 
     Canvas canvas;
     Paint paint;
@@ -440,7 +442,7 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
             if (a != null && b != null) {
                 AltosPointDouble a_screen = map.transform.screen(a);
                 AltosPointDouble b_screen = map.transform.screen(b);
-                paint.setColor(0xff8080ff);
+                paint.setColor(line_color);
                 canvas.drawLine((float) a_screen.x, (float) a_screen.y, (float) b_screen.x, (float) b_screen.y, paint);
             }
         }
@@ -533,6 +535,8 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
         here_marker = new HereMarker(context);
 
         launch_site_marker = new LaunchSiteMarker(context);
+
+        line_color = ContextCompat.getColor(context, R.color.altus_purple);
 
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setStrokeWidth(stroke_width);

@@ -21,6 +21,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
 
+import androidx.core.content.ContextCompat;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
@@ -39,6 +41,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.RoundCap;
 
 import org.altusmetrum.altosdroid.ui.map.MapFragment;
 import org.altusmetrum.altoslib_14.AltosLatLon;
@@ -206,7 +209,8 @@ public class AltosDroidMapOnline implements
             mPolyline = mMap.addPolyline(
                     new PolylineOptions().add(new LatLng(0,0), new LatLng(0,0))
                             .width(20)
-                            .color(Color.BLUE)
+                            .endCap(new RoundCap())
+                            .color(ContextCompat.getColor(context, R.color.altus_purple))
                             .visible(false)
             );
 
