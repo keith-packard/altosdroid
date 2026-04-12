@@ -306,6 +306,8 @@ public class MapFragment extends AltosFragment
     }
 
     public void map_source_changed(int map_source) {
+        if (binding == null)
+            return;
         if (mapInterface != null)
             mapInterface.deactivate();
         mapInterface = null;
