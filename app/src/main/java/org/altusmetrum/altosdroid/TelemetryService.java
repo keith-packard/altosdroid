@@ -590,7 +590,7 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
 
         this.address = address;
 
-        AltosDebug.debug("start_altos_bluetooth(): Connecting to %s (%s)", device.getName(), device.getAddress());
+//        AltosDebug.debug("start_altos_bluetooth(): Connecting to %s (%s)", device.getName(), device.getAddress());
         altos_link = new AltosBluetooth(device, handler, pause);
         telemetry_state.connect = TelemetryState.CONNECT_CONNECTING;
         telemetry_state.address = address;
