@@ -80,6 +80,9 @@ ToDo list
 
  ✓ Add pop-down menu for frequency in idle mode.
 
+ ✓ Switching to offline maps and current location is at upper left
+   instead of centered.
+
  * Add target configuration to Idle mode
 
 	• Main deploy altitude

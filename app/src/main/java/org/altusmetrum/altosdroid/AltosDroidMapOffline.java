@@ -335,6 +335,11 @@ public class AltosDroidMapOffline extends View implements ScaleGestureDetector.O
         canvas = null;
     }
 
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        map.set_transform();
+    }
+
     public boolean onScale(ScaleGestureDetector detector) {
         float f = detector.getScaleFactor();
 
