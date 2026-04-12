@@ -113,3 +113,5 @@ ToDo list
 
  * Support multiple receivers
 
+ * Improve tablet support somehow. Maybe by showing maps adjacent to
+   data? Showing graphs of key values?
