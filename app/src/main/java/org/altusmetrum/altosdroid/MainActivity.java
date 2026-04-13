@@ -216,6 +216,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     };
 
     public Location location = null;
+    public static boolean location_has_gps = false;
     TelemetryState telemetry_state = null;
     double selected_frequency = AltosLib.MISSING;
 
@@ -724,6 +725,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
             String selectedLocationProvider = null;
 
+            /* Record whether we have GPS at all */
+            for (String locationProvider : locationProviders)
+                if (locationProvider.equals(LocationManager.GPS_PROVIDER)) {
+                    location_has_gps = true;
+                    break;
+                }
+
+            /* Now go find the best of the available location providers */
             for (String pref : preferredLocationProviders) {
                 for (String locationProvider : locationProviders) {
                     if (pref == null || pref.equals(locationProvider)) {
