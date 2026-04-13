@@ -67,8 +67,13 @@ public class AltosDroidPreferencesBackend extends AltosPreferencesBackend {
 	}
 
 	public double getDouble(String key, double def) {
-		Float f = prefs.getFloat(key, (float) def);
-		return f.doubleValue();
+            long ldef = java.lang.Double.doubleToRawLongBits(def);
+            long lvalue = ldef;
+            try {
+                lvalue = prefs.getLong(key, ldef);
+            } catch (Exception e) {
+            }
+            return java.lang.Double.longBitsToDouble(lvalue);
 	}
 
 	public int getInt(String key, int def) {
@@ -113,7 +118,8 @@ public class AltosDroidPreferencesBackend extends AltosPreferencesBackend {
 
 	public void putDouble(String key, double value) {
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.putFloat(key, (float)value);
+                long lvalue = java.lang.Double.doubleToRawLongBits(value);
+		editor.putLong(key, lvalue);
 		editor.apply();
 	}
 
