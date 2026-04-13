@@ -1,3 +1,3 @@
 [submodule "altos"]
 	path = altos
-	url = gag.com:/scm/git/fw/altos
+	url = git://git.gag.com/fw/altos
