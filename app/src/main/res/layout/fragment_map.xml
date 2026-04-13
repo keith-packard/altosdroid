@@ -89,11 +89,11 @@
                 android:text="@string/map_distance"
                 android:paddingHorizontal="@dimen/table_padding_start"
                 android:paddingVertical="@dimen/menu_padding_vertical"
-                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintHorizontal_bias="1"
                 app:layout_constrainedHeight="false"
                 app:layout_constrainedWidth="false"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/map_table_column_1"
+                app:layout_constraintEnd_toEndOf="@id/map_bearing"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/map_table_center_line"/>
 
@@ -187,7 +187,7 @@
                 app:layout_constrainedWidth="false"
                 app:layout_constrainedHeight="false"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/map_table_column_1"
+                app:layout_constraintEnd_toEndOf="@id/map_distance"
                 app:layout_constraintTop_toBottomOf="@id/map_table_line"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
