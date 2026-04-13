@@ -21,6 +21,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
                                                    xmlns:app="http://schemas.android.com/apk/res-auto"
                                                    android:id="@+id/setup"
+    android:padding="@dimen/dialog_padding"
                                                    android:layout_width="match_parent"
                                                    android:layout_height="match_parent">
 
@@ -45,6 +46,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:text="@string/telemetry_rate"
+                android:paddingEnd="@dimen/table_padding_horizontal"
 	        />
             <Spinner android:id="@+id/select_rate"
 	             android:layout_width="fill_parent"
@@ -64,6 +66,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	        android:id="@+id/select_units_label"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
+                android:paddingEnd="@dimen/table_padding_horizontal"
 	        android:text="@string/select_units"
 	        />
             <Spinner android:id="@+id/select_units"
@@ -85,6 +88,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:text="@string/select_voice"
+                android:paddingEnd="@dimen/table_padding_horizontal"
 	        />
             <Spinner android:id="@+id/select_voice"
 	             android:layout_width="fill_parent"
@@ -107,7 +111,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
     <TextView android:id="@+id/version"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:paddingVertical="@dimen/table_padding_vertical"
+              android:paddingTop="@dimen/table_padding_vertical"
+              android:paddingBottom="@dimen/table_padding_start"
               android:text=""
               app:layout_constraintStart_toStartOf="parent"
               app:layout_constraintEnd_toEndOf="parent"
