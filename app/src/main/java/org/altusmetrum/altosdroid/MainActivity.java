@@ -217,7 +217,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     public Location location = null;
     TelemetryState telemetry_state = null;
-    double telem_frequency = 434.550;
     double selected_frequency = AltosLib.MISSING;
 
     public static final int SELECT_AUTO = AltosDroidPreferences.SELECT_AUTO;
@@ -635,7 +634,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         if (itemId == R.id.idle_mode) {
               serverIntent = new Intent(this, IdleModeActivity.class);
               serverIntent.putExtra(EXTRA_IDLE_MODE, idle_mode);
-              serverIntent.putExtra(EXTRA_FREQUENCY, telem_frequency);
+              if (telemetry_state != null && telemetry_state.frequency != AltosLib.MISSING)
+                  serverIntent.putExtra(EXTRA_FREQUENCY, telemetry_state.frequency);
               startActivityForResult(serverIntent, REQUEST_IDLE_MODE);
               return true;
         }
@@ -883,6 +883,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     }
 
     private void idle_frequency(double frequency) {
+        double telem_frequency = AltosLib.MISSING;
+
+        if (telemetry_state != null)
+            telem_frequency = telemetry_state.frequency;
+
         if (frequency != AltosLib.MISSING && frequency != 0.0 && frequency != telem_frequency)
             setFrequency(frequency);
     }
@@ -1210,7 +1215,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     }
 
     void setFrequency(double freq) {
-        telem_frequency = freq;
         selected_frequency = AltosLib.MISSING;
         try {
             mService.send(Message.obtain(null, TelemetryService.MSG_SETFREQUENCY, freq));

@@ -83,6 +83,8 @@ ToDo list
  ✓ Switching to offline maps and current location is at upper left
    instead of centered.
 
+ ✓ Idle Mode frequency display doesn't seem to have the correct value
+
  * Add target configuration to Idle mode
 
 	• Main deploy altitude
