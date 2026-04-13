@@ -7,7 +7,40 @@ run with:
 
 	$ ~/src/android/android-studio/bin/studio.sh
 
+Testing Process
 
+ * On virtual devices, ensure all views and dialogs render without
+   crashes. Check both online and offline maps where possible.
+
+ * On physical devices:
+
+	* use ao-send-telem on a telemetry stream of a flight or two
+	* use idle mode -> monitor
+	* open 'download maps' and ensure site list is populated
+
+Release Process
+
+ * Bump version number. Generally four digits with the associated
+   AltOS version followed by an android revision. Also bump the
+   Android release number.
+
+ * Commit change and tag using version number. Build and test a signed
+   version using the emulators and real devices.
+
+ * Publish as a Beta Test version on the Google Play Store:
+
+    Altus Metrum org page:
+
+	https://play.google.com/console/u/0/developers/4749971557595682041/app-list
+
+    Open testing for AltosDroid page:
+
+	https://play.google.com/console/u/0/developers/4749971557595682041/app/4975358408572149422/tracks/open-testing
+
+ * Once sufficient test coverage has been achieved, promote to release
+   and then also ship on Amazon App Store:
+
+	https://developer.amazon.com/apps-and-games/console/apps/list.html#/
 
 ToDo list
 
@@ -117,3 +150,4 @@ ToDo list
 
  * Improve tablet support somehow. Maybe by showing maps adjacent to
    data? Showing graphs of key values?
+
