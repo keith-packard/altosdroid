@@ -85,6 +85,7 @@
     </style>
     <style name="Widget.App.TextView" parent="Widget.MaterialComponents.TextView">
         <item name="android:textAppearance">@style/ValueText</item>"
+        <item name="android:textColor">@color/button_switch</item>
     </style>
     <style name="Widget.App.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
         <item name="android:textAppearance">@style/ButtonText</item>

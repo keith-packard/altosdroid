@@ -218,6 +218,9 @@ public class MapFragment extends AltosFragment
     public void show(TelemetryState telem_state, AltosState state, AltosGreatCircle from_receiver, Location receiver_location) {
         AltosLatLon new_center = null;
         boolean reset_zoom = true;
+        boolean target_valid = (state != null && state.gps != null && state.gps.lat != AltosLib.MISSING &&
+                                state.gps.locked && state.gps.nsat >= 4);
+        boolean receiver_valid = receiver_location != null;
 
         if (binding == null)
             return;
@@ -233,17 +236,6 @@ public class MapFragment extends AltosFragment
 
             if (cal_data != null) {
                 target_serial = cal_data.serial;
-                if (state.gps != null && state.gps.locked && state.gps.nsat >= 4 && state.gps.lat != AltosLib.MISSING) {
-                    long time_since_motion = time_since_user_motion();
-                    if (center_priority < CENTER_TARGET || center_serial != target_serial) {
-                        new_center = new AltosLatLon(state.gps.lat, state.gps.lon);
-                        center_priority = CENTER_TARGET;
-                        center_serial = target_serial;
-                    } else if (time_since_motion > 30000) {
-                        reset_zoom = false;
-                        new_center = new AltosLatLon(state.gps.lat, state.gps.lon);
-                    }
-                }
             }
 
             if (state.gps != null && state.gps.lat != AltosLib.MISSING) {
@@ -253,6 +245,17 @@ public class MapFragment extends AltosFragment
                     binding.mapTargetPosition.setText(lat_text + "\n" + lon_text);
                 }
                 target_position = new AltosLatLon(state.gps.lat, state.gps.lon);
+
+                long time_since_motion = time_since_user_motion();
+
+                if (center_priority < CENTER_TARGET || center_serial != target_serial) {
+                    new_center = target_position;
+                    center_priority = CENTER_TARGET;
+                    center_serial = target_serial;
+                } else if (time_since_motion > 30000) {
+                    reset_zoom = false;
+                    new_center = target_position;
+                }
             }
         }
 
@@ -299,6 +302,14 @@ public class MapFragment extends AltosFragment
             binding.mapBearing.setText(String.format(Locale.getDefault(), "%1.0f°", from_receiver.bearing));
             set_value(binding.mapDistance, AltosConvert.distance, 1, from_receiver.distance);
         }
+
+        if (binding != null) {
+            binding.mapTargetPosition.setEnabled(target_valid);
+            binding.mapReceiverPosition.setEnabled(receiver_valid);
+            binding.mapBearing.setEnabled(target_valid && receiver_valid);
+            binding.mapDistance.setEnabled(target_valid && receiver_valid);
+        }
+
         if (launch_sites_set && mapInterface != null) {
             mapInterface.set_launch_sites(sites);
             launch_sites_set = false;
