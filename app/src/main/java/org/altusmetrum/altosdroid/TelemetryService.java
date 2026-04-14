@@ -29,6 +29,7 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ServiceInfo;
 import android.graphics.Color;
 import android.hardware.usb.UsbDevice;
 import android.os.Build;
@@ -41,6 +42,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.ServiceCompat;
 
 import org.altusmetrum.altoslib_14.*;
 
@@ -74,6 +76,8 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
     static final int MSG_IGNITER_QUERY     = 18;
     static final int MSG_IGNITER_FIRE      = 19;
     static final int MSG_POST_NOTIFICATION = 20;
+
+    static final int TELEMETRY_SERVICE_ID  = 1002;
 
     // Unique Identification Number for the Notification.
     // We use it on Notification start, and to cancel it.
@@ -361,7 +365,16 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
         Notification notification = builder.build();
         // displayNotification(this, notification);
         // Move us into the foreground.
-        startForeground(NOTIFICATION, notification);
+        int type = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+            type = ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE;
+        try {
+            ServiceCompat.startForeground(this,
+                                          TELEMETRY_SERVICE_ID,
+                                          notification,
+                                          type);
+        } catch (SecurityException e) {
+        }
     }
 
     @Override
