@@ -88,6 +88,7 @@
     </style>
     <style name="Widget.App.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
         <item name="android:textAppearance">@style/ButtonText</item>
+        <item name="android:textColor">@color/button_switch</item>
         <item name="thumbTint">@color/altus_orange_switch</item>
         <item name="trackTint">@color/altus_orange_light_switch</item>
     </style>
