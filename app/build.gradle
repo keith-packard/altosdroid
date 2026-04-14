@@ -10,8 +10,8 @@ android {
         applicationId "org.altusmetrum.AltosDroid"
         minSdk 23
         targetSdk 36
-        versionCode 48
-        versionName "1.9.22.11"
+        versionCode 49
+        versionName "1.9.22.12"
     }
 
     buildTypes {
