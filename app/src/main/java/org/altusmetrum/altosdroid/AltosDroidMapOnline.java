@@ -58,18 +58,19 @@ import java.util.HashMap;
 import java.util.List;
 
 class RocketOnline implements Comparable {
-    Marker      marker;
-    int		serial;
-    long	last_packet;
-    int		width, height;
-    double      lat, lon;
-    boolean     is_target;
+    private Marker      marker;
+    private AltosMarker altos_marker;
+    private int		serial;
+    private long	last_packet;
+    private int		width, height;
+    private double      lat, lon;
+    private boolean     is_target;
 
     float z_index() {
         return is_target ? 3 : 2;
     }
 
-    void set_position(double lat, double lon, long last_packet, boolean is_target) {
+    synchronized void set_position(double lat, double lon, long last_packet, boolean is_target) {
         this.lat = lat;
         this.lon = lon;
         this.is_target = is_target;
@@ -80,29 +81,42 @@ class RocketOnline implements Comparable {
         }
     }
 
-    public void remove() {
+    synchronized LatLng get_position() {
+        return new LatLng(lat, lon);
+    }
+
+    public synchronized void remove() {
         if (marker != null)
             marker.remove();
     }
 
-    void set_map(Context context, GoogleMap map) {
+    public synchronized int width() {
+        return width;
+    }
+
+    public synchronized int serial() {
+        return serial;
+    }
+
+    synchronized void set_map(Context context, GoogleMap map) {
         if (marker == null && map != null) {
-            AltosMarker marker = new RocketMarker(context, serial);
-            this.width = marker.width;
-            this.height = marker.height;
             this.marker = map.addMarker(new MarkerOptions()
-                                        .icon(BitmapDescriptorFactory.fromBitmap(marker.bitmap))
+                                        .icon(BitmapDescriptorFactory.fromBitmap(altos_marker.bitmap))
                                         .position(new LatLng(lat, lon))
-                                        .anchor(marker.off_x, marker.off_y)
+                                        .anchor(altos_marker.off_x, altos_marker.off_y)
                                         .zIndex(z_index())
                                         .visible(true));
         }
     }
 
+    synchronized long last_packet() {
+        return last_packet;
+    }
+
     public int compareTo(Object o) {
         RocketOnline other = (RocketOnline) o;
 
-        long	diff = last_packet - other.last_packet;
+        long	diff = last_packet() - other.last_packet();
 
         if (diff > 0)
             return 1;
@@ -113,6 +127,9 @@ class RocketOnline implements Comparable {
 
     RocketOnline(Context context, int serial, GoogleMap map, double lat, double lon, long last_packet, boolean is_target) {
         this.serial = serial;
+        this.altos_marker = new RocketMarker(context, serial);
+        this.width = altos_marker.width;
+        this.height = altos_marker.height;
         set_position(lat, lon, last_packet, is_target);
         set_map(context, map);
     }
@@ -237,6 +254,7 @@ public class AltosDroidMapOnline implements
         return Math.hypot(a_pt.x - b_pt.x, a_pt.y - b_pt.y);
     }
 
+    /* Snapshot current rocket list and return it sorted by last update time */
     private RocketOnline[] sorted_rockets() {
         synchronized(rockets) {
             RocketOnline[]	rocket_array = rockets.values().toArray(new RocketOnline[0]);
@@ -250,14 +268,14 @@ public class AltosDroidMapOnline implements
         ArrayList<Integer> near = new ArrayList<Integer>();
 
         for (RocketOnline rocket : sorted_rockets()) {
-            LatLng	pos = rocket.marker.getPosition();
+            LatLng	pos = rocket.get_position();
 
             if (pos == null)
                 continue;
 
             double distance = pixel_distance(lat_lng, pos);
-            if (distance <= rocket.width * 2)
-                near.add(rocket.serial);
+            if (distance <= rocket.width() * 2)
+                near.add(rocket.serial());
         }
 
         if (near.size() != 0)
@@ -283,6 +301,7 @@ public class AltosDroidMapOnline implements
         }
     }
 
+    /* Only called from set_telem_state, must hold rockets locked */
     private void set_rocket(int serial, AltosState state, boolean is_target) {
         RocketOnline	rocket;
 
@@ -292,26 +311,23 @@ public class AltosDroidMapOnline implements
         if (mMap == null)
             return;
 
-        synchronized(rockets) {
-            if (rockets.containsKey(serial)) {
-                rocket = rockets.get(serial);
-                rocket.set_position(state.gps.lat, state.gps.lon, state.received_time, is_target);
-            } else {
-                rocket = new RocketOnline(altos_droid,
-                        serial,
-                        mMap, state.gps.lat, state.gps.lon,
-                                          state.received_time, is_target);
-                rockets.put(serial, rocket);
-            }
+        if (rockets.containsKey(serial)) {
+            rocket = rockets.get(serial);
+            rocket.set_position(state.gps.lat, state.gps.lon, state.received_time, is_target);
+        } else {
+            rocket = new RocketOnline(altos_droid,
+                                      serial,
+                                      mMap, state.gps.lat, state.gps.lon,
+                                      state.received_time, is_target);
+            rockets.put(serial, rocket);
         }
     }
 
+    /* Only called from set_telem_state, must hold rockets locked */
     private void remove_rocket(int serial) {
-        synchronized(rockets) {
-            RocketOnline rocket = rockets.get(serial);
-            rocket.remove();
-            rockets.remove(serial);
-        }
+        RocketOnline rocket = rockets.get(serial);
+        rocket.remove();
+        rockets.remove(serial);
     }
 
     public void set_telem_state(TelemetryState telem_state) {
