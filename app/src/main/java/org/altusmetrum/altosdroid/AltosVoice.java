@@ -30,6 +30,459 @@ import org.altusmetrum.altoslib_14.AltosState;
 
 import java.util.Locale;
 
+class Utterance {
+    double      score;
+    String      text;
+    Speaker     speaker;
+
+    static double state_score = 100.0;
+    static double pyro_score = 95.0;
+    static double speed_large_score = 90.0;
+    static double height_large_score = 85.0;
+    static double track_large_score = 80.0;
+
+    static double medium_score = 50.0;
+
+    static double speed_medium_score = 45.0;
+    static double height_medium_score = 40.0;
+    static double track_medium_score = 35.0;
+
+    static double small_score = 30.0;
+
+    static double speed_small_score = 25.0;
+    static double height_small_score = 20.0;
+    static double track_small_score = 15.0;
+
+    static boolean is_large_score(double score) {
+        return medium_score < score;
+    }
+
+    static boolean is_medium_score(double score) {
+        return small_score <= score && score <= medium_score;
+    }
+
+    static boolean is_small_score(double score) {
+        return score <= small_score;
+    }
+
+    void commit() {
+        speaker.commit();
+    }
+
+    Utterance(Speaker speaker, double score, String text, Object ... arguments) {
+        this.speaker = speaker;
+        this.score = score;
+        if (arguments.length > 0)
+            this.text = String.format(text, arguments);
+        else
+            this.text = text;
+    }
+}
+
+abstract class Speaker {
+    long        last_time;
+    boolean     new_mode;
+
+    abstract Utterance utterance(TelemetryState telem_state, AltosState state,
+                                 AltosGreatCircle from_receiver, Location receiver,
+                                 boolean new_mode);
+
+    boolean new_mode(boolean new_mode) {
+        if (new_mode)
+            this.new_mode = true;
+        return this.new_mode;
+    }
+
+    void commit() {
+        last_time = System.currentTimeMillis();
+        new_mode = false;
+    }
+
+    Speaker() {
+        last_time = AltosLib.MISSING;
+        new_mode = true;
+    }
+}
+
+class StateSpeaker extends Speaker {
+
+    int last_state;
+    int pending_state;
+
+    Utterance utterance(TelemetryState telem_state, AltosState state,
+                        AltosGreatCircle from_receiver, Location receiver,
+                        boolean new_mode) {
+        pending_state = state.state();
+
+        if (new_mode(new_mode))
+            last_state = AltosLib.ao_flight_invalid;
+
+        if (pending_state != last_state && AltosLib.ao_flight_boost <= pending_state && pending_state <= AltosLib.ao_flight_landed) {
+
+            String text = String.format("%s.", state.state_name());
+
+            if (AltosVoice.descending(state.state()) && !AltosVoice.descending(last_state)) {
+                if (state.max_height() != AltosLib.MISSING) {
+                    text += String.format(" max height: %s.",
+                                          AltosConvert.height.say_units(state.max_height(), 0));
+                }
+            }
+            return new Utterance(this, Utterance.state_score, text);
+        }
+        return null;
+    }
+
+    void commit() {
+        super.commit();
+        last_state = pending_state;
+    }
+
+    StateSpeaker() {
+        super();
+        last_state = AltosLib.ao_flight_invalid;
+    }
+}
+
+class PyroSpeaker extends Speaker {
+
+    int last_pyro_fired;
+    int pending_pyro_fired;
+
+    Utterance utterance(TelemetryState telem_state, AltosState state,
+                        AltosGreatCircle from_receiver, Location receiver,
+                        boolean new_mode) {
+
+        if (new_mode(new_mode))
+            last_pyro_fired = 0;
+
+        /* We only care about bits that turn on, not bits that turn back off */
+        pending_pyro_fired = last_pyro_fired & state.pyro_fired;
+
+        if (state.pyro_fired != last_pyro_fired) {
+            for (int i = 0; (1 << i) <= state.pyro_fired; i++) {
+                int bit = (1 << i);
+                if ((state.pyro_fired & bit) != 0 && (pending_pyro_fired & bit) == 0) {
+                    pending_pyro_fired |= bit;
+                    return new Utterance(this, Utterance.pyro_score, "igniter %c fired", 'A' + i);
+                }
+            }
+        }
+        return null;
+    }
+
+    void commit() {
+        super.commit();
+        last_pyro_fired = pending_pyro_fired;
+    }
+
+    PyroSpeaker() {
+        super();
+        last_pyro_fired = 0;
+    }
+}
+
+class HeightSpeaker extends Speaker {
+
+    double last_height, pending_height;
+
+    Utterance utterance(TelemetryState telem_state, AltosState state,
+                        AltosGreatCircle from_receiver, Location receiver,
+                        boolean new_mode) {
+
+        if (new_mode(new_mode))
+            last_height = AltosLib.MISSING;
+
+        pending_height = state.height();
+
+        if (pending_height != AltosLib.MISSING) {
+
+            double score = 0.0;
+
+            switch (AltosVoice.height_change(pending_height, last_height)) {
+            case AltosVoice.CHANGE_LARGE:
+                score = Utterance.height_large_score;
+                break;
+            case AltosVoice.CHANGE_MEDIUM:
+                score = Utterance.height_medium_score;
+                break;
+            case AltosVoice.CHANGE_SMALL:
+                score = Utterance.height_small_score;
+                break;
+            case AltosVoice.CHANGE_NONE:
+                return null;
+            }
+
+            return new Utterance(this, score, "height %s.",
+                                 AltosConvert.height.say_units(pending_height));
+        }
+        return null;
+    }
+
+    void commit() {
+        super.commit();
+        last_height = pending_height;
+    }
+
+    HeightSpeaker() {
+        super();
+        last_height = AltosLib.MISSING;
+    }
+}
+
+class SpeedSpeaker extends Speaker {
+
+    double last_speed, pending_speed;
+
+    Utterance utterance(TelemetryState telem_state, AltosState state,
+                        AltosGreatCircle from_receiver, Location receiver,
+                        boolean new_mode) {
+
+        if (new_mode(new_mode))
+            last_speed = AltosLib.MISSING;
+
+        pending_speed = AltosLib.MISSING;
+        String value = null;
+
+        if (state.state() <= AltosLib.ao_flight_coast) {
+            pending_speed = state.speed();
+        } else {
+            if (state.gps != null && state.gps.locked && state.gps.nsat >= 4) {
+                if (state.state() < AltosLib.ao_flight_invalid) {
+                    pending_speed = state.gps_ascent_rate();
+                } else {
+                    pending_speed = state.gps_speed();
+                    if (pending_speed != AltosLib.MISSING)
+                        value = "speed";
+                }
+            }
+            if (pending_speed == 0.0 || pending_speed == AltosLib.MISSING)
+                pending_speed = state.speed();
+        }
+
+        if (pending_speed != AltosLib.MISSING) {
+
+            double score = 0.0;
+
+            switch (AltosVoice.speed_change(pending_speed, last_speed)) {
+            case AltosVoice.CHANGE_LARGE:
+                score = Utterance.speed_large_score;
+                break;
+            case AltosVoice.CHANGE_MEDIUM:
+                score = Utterance.speed_medium_score;
+                break;
+            case AltosVoice.CHANGE_SMALL:
+                score = Utterance.speed_small_score;
+                break;
+            case AltosVoice.CHANGE_NONE:
+                return null;
+            }
+
+            double speed = pending_speed;
+
+            if (value == null) {
+                if (Math.abs(speed) < 1.0)
+                    value = "speed";
+                else if (speed >= 0)
+                    value = "ascending at";
+                else {
+                    value = "descending at";
+                    speed = -speed;
+                }
+            }
+
+            return new Utterance(this, score, "%s %s.", value,
+                                 AltosConvert.speed.say_units(speed));
+        }
+        return null;
+    }
+
+    void commit() {
+        super.commit();
+        last_speed = pending_speed;
+    }
+
+    SpeedSpeaker() {
+        super();
+        last_speed = AltosLib.MISSING;
+    }
+}
+
+class TrackSpeaker extends Speaker {
+
+    AltosGreatCircle    last_track, pending_track;
+
+    int change() {
+        return AltosVoice.track_change(pending_track, last_track);
+    }
+
+    double score() {
+        double score = 0.0;
+
+        switch(AltosVoice.track_change(pending_track, last_track)) {
+        case AltosVoice.CHANGE_LARGE:
+            score = Utterance.track_large_score;
+            break;
+        case AltosVoice.CHANGE_MEDIUM:
+            score = Utterance.track_medium_score;
+            break;
+        case AltosVoice.CHANGE_SMALL:
+            score = Utterance.track_small_score;
+            break;
+        case AltosVoice.CHANGE_NONE:
+            score = 0.0;
+            break;
+        }
+        return score;
+    }
+
+    Utterance sayit(double score) {
+        if (pending_track.elevation < 10.0) {
+            return new Utterance(this, score, "bearing %s %d, distance %s.",
+                                 pending_track.bearing_words(
+                                     AltosGreatCircle.BEARING_VOICE),
+                                 (int) (pending_track.bearing + 0.5),
+                                 AltosConvert.distance.say(pending_track.distance, 3));
+        } else {
+            return new Utterance(this, score, "bearing %s %d, elevation %d, distance %s.",
+                                 pending_track.bearing_words(
+                                     AltosGreatCircle.BEARING_VOICE),
+                                 (int) (pending_track.bearing + 0.5),
+                                 (int) (pending_track.elevation + 0.5),
+                                 AltosConvert.distance.say(pending_track.distance, 3));
+        }
+    }
+
+    Utterance utterance(TelemetryState telem_state, AltosState state,
+                        AltosGreatCircle from_receiver, Location receiver,
+                        boolean new_mode) {
+
+        if (new_mode(new_mode))
+            last_track = null;
+
+        pending_track = from_receiver;
+
+        if (pending_track != null) {
+            double score = score();
+            if (score == 0.0)
+                return null;
+            return sayit(score);
+        }
+        return null;
+    }
+
+    void commit() {
+        super.commit();
+        last_track = pending_track;
+    }
+
+    TrackSpeaker() {
+        super();
+        last_track = null;
+    }
+}
+
+class RecoverSpeaker extends TrackSpeaker {
+
+    Location pending_receiver, last_receiver;
+    AltosGPS pending_target, last_target;
+
+    int change() {
+        int change = AltosVoice.CHANGE_NONE;
+
+        int target_change = AltosVoice.target_change(pending_target, last_target);
+        if (target_change > change)
+            change = target_change;
+        int receiver_change = AltosVoice.receiver_change(pending_receiver, last_receiver);
+        if (receiver_change > change)
+            change = receiver_change;
+        return change;
+    }
+
+    Utterance utterance(TelemetryState telem_state, AltosState state,
+                        AltosGreatCircle from_receiver, Location receiver,
+                        boolean new_mode) {
+
+        if (new_mode(new_mode)) {
+            last_receiver = null;
+            last_target = null;
+            last_track = null;
+        }
+
+        pending_track = from_receiver;
+        pending_receiver = receiver;
+        pending_target = null;
+        if (state != null)
+            pending_target = state.gps;
+
+        if (pending_track != null) {
+            double score = score();
+            if (score == 0.0)
+                return null;
+            return sayit(score);
+        }
+        return null;
+    }
+
+    void commit() {
+        super.commit();
+        last_receiver = pending_receiver;
+        last_target = pending_target;
+    }
+
+    RecoverSpeaker() {
+        super();
+        last_receiver = null;
+        last_target = null;
+    }
+}
+
+abstract class GoNoGoSpeaker extends Speaker {
+
+    boolean pending_ready, last_ready;
+
+    abstract String name();
+    abstract boolean ready(AltosState state);
+
+    Utterance utterance(TelemetryState telem_state, AltosState state,
+                        AltosGreatCircle from_receiver, Location receiver,
+                        boolean new_mode) {
+
+        new_mode = new_mode(new_mode);
+
+        pending_ready = ready(state);
+        if (pending_ready != last_ready || new_mode) {
+            return new Utterance(this, Utterance.pyro_score, "%s %s.",
+                                 name(), pending_ready? "ready" : "not ready");
+        }
+        return null;
+    }
+
+    void commit() {
+        super.commit();
+        last_ready = pending_ready;
+    }
+
+    GoNoGoSpeaker() {
+        super();
+        last_ready = false;
+    }
+}
+
+class ApogeeSpeaker extends GoNoGoSpeaker {
+    String name() { return "apogee"; }
+    boolean ready(AltosState state) { return state.apogee_voltage >= AltosLib.ao_igniter_good; }
+}
+
+class MainSpeaker extends GoNoGoSpeaker {
+    String name() { return "main"; }
+    boolean ready(AltosState state) { return state.main_voltage >= AltosLib.ao_igniter_good; }
+}
+
+class GPSSpeaker extends GoNoGoSpeaker {
+    String name() { return "G P S"; }
+    boolean ready(AltosState state) { return state.gps_ready; }
+}
+
 public class AltosVoice {
 
     private TextToSpeech tts         = null;
@@ -39,23 +492,64 @@ public class AltosVoice {
     static final int TELL_MODE_NONE = 0;
     static final int TELL_MODE_PAD = 1;
     static final int TELL_MODE_FLIGHT = 2;
-    static final int TELL_MODE_RECOVER = 3;
+    static final int TELL_MODE_MAP = 3;
+    static final int TELL_MODE_RECOVER = 4;
 
-    static final int TELL_FLIGHT_NONE = 0;
-    static final int TELL_FLIGHT_STATE = 1;
-    static final int TELL_FLIGHT_SPEED = 2;
-    static final int TELL_FLIGHT_HEIGHT = 3;
-    static final int TELL_FLIGHT_TRACK = 4;
+    static final int TELL_STEP_NONE = 0;
+    static final int TELL_STEP_STATE = 1;
+    static final int TELL_STEP_SPEED = 2;
+    static final int TELL_STEP_HEIGHT = 3;
+    static final int TELL_STEP_TRACK = 4;
 
     private int		last_tell_mode;
     private int		last_tell_serial = AltosLib.MISSING;
     private int		last_state;
     private AltosGPS last_gps;
-    private double		last_height = AltosLib.MISSING;
+    private double	last_height = AltosLib.MISSING;
+    private double      last_spoken_height = AltosLib.MISSING;
+    private double      last_speed = AltosLib.MISSING;
+    private double      last_spoken_speed = AltosLib.MISSING;
+    private int         last_spoken_pyro_fired = 0;
+    private AltosGreatCircle last_from_receiver = null;
+    private AltosGreatCircle last_spoken_from_receiver = null;
     private Location last_receiver;
-    private long		last_speak_time;
-    private int		last_flight_tell = TELL_FLIGHT_NONE;
-    private boolean		quiet = false;
+    private long	last_speak_time;
+    private int		last_tell_step = TELL_STEP_NONE;
+    private boolean	quiet = false;
+
+    static final int CHANGE_NONE = 0;
+    static final int CHANGE_SMALL = 1;
+    static final int CHANGE_MEDIUM = 2;
+    static final int CHANGE_LARGE = 3;
+
+    Speaker stateSpeaker = new StateSpeaker();
+    Speaker pyroSpeaker = new PyroSpeaker();
+    Speaker heightSpeaker = new HeightSpeaker();
+    Speaker speedSpeaker = new SpeedSpeaker();
+    Speaker trackSpeaker = new TrackSpeaker();
+    Speaker recoverSpeaker = new RecoverSpeaker();
+
+    Speaker apogeeSpeaker = new ApogeeSpeaker();
+    Speaker mainSpeaker = new MainSpeaker();
+    Speaker gpsSpeaker = new GPSSpeaker();
+
+    private Speaker pad_speakers[] = {
+        apogeeSpeaker,
+        mainSpeaker,
+        gpsSpeaker,
+    };
+
+    private Speaker flight_speakers[] = {
+        stateSpeaker,
+        pyroSpeaker,
+        heightSpeaker,
+        speedSpeaker,
+        trackSpeaker,
+    };
+
+    private Speaker recover_speakers[] = {
+        recoverSpeaker,
+    };
 
     private long now() {
         return System.currentTimeMillis();
@@ -66,9 +560,15 @@ public class AltosVoice {
         last_speak_time = now() - 100 * 1000;
         last_gps = null;
         last_height = AltosLib.MISSING;
+        last_spoken_height = AltosLib.MISSING;
+        last_speed = AltosLib.MISSING;
+        last_spoken_speed = AltosLib.MISSING;
+        last_from_receiver = null;
+        last_spoken_from_receiver = null;
         last_receiver = null;
+        last_spoken_pyro_fired = 0;
         last_state = AltosLib.ao_flight_invalid;
-        last_flight_tell = TELL_FLIGHT_NONE;
+        last_tell_step = TELL_STEP_NONE;
     }
 
     public AltosVoice(MainActivity a) {
@@ -116,204 +616,222 @@ public class AltosVoice {
     private boolean		last_main_good;
     private boolean		last_gps_good;
 
-    private boolean tell_gonogo(String name,
-                                boolean current,
-                                boolean previous,
-                                boolean new_mode) {
-        if (current != previous || new_mode)
-            speak("%s %s.", name, current ? "ready" : "not ready");
-        return current;
-    }
-
-    private boolean tell_pad(TelemetryState telem_state, AltosState state,
-                             AltosGreatCircle from_receiver, Location receiver) {
-
-        if (state == null)
-            return false;
-
-        if (state.apogee_voltage != AltosLib.MISSING)
-            last_apogee_good = tell_gonogo("apogee",
-                                           state.apogee_voltage >= AltosLib.ao_igniter_good,
-                                           last_apogee_good,
-                                           last_tell_mode != TELL_MODE_PAD);
-
-        if (state.main_voltage != AltosLib.MISSING)
-            last_main_good = tell_gonogo("main",
-                                         state.main_voltage >= AltosLib.ao_igniter_good,
-                                         last_main_good,
-                                         last_tell_mode != TELL_MODE_PAD);
-
-        if (state.gps != null)
-            last_gps_good = tell_gonogo("G P S",
-                                        state.gps_ready,
-                                        last_gps_good,
-                                        last_tell_mode != TELL_MODE_PAD);
-        return true;
-    }
-
-
-    private boolean descending(int state) {
+    static boolean descending(int state) {
         return AltosLib.ao_flight_drogue <= state && state <= AltosLib.ao_flight_landed;
     }
 
-    private boolean target_moved(AltosState state) {
-        if (last_gps != null && state != null && state.gps != null) {
-            AltosGreatCircle	moved = new AltosGreatCircle(last_gps.lat, last_gps.lon, last_gps.alt,
-                                                             state.gps.lat, state.gps.lon, state.gps.alt);
-            double			height_change = 0;
-            double			height = state.height();
+    static int location_change(double new_lat, double new_lon, double new_height,
+                               double old_lat, double old_lon, double old_height) {
 
-            if (height != AltosLib.MISSING && last_height != AltosLib.MISSING)
-                height_change = Math.abs(last_height - height);
+        if (new_lat == old_lat && new_lon == old_lon)
+            return height_change(new_height, old_height);
 
-            return !(moved.range < 10) || !(height_change < 10);
+        if (new_lat == AltosLib.MISSING || old_lat == AltosLib.MISSING)
+            return CHANGE_LARGE;
+
+        if (new_height == AltosLib.MISSING || old_height == AltosLib.MISSING) {
+            if (new_height != old_height)
+                return CHANGE_LARGE;
+            new_height = 0.0;
+            old_height = 0.0;
         }
-        return true;
+
+        int change = CHANGE_NONE;
+        AltosGreatCircle	moved = new AltosGreatCircle(new_lat, new_lon, new_height,
+                                                             old_lat, old_lon, old_height);
+
+        int height_change = height_change(new_height, old_height);
+        if (height_change > change)
+            change = height_change;
+        int distance_change = distance_change(moved.range, 0.0);
+        if (distance_change > change)
+            change = distance_change;
+        return change;
     }
 
-    private boolean receiver_moved(Location receiver) {
-        if (last_receiver != null && receiver != null) {
-            AltosGreatCircle	moved = new AltosGreatCircle(last_receiver.getLatitude(),
-                                                             last_receiver.getLongitude(),
-                                                             last_receiver.getAltitude(),
-                                                             receiver.getLatitude(),
-                                                             receiver.getLongitude(),
-                                                             receiver.getAltitude());
-            return !(moved.range < 10);
-        }
-        return true;
-    }
-
-    private boolean tell_flight(TelemetryState telem_state, AltosState state,
-                                AltosGreatCircle from_receiver, Location receiver) {
-
-        boolean	spoken = false;
-
-        if (state == null)
+    static boolean gps_known(AltosGPS gps) {
+        if (gps == null)
             return false;
-
-        if (last_tell_mode != TELL_MODE_FLIGHT)
-            last_flight_tell = TELL_FLIGHT_NONE;
-
-        if (state.state() != last_state && AltosLib.ao_flight_boost <= state.state() && state.state() <= AltosLib.ao_flight_landed) {
-            speak(state.state_name());
-            if (descending(state.state()) && !descending(last_state)) {
-                if (state.max_height() != AltosLib.MISSING) {
-                    speak("max height: %s.",
-                          AltosConvert.height.say_units(state.max_height()));
-                }
-            }
-            last_flight_tell = TELL_FLIGHT_STATE;
-            return true;
-        }
-
-        if (last_tell_mode == TELL_MODE_FLIGHT && last_flight_tell == TELL_FLIGHT_TRACK) {
-            if (time_since_speak() < 10 * 1000)
-                return false;
-            if (!target_moved(state) && !receiver_moved(receiver))
-                return false;
-        }
-
-        double	speed;
-        double	height;
-
-        if (last_flight_tell == TELL_FLIGHT_NONE || last_flight_tell == TELL_FLIGHT_STATE || last_flight_tell == TELL_FLIGHT_TRACK) {
-            last_flight_tell = TELL_FLIGHT_SPEED;
-
-            String value = null;
-            if (state.state() <= AltosLib.ao_flight_coast) {
-                speed = state.speed();
-            } else {
-                speed = AltosLib.MISSING;
-                if (state.gps != null && state.gps.locked && state.gps.nsat >= 4) {
-                    if (state.state() < AltosLib.ao_flight_invalid) {
-                        speed = state.gps_ascent_rate();
-                    } else {
-                        speed = state.gps_speed();
-                        if (speed != AltosLib.MISSING)
-                            value = "speed";
-                    }
-                }
-                if (speed == 0.0 || speed == AltosLib.MISSING)
-                    speed = state.speed();
-            }
-
-            if (speed != AltosLib.MISSING) {
-                if (value == null) {
-                    if (Math.abs(speed) < 1.0)
-                        value = "speed";
-                    else if (speed >= 0)
-                        value = "ascending at";
-                    else {
-                        value = "descending at";
-                        speed = -speed;
-                    }
-                }
-                speak("%s %s.", value, AltosConvert.speed.say_units(speed));
-                return true;
-            }
-        }
-
-        if (last_flight_tell == TELL_FLIGHT_SPEED) {
-            last_flight_tell = TELL_FLIGHT_HEIGHT;
-            height = state.height();
-
-            if (height != AltosLib.MISSING) {
-                speak("height %s.", AltosConvert.height.say_units(height));
-                return true;
-            }
-        }
-
-        if (last_flight_tell == TELL_FLIGHT_HEIGHT) {
-            last_flight_tell = TELL_FLIGHT_TRACK;
-            if (from_receiver != null) {
-                speak("bearing %s %d, elevation %d, distance %s.",
-                      from_receiver.bearing_words(
-                          AltosGreatCircle.BEARING_VOICE),
-                      (int) (from_receiver.bearing + 0.5),
-                      (int) (from_receiver.elevation + 0.5),
-                      AltosConvert.distance.say(from_receiver.distance));
-                return true;
-            }
-        }
-
-        return spoken;
-    }
-
-    private boolean tell_recover(TelemetryState telem_state, AltosState state,
-                                 AltosGreatCircle from_receiver, Location receiver, Resources resources) {
-
-        if (from_receiver == null)
+        if (!gps.locked)
             return false;
-
-        if (last_tell_mode == TELL_MODE_RECOVER) {
-            if (!target_moved(state) && !receiver_moved(receiver))
-                return false;
-            if (time_since_speak() <= 10 * 1000)
-                return false;
-        }
-
-        String direction = AltosValue.direction(from_receiver, receiver, resources);
-        if (direction == null)
-            direction = String.format(Locale.getDefault(), "Bearing %d", (int) (from_receiver.bearing + 0.5));
-
-        speak("%s, distance %s.", direction,
-              AltosConvert.distance.say_units(from_receiver.distance));
-
+        if (gps.nsat < 4)
+            return false;
         return true;
     }
 
-    public void tell(TelemetryState telem_state, AltosState state,
+    static int target_change(AltosGPS new_gps, AltosGPS old_gps) {
+        if (new_gps == old_gps)
+            return CHANGE_NONE;
+
+        boolean new_known = gps_known(new_gps);
+        boolean old_known = gps_known(old_gps);
+
+        if (!new_known && !old_known)
+            return CHANGE_NONE;
+
+        if (new_known != old_known)
+            return CHANGE_LARGE;
+
+        return location_change(new_gps.lat, new_gps.lon, new_gps.alt,
+                               old_gps.lat, old_gps.lon, old_gps.alt);
+    }
+
+    static int receiver_change(Location new_receiver, Location old_receiver) {
+        if (new_receiver == old_receiver)
+            return CHANGE_NONE;
+
+        if (new_receiver == null || old_receiver == null)
+            return CHANGE_LARGE;
+
+        return location_change(new_receiver.getLatitude(), new_receiver.getLongitude(), new_receiver.getAltitude(),
+                               old_receiver.getLatitude(), old_receiver.getLongitude(), old_receiver.getAltitude());
+    }
+
+    static int speed_change(double new_speed, double old_speed) {
+
+        if (new_speed == old_speed)
+            return CHANGE_NONE;
+
+        if (new_speed == AltosLib.MISSING || old_speed == AltosLib.MISSING)
+            return CHANGE_LARGE;
+
+        double new_mag = Math.abs(new_speed);
+        double change = Math.abs(new_speed - old_speed);
+        double big_change = new_mag / 4;
+        if (big_change < 25)
+            big_change = 25;
+        double medium_change = new_mag / 10;
+        if (medium_change < 5)
+            medium_change = 5;
+
+        if (change >= big_change)
+            return CHANGE_LARGE;
+
+        if (change >= medium_change)
+            return CHANGE_MEDIUM;
+
+        return CHANGE_SMALL;
+    }
+
+    static int height_change(double new_height, double old_height) {
+
+        if (new_height == old_height)
+            return CHANGE_NONE;
+
+        if (new_height == AltosLib.MISSING || old_height == AltosLib.MISSING)
+            return CHANGE_LARGE;
+
+        double new_mag = Math.abs(new_height);
+        double change = Math.abs(new_height - old_height);
+        double big_change = new_mag / 4;
+        if (big_change < 100)
+            big_change = 100;
+        double medium_change = new_mag / 10;
+        if (medium_change < 10)
+            medium_change = 10;
+
+        if (change >= big_change)
+            return CHANGE_LARGE;
+
+        if (change >= medium_change)
+            return CHANGE_MEDIUM;
+
+        return CHANGE_SMALL;
+    }
+
+    static int distance_change(double new_distance, double old_distance) {
+
+        if (new_distance == old_distance)
+            return CHANGE_NONE;
+
+        if (new_distance == AltosLib.MISSING || old_distance == AltosLib.MISSING)
+            return CHANGE_LARGE;
+
+        double new_mag = Math.abs(new_distance);
+        double change = Math.abs(new_distance - old_distance);
+        double big_change = new_distance / 4;
+        if (big_change > 2000)
+            big_change = 2000;
+        double medium_change = new_mag / 10;
+        if (medium_change > 200)
+            medium_change = 200;
+
+        if (change >= big_change)
+            return CHANGE_LARGE;
+
+        if (change >= medium_change)
+            return CHANGE_MEDIUM;
+
+        return CHANGE_SMALL;
+    }
+
+    static int angle_change(double new_angle, double old_angle, double new_distance) {
+
+        if (new_angle == old_angle)
+            return CHANGE_NONE;
+
+        if (new_angle == AltosLib.MISSING || old_angle == AltosLib.MISSING)
+            return CHANGE_LARGE;
+
+        double change = Math.abs(new_angle - old_angle);
+        while (change >= 360)
+            change -= 360;
+
+        if (new_distance == AltosLib.MISSING)
+            return CHANGE_NONE;
+
+        double big_change = 90;
+        if (new_distance >= 1000)
+            big_change = 10;
+
+        double medium_change = 30;
+        if (new_distance >= 1000)
+            medium_change = 2;
+        if (new_distance >= 10)
+            medium_change = 15;
+
+        if (change >= big_change)
+            return CHANGE_LARGE;
+        if (change >= medium_change)
+            return CHANGE_MEDIUM;
+        return CHANGE_SMALL;
+    }
+
+    static int track_change(AltosGreatCircle new_track, AltosGreatCircle old_track) {
+
+        if (new_track == old_track)
+            return CHANGE_NONE;
+
+        if (new_track == null || old_track == null)
+            return CHANGE_LARGE;
+
+        if (new_track.equals(old_track))
+            return CHANGE_NONE;
+
+        int change = CHANGE_NONE;
+        int distance_change = distance_change(new_track.distance, old_track.distance);
+        if (distance_change > change)
+            change = distance_change;
+        int bearing_change = angle_change(new_track.bearing, old_track.bearing, new_track.distance);
+        if (bearing_change > change)
+            change = bearing_change;
+        int elevation_change = angle_change(new_track.elevation, old_track.elevation, new_track.distance);
+        if (elevation_change > change)
+            change = elevation_change;
+        return change;
+    }
+
+    public boolean tell(TelemetryState telem_state, AltosState state,
                      AltosGreatCircle from_receiver, Location receiver,
-                     AltosFragment fragment, boolean quiet, Resources resources) {
+                     AltosFragment fragment, boolean quiet) {
 
         this.quiet = quiet;
 
         boolean	spoken = false;
 
-        if (!tts_enabled || !tts_running) return;
+        if (!tts_enabled || !tts_running) return false;
 
-        if (is_speaking()) return;
+        if (is_speaking()) return true;
 
         int	tell_serial = last_tell_serial;
 
@@ -329,15 +847,54 @@ public class AltosVoice {
             tell_mode = TELL_MODE_PAD;
         else if (fragment != null && fragment.name().equals(MainActivity.flight_name))
             tell_mode = TELL_MODE_FLIGHT;
+        else if (fragment != null && fragment.name().equals(MainActivity.map_name))
+            tell_mode = TELL_MODE_MAP;
         else
             tell_mode = TELL_MODE_RECOVER;
 
-        if (tell_mode == TELL_MODE_PAD)
-            spoken = tell_pad(telem_state, state, from_receiver, receiver);
-        else if (tell_mode == TELL_MODE_FLIGHT)
-            spoken = tell_flight(telem_state, state, from_receiver, receiver);
-        else
-            spoken = tell_recover(telem_state, state, from_receiver, receiver, resources);
+        if (tell_mode != last_tell_mode)
+            last_tell_step = TELL_STEP_NONE;
+
+        Speaker[] speakers = null;
+
+        switch (tell_mode) {
+        case TELL_MODE_PAD:
+            speakers = pad_speakers;
+            break;
+        case TELL_MODE_FLIGHT:
+        case TELL_MODE_MAP:
+            speakers = flight_speakers;
+            break;
+        case TELL_MODE_RECOVER:
+            speakers = recover_speakers;
+            break;
+        }
+
+        spoken = false;
+
+        if (speakers != null && state != null) {
+            Utterance utterance = null;
+            boolean new_mode = tell_mode != last_tell_mode;
+
+            for (int i = 0; i < speakers.length; i++) {
+                Utterance pending = speakers[i].utterance(telem_state, state, from_receiver, receiver, new_mode);
+                if (pending != null) {
+                    if (utterance == null || pending.score > utterance.score)
+                        utterance = pending;
+                }
+            }
+
+            if (utterance != null) {
+                if (Utterance.is_large_score(utterance.score) ||
+                    (Utterance.is_medium_score(utterance.score) && time_since_speak() >= 4 * 1000) ||
+                    time_since_speak() >= 10 * 1000)
+                {
+                    utterance.commit();
+                    speak(utterance.text);
+                    spoken = true;
+                }
+            }
+        }
 
         if (spoken) {
             last_tell_mode = tell_mode;
@@ -345,11 +902,16 @@ public class AltosVoice {
             if (state != null) {
                 last_state = state.state();
                 last_height = state.height();
+                last_speed = state.speed();
                 if (state.gps != null)
                     last_gps = state.gps;
             }
             if (receiver != null)
                 last_receiver = receiver;
+            if (from_receiver != null)
+                last_from_receiver = from_receiver;
         }
+
+        return spoken;
     }
 }

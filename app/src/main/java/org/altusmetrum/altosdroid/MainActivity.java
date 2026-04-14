@@ -218,6 +218,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     public Location location = null;
     public static boolean location_has_gps = false;
     TelemetryState telemetry_state = null;
+    AltosGreatCircle from_receiver;
+    boolean speaking;
     double selected_frequency = AltosLib.MISSING;
 
     public static final int SELECT_AUTO = AltosDroidPreferences.SELECT_AUTO;
@@ -967,6 +969,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         }
     }
 
+    void speak() {
+        if (altos_voice != null) {
+            boolean quiet = true;
+            if (telemetry_state != null)
+                quiet = telemetry_state.quiet;
+            speaking = altos_voice.tell(telemetry_state, state, from_receiver, location, active_fragment, quiet);
+        }
+    }
+
     void update_ui(TelemetryState telem_state, AltosState state, boolean quiet) {
         //AltosDebug.debug("update_ui");
         this.state = state;
@@ -974,7 +985,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         int prev_state = saved_state == null ? AltosLib.ao_flight_invalid : saved_state.state;
         int active_menu_id = nav_controller.getCurrentDestination().getId();
         int next_menu_id = active_menu_id;
-        AltosGreatCircle from_receiver = null;
+        from_receiver = null;
 
         if (state != null) {
             // compute the next fragment to switch to
@@ -1060,10 +1071,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         if (active_fragment != null) {
             active_fragment.show(telem_state, state, from_receiver, location);
         }
-
-        if (altos_voice != null) {
-            altos_voice.tell(telem_state, state, from_receiver, location, active_fragment, quiet, getResources());
-        }
+        speak();
     }
 
     int auto_select_tracker() {
@@ -1157,6 +1165,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     void timer_tick() {
         try {
             mMessenger.send(Message.obtain(null, MSG_UPDATE_AGE));
+            if (speaking)
+                speak();
         } catch (RemoteException e) {
         }
     }

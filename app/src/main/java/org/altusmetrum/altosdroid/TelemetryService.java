@@ -298,7 +298,7 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
 
         telemetry_state.latest_serial = AltosPreferences.latest_state();
 
-        telemetry_state.quiet = true;
+        telemetry_state.quiet = false;
 
         AltosDebug.debug("latest serial %d\n", telemetry_state.latest_serial);
 
