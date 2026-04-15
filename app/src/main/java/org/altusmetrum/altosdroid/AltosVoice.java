@@ -309,16 +309,23 @@ class SpeedSpeaker extends Speaker {
 
 class TrackSpeaker extends Speaker {
 
+    Location            last_receiver, pending_receiver;
+    AltosGPS            last_target, pending_target;
     AltosGreatCircle    last_track, pending_track;
 
-    int change() {
-        return AltosVoice.track_change(pending_track, last_track);
-    }
-
     double score() {
+
+        int change = AltosVoice.CHANGE_NONE;
+        int receiver_change = AltosVoice.receiver_change(pending_receiver, last_receiver);
+        if (receiver_change > change)
+            change = receiver_change;
+        int target_change = AltosVoice.target_change(pending_target, last_target);
+        if (target_change > change)
+            change = target_change;
+
         double score = 0.0;
 
-        switch(AltosVoice.track_change(pending_track, last_track)) {
+        switch(change) {
         case AltosVoice.CHANGE_LARGE:
             score = Utterance.track_large_score;
             break;
@@ -356,12 +363,17 @@ class TrackSpeaker extends Speaker {
                         AltosGreatCircle from_receiver, Location receiver,
                         boolean new_mode) {
 
-        if (new_mode(new_mode))
+        if (new_mode(new_mode)) {
+            last_target = null;
+            last_receiver = null;
             last_track = null;
+        }
 
+        pending_target = state.gps;
+        pending_receiver = receiver;
         pending_track = from_receiver;
 
-        if (pending_track != null) {
+        if (pending_target != null && pending_receiver != null && pending_track != null) {
             double score = score();
             if (score == 0.0)
                 return null;
@@ -373,66 +385,15 @@ class TrackSpeaker extends Speaker {
     void commit() {
         super.commit();
         last_track = pending_track;
+        last_target = pending_target;
+        last_receiver = pending_receiver;
     }
 
     TrackSpeaker() {
         super();
         last_track = null;
-    }
-}
-
-class RecoverSpeaker extends TrackSpeaker {
-
-    Location pending_receiver, last_receiver;
-    AltosGPS pending_target, last_target;
-
-    int change() {
-        int change = AltosVoice.CHANGE_NONE;
-
-        int target_change = AltosVoice.target_change(pending_target, last_target);
-        if (target_change > change)
-            change = target_change;
-        int receiver_change = AltosVoice.receiver_change(pending_receiver, last_receiver);
-        if (receiver_change > change)
-            change = receiver_change;
-        return change;
-    }
-
-    Utterance utterance(TelemetryState telem_state, AltosState state,
-                        AltosGreatCircle from_receiver, Location receiver,
-                        boolean new_mode) {
-
-        if (new_mode(new_mode)) {
-            last_receiver = null;
-            last_target = null;
-            last_track = null;
-        }
-
-        pending_track = from_receiver;
-        pending_receiver = receiver;
-        pending_target = null;
-        if (state != null)
-            pending_target = state.gps;
-
-        if (pending_track != null) {
-            double score = score();
-            if (score == 0.0)
-                return null;
-            return sayit(score);
-        }
-        return null;
-    }
-
-    void commit() {
-        super.commit();
-        last_receiver = pending_receiver;
-        last_target = pending_target;
-    }
-
-    RecoverSpeaker() {
-        super();
-        last_receiver = null;
         last_target = null;
+        last_receiver = null;
     }
 }
 
@@ -527,13 +488,13 @@ public class AltosVoice {
     Speaker heightSpeaker = new HeightSpeaker();
     Speaker speedSpeaker = new SpeedSpeaker();
     Speaker trackSpeaker = new TrackSpeaker();
-    Speaker recoverSpeaker = new RecoverSpeaker();
 
     Speaker apogeeSpeaker = new ApogeeSpeaker();
     Speaker mainSpeaker = new MainSpeaker();
     Speaker gpsSpeaker = new GPSSpeaker();
 
     private Speaker pad_speakers[] = {
+        stateSpeaker,
         apogeeSpeaker,
         mainSpeaker,
         gpsSpeaker,
@@ -548,7 +509,8 @@ public class AltosVoice {
     };
 
     private Speaker recover_speakers[] = {
-        recoverSpeaker,
+        stateSpeaker,
+        trackSpeaker,
     };
 
     private long now() {
@@ -636,16 +598,16 @@ public class AltosVoice {
             old_height = 0.0;
         }
 
-        int change = CHANGE_NONE;
         AltosGreatCircle	moved = new AltosGreatCircle(new_lat, new_lon, new_height,
                                                              old_lat, old_lon, old_height);
 
-        int height_change = height_change(new_height, old_height);
-        if (height_change > change)
-            change = height_change;
-        int distance_change = distance_change(moved.range, 0.0);
-        if (distance_change > change)
-            change = distance_change;
+        int change = CHANGE_NONE;
+
+        if (moved.range > 100)
+            change = CHANGE_LARGE;
+        else if (moved.range > 10)
+            change = CHANGE_MEDIUM;
+
         return change;
     }
 
@@ -710,7 +672,10 @@ public class AltosVoice {
         if (change >= medium_change)
             return CHANGE_MEDIUM;
 
-        return CHANGE_SMALL;
+        if (change > 1)
+            return CHANGE_SMALL;
+
+        return CHANGE_NONE;
     }
 
     static int height_change(double new_height, double old_height) {
@@ -736,89 +701,10 @@ public class AltosVoice {
         if (change >= medium_change)
             return CHANGE_MEDIUM;
 
-        return CHANGE_SMALL;
-    }
+        if (change > 1)
+            return CHANGE_SMALL;
 
-    static int distance_change(double new_distance, double old_distance) {
-
-        if (new_distance == old_distance)
-            return CHANGE_NONE;
-
-        if (new_distance == AltosLib.MISSING || old_distance == AltosLib.MISSING)
-            return CHANGE_LARGE;
-
-        double new_mag = Math.abs(new_distance);
-        double change = Math.abs(new_distance - old_distance);
-        double big_change = new_distance / 4;
-        if (big_change > 2000)
-            big_change = 2000;
-        double medium_change = new_mag / 10;
-        if (medium_change > 200)
-            medium_change = 200;
-
-        if (change >= big_change)
-            return CHANGE_LARGE;
-
-        if (change >= medium_change)
-            return CHANGE_MEDIUM;
-
-        return CHANGE_SMALL;
-    }
-
-    static int angle_change(double new_angle, double old_angle, double new_distance) {
-
-        if (new_angle == old_angle)
-            return CHANGE_NONE;
-
-        if (new_angle == AltosLib.MISSING || old_angle == AltosLib.MISSING)
-            return CHANGE_LARGE;
-
-        double change = Math.abs(new_angle - old_angle);
-        while (change >= 360)
-            change -= 360;
-
-        if (new_distance == AltosLib.MISSING)
-            return CHANGE_NONE;
-
-        double big_change = 90;
-        if (new_distance >= 1000)
-            big_change = 10;
-
-        double medium_change = 30;
-        if (new_distance >= 1000)
-            medium_change = 2;
-        if (new_distance >= 10)
-            medium_change = 15;
-
-        if (change >= big_change)
-            return CHANGE_LARGE;
-        if (change >= medium_change)
-            return CHANGE_MEDIUM;
-        return CHANGE_SMALL;
-    }
-
-    static int track_change(AltosGreatCircle new_track, AltosGreatCircle old_track) {
-
-        if (new_track == old_track)
-            return CHANGE_NONE;
-
-        if (new_track == null || old_track == null)
-            return CHANGE_LARGE;
-
-        if (new_track.equals(old_track))
-            return CHANGE_NONE;
-
-        int change = CHANGE_NONE;
-        int distance_change = distance_change(new_track.distance, old_track.distance);
-        if (distance_change > change)
-            change = distance_change;
-        int bearing_change = angle_change(new_track.bearing, old_track.bearing, new_track.distance);
-        if (bearing_change > change)
-            change = bearing_change;
-        int elevation_change = angle_change(new_track.elevation, old_track.elevation, new_track.distance);
-        if (elevation_change > change)
-            change = elevation_change;
-        return change;
+        return CHANGE_NONE;
     }
 
     public boolean tell(TelemetryState telem_state, AltosState state,
