@@ -26,6 +26,7 @@ import org.altusmetrum.altoslib_14.AltosConvert;
 import org.altusmetrum.altoslib_14.AltosGPS;
 import org.altusmetrum.altoslib_14.AltosGreatCircle;
 import org.altusmetrum.altoslib_14.AltosLib;
+import org.altusmetrum.altoslib_14.AltosPreferences;
 import org.altusmetrum.altoslib_14.AltosState;
 
 import java.util.Locale;
@@ -447,7 +448,6 @@ class GPSSpeaker extends GoNoGoSpeaker {
 public class AltosVoice {
 
     private TextToSpeech tts         = null;
-    private boolean      tts_enabled = true;
     private boolean      tts_running = false;
 
     static final int TELL_MODE_NONE = 0;
@@ -542,14 +542,17 @@ public class AltosVoice {
         reset_last();
     }
 
+    private boolean tts_enabled() {
+        return AltosPreferences.voice();
+    }
+
     public synchronized void set_enable(boolean enable) {
-        tts_enabled = enable;
-        if (tts_running)
+        if (!enable && tts_running)
             tts.stop();
     }
 
     public synchronized void speak(String s) {
-        if (!tts_enabled || !tts_running) return;
+        if (!tts_enabled() || !tts_running) return;
         last_speak_time = now();
         if (!quiet)
             tts.speak(s, TextToSpeech.QUEUE_ADD, null, null);
@@ -715,7 +718,7 @@ public class AltosVoice {
 
         boolean	spoken = false;
 
-        if (!tts_enabled || !tts_running) return false;
+        if (!tts_enabled() || !tts_running) return false;
 
         if (is_speaking()) return true;
 
