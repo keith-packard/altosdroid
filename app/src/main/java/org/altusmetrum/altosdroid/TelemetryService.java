@@ -107,6 +107,8 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
     AltosIgnite ignite = null;
     boolean ignite_running;
 
+    Notification notification;
+
     // Handler of incoming messages from clients.
     static class IncomingHandler extends Handler {
         private final WeakReference<TelemetryService> service;
@@ -322,9 +324,9 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
 
     private NotificationChannel createNotificationChannel(String channelId, String channelName) {
         NotificationChannel chan = new NotificationChannel(
-            channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT);
-        chan.setLightColor(Color.BLUE);
-        chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+            channelId, channelName, NotificationManager.IMPORTANCE_LOW);
+        chan.enableLights(false);
+        chan.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
         NotificationManager service = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         service.createNotificationChannel(chan);
         return chan;
@@ -336,23 +338,27 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
     }
 
     private void post_notification() {
-        int		flag;
 
-        if (Build.VERSION.SDK_INT >= 31) // android.os.Build.VERSION_CODES.S
+        if (notification != null)
+            return;
+
+        int		flag = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
             flag = 33554432; // PendingIntent.FLAG_MUTABLE
-        else
-            flag = 0;
 
-        // The PendingIntent to launch our activity if the user selects this notification
+        /*
+         * The PendingIntent to launch our activity if the user
+         * selects this notification
+         */
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
                                                                 new Intent(this, MainActivity.class), flag);
 
-        String channelId = "altosdroid_telemetry";
+        String channelId = "org.altusmetrum.altosdroid.telemetry";
 
         NotificationChannel channel = createNotificationChannel(channelId,
                                                                 "AltosDroid Telemetry Service");
 
-        // Create notification to be displayed while the service runs
+        /* Create notification to be displayed while the service runs */
         Notification.Builder builder = new Notification.Builder(this, channel.getId());
         builder.setSmallIcon(R.drawable.altosdroid);
         builder.setContentTitle(getText(R.string.telemetry_service_label));
@@ -360,14 +366,14 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
         builder.setContentIntent(contentIntent);
         builder.setWhen(System.currentTimeMillis());
         builder.setOngoing(true);
-        //.setLargeIcon(R.drawable.altosdroid)
         builder.setBadgeIconType(Notification.BADGE_ICON_SMALL);
-        Notification notification = builder.build();
-        // displayNotification(this, notification);
+        notification = builder.build();
+
         // Move us into the foreground.
         int type = 0;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
             type = ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE;
+
         try {
             ServiceCompat.startForeground(this,
                                           TELEMETRY_SERVICE_ID,
