@@ -978,10 +978,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         }
     }
 
-    void update_ui(TelemetryState telem_state, AltosState state, boolean quiet) {
+    void update_ui(TelemetryState new_telemetry_state, AltosState new_state, boolean quiet) {
         //AltosDebug.debug("update_ui");
-        this.state = state;
-        this.telemetry_state = telem_state;
+        if (new_state != null)
+            this.state = new_state;
+        if (new_telemetry_state != null)
+            this.telemetry_state = new_telemetry_state;
         int prev_state = saved_state == null ? AltosLib.ao_flight_invalid : saved_state.state;
         int active_menu_id = nav_controller.getCurrentDestination().getId();
         int next_menu_id = active_menu_id;
@@ -1069,7 +1071,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         }
 
         if (active_fragment != null) {
-            active_fragment.show(telem_state, state, from_receiver, location);
+            active_fragment.show(telemetry_state, state, from_receiver, location);
         }
         speak();
     }
