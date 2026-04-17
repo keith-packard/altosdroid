@@ -25,6 +25,15 @@
         <item name="colorControlNormal">@color/foreground</item>
         <item name="colorControlHighlight">@color/altus_orange_dark</item>
 
+        <!-- window system colors -->
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:windowBackgroundFallback">@color/background</item>
+        <item name="statusBarBackground">@color/background</item>
+        <item name="statusBarForeground">@color/foreground</item>
+        <item name="android:statusBarColor">@color/background</item>
+        <item name="android:navigationBarColor">@color/background</item>
+        <item name="android:navigationBarDividerColor">@color/foreground</item>
+
         <!-- widget themes -->
         <item name="radioButtonStyle">@style/Widget.App.RadioButton</item>
         <item name="android:radioButtonStyle">@style/Widget.App.RadioButton</item>
@@ -38,6 +47,8 @@
 
         <!-- other settings -->
         <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:windowLightNavigationBar">true</item>
     </style>
 
     <!-- dialog theme -->
@@ -65,6 +76,15 @@
         <item name="colorControlNormal">@color/foreground</item>
         <item name="colorControlHighlight">@color/altus_orange_dark</item>
 
+        <!-- window system colors -->
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:windowBackgroundFallback">@color/background</item>
+        <item name="statusBarBackground">@color/background</item>
+        <item name="statusBarForeground">@color/foreground</item>
+        <item name="android:statusBarColor">@color/background</item>
+        <item name="android:navigationBarColor">@color/background</item>
+        <item name="android:navigationBarDividerColor">@color/foreground</item>
+
         <!-- widget themes -->
         <item name="radioButtonStyle">@style/Widget.App.RadioButton</item>
         <item name="android:radioButtonStyle">@style/Widget.App.RadioButton</item>
@@ -75,6 +95,11 @@
         <item name="android:actionBarStyle">@style/Widget.App.ActionBar</item>
         <item name="spinnerStyle">@style/Widget.App.Spinner</item>
         <item name="android:spinnerStyle">@style/Widget.App.Spinner</item>
+
+        <!-- other settings -->
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:windowLightNavigationBar">true</item>
 
     </style>
 
