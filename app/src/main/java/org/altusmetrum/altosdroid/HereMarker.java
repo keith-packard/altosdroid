@@ -22,6 +22,6 @@ import android.content.Context;
 
 public class HereMarker extends AltosMarker {
     public HereMarker(Context context) {
-        super(context, R.drawable.alien_light, 0.56f, 1.0f);
+        super(context, R.drawable.alien_light, R.dimen.map_here_marker_size, 0.24f, 0.135f);
     }
 }
