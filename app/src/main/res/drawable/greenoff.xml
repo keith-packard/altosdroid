@@ -5,17 +5,17 @@
     android:viewportWidth="12"
     android:viewportHeight="12">
   <path
-      android:pathData="M12,6C12,9.313 9.313,12 6,12C2.688,12 0,9.313 0,6C0,2.688 2.688,0 6,0C9.313,0 12,2.688 12,6"
+      android:pathData="M11.684,5.984C11.684,9.133 9.133,11.684 5.984,11.684C2.836,11.684 0.285,9.133 0.285,5.984C0.285,2.836 2.836,0.285 5.984,0.285C9.133,0.285 11.684,2.836 11.684,5.984"
       android:fillColor="#006631"
       android:fillType="nonZero"/>
   <path
-      android:pathData="M12,6C12,9.313 9.313,12 6,12C2.688,12 0,9.313 0,6C0,2.688 2.688,0 6,0C9.313,0 12,2.688 12,6M12,6L11.398,6C11.398,-1.199 0.602,-1.199 0.602,6C0.602,13.199 11.398,13.199 11.398,6"
+      android:pathData="M11.684,5.984C11.684,9.133 9.133,11.684 5.984,11.684C2.836,11.684 0.285,9.133 0.285,5.984C0.285,2.836 2.836,0.285 5.984,0.285C9.133,0.285 11.684,2.836 11.684,5.984M11.684,5.984L11.113,5.984C11.113,-0.855 0.855,-0.855 0.855,5.984C0.855,12.824 11.113,12.824 11.113,5.984"
       android:fillType="nonZero">
     <aapt:attr name="android:fillColor">
       <gradient
-          android:centerX="6"
-          android:centerY="6"
-          android:gradientRadius="6"
+          android:centerX="5.985"
+          android:centerY="5.985"
+          android:gradientRadius="5.7"
           android:type="radial">
         <item android:offset="0.8" android:color="#FF000000"/>
         <item android:offset="0.9" android:color="#FF000000"/>
@@ -24,13 +24,13 @@
     </aapt:attr>
   </path>
   <path
-      android:pathData="M12,6C12,9.313 9.313,12 6,12C2.688,12 0,9.313 0,6C0,2.688 2.688,0 6,0C9.313,0 12,2.688 12,6"
+      android:pathData="M11.684,5.984C11.684,9.133 9.133,11.684 5.984,11.684C2.836,11.684 0.285,9.133 0.285,5.984C0.285,2.836 2.836,0.285 5.984,0.285C9.133,0.285 11.684,2.836 11.684,5.984"
       android:fillType="nonZero">
     <aapt:attr name="android:fillColor">
       <gradient
-          android:centerX="4"
-          android:centerY="4"
-          android:gradientRadius="6"
+          android:centerX="4.085"
+          android:centerY="4.085"
+          android:gradientRadius="5.7"
           android:type="radial">
         <item android:offset="0" android:color="#66FFFFFF"/>
         <item android:offset="1" android:color="#00FFFFFF"/>
