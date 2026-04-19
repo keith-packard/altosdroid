@@ -464,18 +464,7 @@ public class AltosVoice {
 
     private int		last_tell_mode;
     private int		last_tell_serial = AltosLib.MISSING;
-    private int		last_state;
-    private AltosGPS last_gps;
-    private double	last_height = AltosLib.MISSING;
-    private double      last_spoken_height = AltosLib.MISSING;
-    private double      last_speed = AltosLib.MISSING;
-    private double      last_spoken_speed = AltosLib.MISSING;
-    private int         last_spoken_pyro_fired = 0;
-    private AltosGreatCircle last_from_receiver = null;
-    private AltosGreatCircle last_spoken_from_receiver = null;
-    private Location last_receiver;
     private long	last_speak_time;
-    private int		last_tell_step = TELL_STEP_NONE;
     private boolean	quiet = false;
 
     static final int CHANGE_NONE = 0;
@@ -520,17 +509,6 @@ public class AltosVoice {
     private void reset_last() {
         last_tell_mode = TELL_MODE_NONE;
         last_speak_time = now() - 100 * 1000;
-        last_gps = null;
-        last_height = AltosLib.MISSING;
-        last_spoken_height = AltosLib.MISSING;
-        last_speed = AltosLib.MISSING;
-        last_spoken_speed = AltosLib.MISSING;
-        last_from_receiver = null;
-        last_spoken_from_receiver = null;
-        last_receiver = null;
-        last_spoken_pyro_fired = 0;
-        last_state = AltosLib.ao_flight_invalid;
-        last_tell_step = TELL_STEP_NONE;
     }
 
     public AltosVoice(MainActivity a) {
@@ -741,9 +719,6 @@ public class AltosVoice {
         else
             tell_mode = TELL_MODE_RECOVER;
 
-        if (tell_mode != last_tell_mode)
-            last_tell_step = TELL_STEP_NONE;
-
         Speaker[] speakers = null;
 
         switch (tell_mode) {
@@ -788,17 +763,6 @@ public class AltosVoice {
         if (spoken) {
             last_tell_mode = tell_mode;
             last_tell_serial = tell_serial;
-            if (state != null) {
-                last_state = state.state();
-                last_height = state.height();
-                last_speed = state.speed();
-                if (state.gps != null)
-                    last_gps = state.gps;
-            }
-            if (receiver != null)
-                last_receiver = receiver;
-            if (from_receiver != null)
-                last_from_receiver = from_receiver;
         }
 
         return spoken;
