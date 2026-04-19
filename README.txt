@@ -118,6 +118,26 @@ ToDo list
 
  ✓ Idle Mode frequency display doesn't seem to have the correct value
 
+ ✓ Round most spoken numbers to two digits.
+
+ ✓ Reporting direction (delta from current track) in Recover view
+
+ * Elevation numbers seem weird.
+
+ * Add receiver and target alt to recover screen (at least for debug)
+
+ * Frequency selection menu should indicate the current frequency somehow
+
+ * On the iOS application -- 'My lat/my lon' never update, along with
+   related data. Restarting the app didn't fix this, but rebooting the
+   phone did.
+
+---------------------------------
+
+ * Prefer the 'Fused' location provider instead of GPS
+
+ * Rotate online map to match track/compass
+
  * Add target configuration to Idle mode
 
 	• Main deploy altitude
@@ -140,8 +160,6 @@ ToDo list
 	• APRS SSID
 	• APRS format
 	• APRS offset
-
- * Round most spoken numbers to two digits.
 
  * Add auto callsign mode to wait for a tracker with the specified
    callsign
