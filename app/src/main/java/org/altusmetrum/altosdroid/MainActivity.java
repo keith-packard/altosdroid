@@ -531,6 +531,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             } else {
                 setFrequency(frequencies[item-1]);
                 selected_frequency = frequencies[item-1].frequency;
+                AltosDroidPreferences.set_selected_serial(SELECT_AUTO);
             }
         }
     }
