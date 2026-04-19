@@ -312,17 +312,29 @@ class TrackSpeaker extends Speaker {
 
     Location            last_receiver, pending_receiver;
     AltosGPS            last_target, pending_target;
-    AltosGreatCircle    last_track, pending_track;
+    AltosGreatCircle    pending_track;
+
+    double              receiver_motion = AltosLib.MISSING;
+    double              target_motion = AltosLib.MISSING;
 
     double score() {
 
-        int change = AltosVoice.CHANGE_NONE;
-        int receiver_change = AltosVoice.receiver_change(pending_receiver, last_receiver);
-        if (receiver_change > change)
-            change = receiver_change;
-        int target_change = AltosVoice.target_change(pending_target, last_target);
-        if (target_change > change)
-            change = target_change;
+        receiver_motion = AltosVoice.receiver_motion(pending_receiver, last_receiver);
+        target_motion = AltosVoice.target_motion(pending_target, last_target);
+
+        if (receiver_motion == AltosLib.MISSING || target_motion == AltosLib.MISSING)
+            return 0.0;
+
+        double motion = Math.max(receiver_motion, target_motion);
+
+        int change;
+
+        if (motion > 100)
+            change = AltosVoice.CHANGE_LARGE;
+        else if (motion > 10)
+            change = AltosVoice.CHANGE_MEDIUM;
+        else
+            change = AltosVoice.CHANGE_NONE;
 
         double score = 0.0;
 
@@ -343,23 +355,6 @@ class TrackSpeaker extends Speaker {
         return score;
     }
 
-    Utterance sayit(double score) {
-        if (pending_track.elevation < 10.0) {
-            return new Utterance(this, score, "bearing %s %d, distance %s.",
-                                 pending_track.bearing_words(
-                                     AltosGreatCircle.BEARING_VOICE),
-                                 (int) (pending_track.bearing + 0.5),
-                                 AltosConvert.distance.say(pending_track.distance, 3));
-        } else {
-            return new Utterance(this, score, "bearing %s %d, elevation %d, distance %s.",
-                                 pending_track.bearing_words(
-                                     AltosGreatCircle.BEARING_VOICE),
-                                 (int) (pending_track.bearing + 0.5),
-                                 (int) (pending_track.elevation + 0.5),
-                                 AltosConvert.distance.say(pending_track.distance, 3));
-        }
-    }
-
     Utterance utterance(TelemetryState telem_state, AltosState state,
                         AltosGreatCircle from_receiver, Location receiver,
                         boolean new_mode) {
@@ -367,7 +362,6 @@ class TrackSpeaker extends Speaker {
         if (new_mode(new_mode)) {
             last_target = null;
             last_receiver = null;
-            last_track = null;
         }
 
         pending_target = state.gps;
@@ -378,21 +372,36 @@ class TrackSpeaker extends Speaker {
             double score = score();
             if (score == 0.0)
                 return null;
-            return sayit(score);
+
+            String message;
+
+            if (pending_track.elevation < 10.0) {
+                message = String.format("bearing %s %d, distance %s.",
+                                        pending_track.bearing_words(
+                                            AltosGreatCircle.BEARING_VOICE),
+                                        (int) (pending_track.bearing + 0.5),
+                                        AltosConvert.distance.say(pending_track.distance, 3));
+            } else {
+                message = String.format("bearing %s %d, elevation %d, distance %s.",
+                                        pending_track.bearing_words(
+                                            AltosGreatCircle.BEARING_VOICE),
+                                        (int) (pending_track.bearing + 0.5),
+                                        (int) (pending_track.elevation + 0.5),
+                                        AltosConvert.distance.say(pending_track.distance, 3));
+            }
+            return new Utterance(this, score, message);
         }
         return null;
     }
 
     void commit() {
         super.commit();
-        last_track = pending_track;
         last_target = pending_target;
         last_receiver = pending_receiver;
     }
 
     TrackSpeaker() {
         super();
-        last_track = null;
         last_target = null;
         last_receiver = null;
     }
@@ -462,6 +471,8 @@ public class AltosVoice {
     static final int TELL_STEP_HEIGHT = 3;
     static final int TELL_STEP_TRACK = 4;
 
+    static AltosVoice current_voice;
+
     private int		last_tell_mode;
     private int		last_tell_serial = AltosLib.MISSING;
     private long	last_speak_time;
@@ -476,7 +487,7 @@ public class AltosVoice {
     Speaker pyroSpeaker = new PyroSpeaker();
     Speaker heightSpeaker = new HeightSpeaker();
     Speaker speedSpeaker = new SpeedSpeaker();
-    Speaker trackSpeaker = new TrackSpeaker();
+    TrackSpeaker trackSpeaker = new TrackSpeaker();
 
     Speaker apogeeSpeaker = new ApogeeSpeaker();
     Speaker mainSpeaker = new MainSpeaker();
@@ -512,6 +523,7 @@ public class AltosVoice {
     }
 
     public AltosVoice(MainActivity a) {
+        current_voice = this;
         tts = new TextToSpeech(a, new TextToSpeech.OnInitListener() {
                 public void onInit(int status) {
                     if (status == TextToSpeech.SUCCESS) tts_running = true;
@@ -563,33 +575,21 @@ public class AltosVoice {
         return AltosLib.ao_flight_drogue <= state && state <= AltosLib.ao_flight_landed;
     }
 
-    static int location_change(double new_lat, double new_lon, double new_height,
-                               double old_lat, double old_lon, double old_height) {
+    static final double LOCATION_NEW = 99999;
 
-        if (new_lat == old_lat && new_lon == old_lon)
-            return height_change(new_height, old_height);
+    static double location_motion(double new_lat, double new_lon, double new_alt,
+                                  double old_lat, double old_lon, double old_alt) {
 
-        if (new_lat == AltosLib.MISSING || old_lat == AltosLib.MISSING)
-            return CHANGE_LARGE;
+        if (new_lat == AltosLib.MISSING || new_lon == AltosLib.MISSING || new_alt == AltosLib.MISSING)
+            return AltosLib.MISSING;
 
-        if (new_height == AltosLib.MISSING || old_height == AltosLib.MISSING) {
-            if (new_height != old_height)
-                return CHANGE_LARGE;
-            new_height = 0.0;
-            old_height = 0.0;
-        }
+        if (old_lat == AltosLib.MISSING || old_lon == AltosLib.MISSING || old_alt == AltosLib.MISSING)
+            return LOCATION_NEW;
 
-        AltosGreatCircle	moved = new AltosGreatCircle(new_lat, new_lon, new_height,
-                                                             old_lat, old_lon, old_height);
+        AltosGreatCircle	moved = new AltosGreatCircle(new_lat, new_lon, new_alt,
+                                                             old_lat, old_lon, old_alt);
 
-        int change = CHANGE_NONE;
-
-        if (moved.range > 100)
-            change = CHANGE_LARGE;
-        else if (moved.range > 10)
-            change = CHANGE_MEDIUM;
-
-        return change;
+        return moved.range;
     }
 
     static boolean gps_known(AltosGPS gps) {
@@ -602,32 +602,40 @@ public class AltosVoice {
         return true;
     }
 
-    static int target_change(AltosGPS new_gps, AltosGPS old_gps) {
+    static double target_motion(AltosGPS new_gps, AltosGPS old_gps) {
+
         if (new_gps == old_gps)
-            return CHANGE_NONE;
+            return 0.0;
 
         boolean new_known = gps_known(new_gps);
         boolean old_known = gps_known(old_gps);
 
-        if (!new_known && !old_known)
-            return CHANGE_NONE;
+        if (!new_known)
+            return AltosLib.MISSING;
 
-        if (new_known != old_known)
-            return CHANGE_LARGE;
+        if (!old_known)
+            return LOCATION_NEW;
 
-        return location_change(new_gps.lat, new_gps.lon, new_gps.alt,
+        return location_motion(new_gps.lat, new_gps.lon, new_gps.alt,
                                old_gps.lat, old_gps.lon, old_gps.alt);
     }
 
-    static int receiver_change(Location new_receiver, Location old_receiver) {
-        if (new_receiver == old_receiver)
-            return CHANGE_NONE;
+    static double location_alt(Location location) {
+        if (!location.hasAltitude())
+            return AltosLib.MISSING;
+        return location.getAltitude();
+    }
 
-        if (new_receiver == null || old_receiver == null)
-            return CHANGE_LARGE;
+    static double receiver_motion(Location new_receiver, Location old_receiver) {
 
-        return location_change(new_receiver.getLatitude(), new_receiver.getLongitude(), new_receiver.getAltitude(),
-                               old_receiver.getLatitude(), old_receiver.getLongitude(), old_receiver.getAltitude());
+        if (new_receiver == null)
+            return AltosLib.MISSING;
+
+        if (old_receiver == null)
+            return LOCATION_NEW;
+
+        return location_motion(new_receiver.getLatitude(), new_receiver.getLongitude(), location_alt(new_receiver),
+                               old_receiver.getLatitude(), old_receiver.getLongitude(), location_alt(old_receiver));
     }
 
     static int speed_change(double new_speed, double old_speed) {
@@ -686,6 +694,18 @@ public class AltosVoice {
             return CHANGE_SMALL;
 
         return CHANGE_NONE;
+    }
+
+    static public double receiver_motion() {
+        if (current_voice == null)
+            return AltosLib.MISSING;
+        return current_voice.trackSpeaker.receiver_motion;
+    }
+
+    static public double target_motion() {
+        if (current_voice == null)
+            return AltosLib.MISSING;
+        return current_voice.trackSpeaker.target_motion;
     }
 
     public boolean tell(TelemetryState telem_state, AltosState state,
