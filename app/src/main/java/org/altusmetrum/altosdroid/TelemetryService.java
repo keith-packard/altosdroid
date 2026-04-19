@@ -768,8 +768,6 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
 
     @Override
     public void update(AltosState state, AltosListenerState listener_state) {
-        if (state != null)
-            AltosDebug.debug("update call %s freq %7.3f", state.cal_data().callsign, state.frequency);
         telemetry_state.put(state.cal_data().serial, state);
         telemetry_state.receiver_battery = listener_state.battery;
         send_to_clients();
