@@ -208,8 +208,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     AltosVoice altos_voice;
 
     static final String[] preferredLocationProviders = {
-        LocationManager.FUSED_PROVIDER,
         LocationManager.GPS_PROVIDER,
+        LocationManager.FUSED_PROVIDER,
         LocationManager.NETWORK_PROVIDER,
         LocationManager.PASSIVE_PROVIDER,
         null
