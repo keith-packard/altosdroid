@@ -86,7 +86,7 @@ abstract class Speaker {
 
     abstract Utterance utterance(TelemetryState telem_state, AltosState state,
                                  AltosGreatCircle from_receiver, Location receiver,
-                                 boolean new_mode);
+                                 boolean new_mode, int tell_mode);
 
     boolean new_mode(boolean new_mode) {
         if (new_mode)
@@ -112,7 +112,7 @@ class StateSpeaker extends Speaker {
 
     Utterance utterance(TelemetryState telem_state, AltosState state,
                         AltosGreatCircle from_receiver, Location receiver,
-                        boolean new_mode) {
+                        boolean new_mode, int tell_mode) {
         pending_state = state.state();
 
         if (new_mode(new_mode))
@@ -151,7 +151,7 @@ class PyroSpeaker extends Speaker {
 
     Utterance utterance(TelemetryState telem_state, AltosState state,
                         AltosGreatCircle from_receiver, Location receiver,
-                        boolean new_mode) {
+                        boolean new_mode, int tell_mode) {
 
         if (new_mode(new_mode))
             last_pyro_fired = 0;
@@ -188,7 +188,7 @@ class HeightSpeaker extends Speaker {
 
     Utterance utterance(TelemetryState telem_state, AltosState state,
                         AltosGreatCircle from_receiver, Location receiver,
-                        boolean new_mode) {
+                        boolean new_mode, int tell_mode) {
 
         if (new_mode(new_mode))
             last_height = AltosLib.MISSING;
@@ -236,7 +236,7 @@ class SpeedSpeaker extends Speaker {
 
     Utterance utterance(TelemetryState telem_state, AltosState state,
                         AltosGreatCircle from_receiver, Location receiver,
-                        boolean new_mode) {
+                        boolean new_mode, int tell_mode) {
 
         if (new_mode(new_mode))
             last_speed = AltosLib.MISSING;
@@ -357,7 +357,7 @@ class TrackSpeaker extends Speaker {
 
     Utterance utterance(TelemetryState telem_state, AltosState state,
                         AltosGreatCircle from_receiver, Location receiver,
-                        boolean new_mode) {
+                        boolean new_mode, int tell_mode) {
 
         if (new_mode(new_mode)) {
             last_target = null;
@@ -374,8 +374,15 @@ class TrackSpeaker extends Speaker {
                 return null;
 
             String message;
+            String direction = null;
 
-            if (pending_track.elevation < 10.0) {
+            if (tell_mode == AltosVoice.TELL_MODE_RECOVER)
+                direction = MainActivity.direction(pending_track, pending_receiver);
+
+            if (direction != null) {
+                message = String.format("%s, distance %s.",
+                                        direction, AltosConvert.distance.say(pending_track.distance, 3));
+            } else if (pending_track.elevation < 10.0) {
                 message = String.format("bearing %s %d, distance %s.",
                                         pending_track.bearing_words(
                                             AltosGreatCircle.BEARING_VOICE),
@@ -416,7 +423,7 @@ abstract class GoNoGoSpeaker extends Speaker {
 
     Utterance utterance(TelemetryState telem_state, AltosState state,
                         AltosGreatCircle from_receiver, Location receiver,
-                        boolean new_mode) {
+                        boolean new_mode, int tell_mode) {
 
         new_mode = new_mode(new_mode);
 
@@ -755,7 +762,7 @@ public class AltosVoice {
             boolean new_mode = tell_mode != last_tell_mode;
 
             for (int i = 0; i < speakers.length; i++) {
-                Utterance pending = speakers[i].utterance(telem_state, state, from_receiver, receiver, new_mode);
+                Utterance pending = speakers[i].utterance(telem_state, state, from_receiver, receiver, new_mode, tell_mode);
                 if (pending != null) {
                     if (utterance == null || pending.score > utterance.score)
                         utterance = pending;
