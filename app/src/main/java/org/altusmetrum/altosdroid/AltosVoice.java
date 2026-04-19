@@ -661,9 +661,6 @@ public class AltosVoice {
         if (change >= medium_change)
             return CHANGE_MEDIUM;
 
-        if (change > 1)
-            return CHANGE_SMALL;
-
         return CHANGE_NONE;
     }
 
@@ -689,9 +686,6 @@ public class AltosVoice {
 
         if (change >= medium_change)
             return CHANGE_MEDIUM;
-
-        if (change > 1)
-            return CHANGE_SMALL;
 
         return CHANGE_NONE;
     }
