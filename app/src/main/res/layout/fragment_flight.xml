@@ -549,11 +549,10 @@
 
 	<ImageView
             android:id="@+id/target_pos_icon"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="centerInside"
-            android:paddingStart="@dimen/table_padding_start"
-            android:paddingEnd="10dp"
+            android:scaleType="fitCenter"
+            android:padding="@dimen/icon_padding"
             android:contentDescription="@string/target_position_label"
             android:src="@drawable/flight_orange"
             app:layout_constrainedHeight="true"
@@ -634,29 +633,27 @@
             android:visibility="visible"
             app:constraint_referenced_ids="apogee_redled,apogee_greenled,apogee_voltage_label,apogee_voltage_value"/>
 
-	<ImageView
+        <ImageView
             android:id="@+id/apogee_redled"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="centerInside"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
             android:contentDescription="@string/apogee_voltage_label"
+            android:padding="@dimen/led_padding"
+            android:scaleType="fitCenter"
             android:src="@drawable/grayled"
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/apogee_row"
             app:layout_constraintEnd_toStartOf="@id/column_bad"
-            app:layout_constraintTop_toTopOf="@id/lon_row"
-            app:layout_constraintBottom_toTopOf="@id/apogee_row" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/lon_row" />
 
 	<ImageView
             android:id="@+id/apogee_greenled"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="centerInside"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
+            android:scaleType="fitCenter"
+            android:padding="@dimen/led_padding"
             android:contentDescription="@string/apogee_voltage_label"
             android:src="@drawable/grayled"
             app:layout_constrainedHeight="true"
@@ -705,11 +702,10 @@
 
 	<ImageView
             android:id="@+id/main_redled"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="centerInside"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
+            android:scaleType="fitCenter"
+            android:padding="@dimen/led_padding"
             android:contentDescription="@string/main_voltage_label"
             android:src="@drawable/grayled"
             app:layout_constrainedHeight="true"
@@ -721,11 +717,10 @@
 
 	<ImageView
             android:id="@+id/main_greenled"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="centerInside"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
+            android:scaleType="fitCenter"
+            android:padding="@dimen/led_padding"
             android:contentDescription="@string/main_voltage_label"
             android:src="@drawable/grayled"
             app:layout_constrainedHeight="true"
@@ -774,11 +769,10 @@
 
 	<ImageView
             android:id="@+id/ignite_a_redled"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="centerInside"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
+            android:scaleType="fitCenter"
+            android:padding="@dimen/led_padding"
             android:contentDescription="@string/ignite_a_voltage_label"
             android:src="@drawable/grayled"
             app:layout_constrainedHeight="true"
@@ -790,11 +784,10 @@
 
 	<ImageView
             android:id="@+id/ignite_a_greenled"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="centerInside"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
+            android:scaleType="fitCenter"
+            android:padding="@dimen/led_padding"
             android:contentDescription="@string/ignite_a_voltage_label"
             android:src="@drawable/grayled"
             app:layout_constrainedHeight="true"
@@ -843,11 +836,10 @@
 
 	<ImageView
             android:id="@+id/ignite_b_redled"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="centerInside"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
+            android:scaleType="fitCenter"
+            android:padding="@dimen/led_padding"
             android:contentDescription="@string/ignite_b_voltage_label"
             android:src="@drawable/grayled"
             app:layout_constrainedHeight="true"
@@ -859,11 +851,10 @@
 
 	<ImageView
             android:id="@+id/ignite_b_greenled"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="centerInside"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
+            android:scaleType="fitCenter"
+            android:padding="@dimen/led_padding"
             android:contentDescription="@string/ignite_b_voltage_label"
             android:src="@drawable/grayled"
             app:layout_constrainedHeight="true"
@@ -913,11 +904,10 @@
 
 	<ImageView
             android:id="@+id/ignite_c_redled"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="centerInside"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
+            android:scaleType="fitCenter"
+            android:padding="@dimen/led_padding"
             android:contentDescription="@string/ignite_c_voltage_label"
             android:src="@drawable/grayled"
             app:layout_constrainedHeight="true"
@@ -929,11 +919,10 @@
 
 	<ImageView
             android:id="@+id/ignite_c_greenled"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="centerInside"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
+            android:scaleType="fitCenter"
+            android:padding="@dimen/led_padding"
             android:contentDescription="@string/ignite_c_voltage_label"
             android:src="@drawable/grayled" 
             app:layout_constrainedHeight="true"
@@ -982,11 +971,10 @@
 
 	<ImageView
             android:id="@+id/ignite_d_redled"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="centerInside"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
+            android:scaleType="fitCenter"
+            android:padding="@dimen/led_padding"
             android:contentDescription="@string/ignite_d_voltage_label"
             android:src="@drawable/grayled"
             app:layout_constrainedHeight="true"
@@ -998,11 +986,10 @@
 
 	<ImageView
             android:id="@+id/ignite_d_greenled"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="centerInside"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
+            android:scaleType="fitCenter"
+            android:padding="@dimen/led_padding"
             android:contentDescription="@string/ignite_d_voltage_label"
             android:src="@drawable/grayled"
             app:layout_constrainedHeight="true"

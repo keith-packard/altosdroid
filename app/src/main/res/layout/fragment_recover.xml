@@ -12,13 +12,6 @@
 	tools:context=".ui.recover.RecoverFragment">
 
 	<androidx.constraintlayout.widget.Guideline
-            android:id="@+id/column_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-	    android:orientation="vertical"
-            app:layout_constraintGuide_percent=".12"/>
-
-	<androidx.constraintlayout.widget.Guideline
             android:id="@+id/column_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -144,17 +137,16 @@
 
 	<ImageView
             android:id="@+id/target_icon"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="centerInside"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
-            android:contentDescription="Target Position"
+            android:scaleType="fitStart"
+            android:padding="@dimen/icon_padding"
+            android:contentDescription="@string/target_pos_label"
             android:src="@drawable/flight_orange"
             app:layout_constrainedHeight="true"
             app:layout_constrainedWidth="true"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/column_icon"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
             app:layout_constraintTop_toTopOf="@id/distance_row"
             app:layout_constraintBottom_toTopOf="@id/target_lon_row"/>
 
@@ -204,17 +196,16 @@
 
 	<ImageView
             android:id="@+id/receiver_icon"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="centerInside"
-            android:paddingStart="0dp"
-            android:paddingEnd="0dp"
-            android:contentDescription="Receiver Position"
+            android:scaleType="fitStart"
+            android:padding="@dimen/icon_padding"
+            android:contentDescription="@string/receiver_pos_label"
             android:src="@drawable/alien"
             app:layout_constrainedHeight="true"
-            app:layout_constrainedWidth="false"
+            app:layout_constrainedWidth="true"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/column_icon"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
             app:layout_constraintTop_toTopOf="@id/target_lon_row"
             app:layout_constraintBottom_toTopOf="@id/receiver_lon_row"/>
 
@@ -480,6 +471,82 @@
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
             app:constraint_referenced_ids="max_gps_altitude_label,max_gps_altitude_value"/>
+
+	<androidx.constraintlayout.widget.Group
+            android:id="@+id/receiver_motion_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="receiver_motion_label,receiver_motion_value"/>
+
+	<TextView
+            android:id="@+id/receiver_motion_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/LabelText"
+            android:text="@string/receiver_motion_label"
+            android:paddingStart="@dimen/table_padding_start"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/max_gps_altitude_row"
+            app:layout_constraintBottom_toTopOf="@id/receiver_motion_row" />
+
+	<TextView
+            android:id="@+id/receiver_motion_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/max_gps_altitude_row"
+            app:layout_constraintBottom_toTopOf="@id/receiver_motion_row" />
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/receiver_motion_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="receiver_motion_label,receiver_motion_value"/>
+
+	<androidx.constraintlayout.widget.Group
+            android:id="@+id/target_motion_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="target_motion_label,target_motion_value"/>
+
+	<TextView
+            android:id="@+id/target_motion_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/LabelText"
+            android:text="@string/target_motion_label"
+            android:paddingStart="@dimen/table_padding_start"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/receiver_motion_row"
+            app:layout_constraintBottom_toTopOf="@id/target_motion_row" />
+
+	<TextView
+            android:id="@+id/target_motion_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/receiver_motion_row"
+            app:layout_constraintBottom_toTopOf="@id/target_motion_row" />
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/target_motion_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="target_motion_label,target_motion_value"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

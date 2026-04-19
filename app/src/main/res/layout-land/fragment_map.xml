@@ -111,19 +111,26 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/map_position_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="start"
+                app:constraint_referenced_ids="map_target_position,map_receiver_position"/>
+
             <ImageView
                 android:id="@+id/map_target"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:scaleType="fitCenter"
                 android:contentDescription="@string/map_target"
                 android:src="@drawable/flight_orange"
-                android:paddingHorizontal="@dimen/table_padding_start"
-                android:paddingVertical="@dimen/menu_padding_vertical"
-                app:layout_constraintHeight_max="48dp"
+                android:padding="@dimen/icon_padding"
                 app:layout_constrainedHeight="true"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/map_position_barrier"
                 app:layout_constraintTop_toTopOf="@id/map_target_position"
                 app:layout_constraintBottom_toBottomOf="@id/map_target_position"
                 app:layout_wrapBehaviorInParent="skipped" />
@@ -140,7 +147,7 @@
                 app:layout_constraintHorizontal_bias="1"
                 app:layout_constrainedHeight="false"
                 app:layout_constrainedWidth="false"
-                app:layout_constraintStart_toEndOf="@id/map_target"
+                app:layout_constraintStart_toEndOf="@id/map_position_barrier"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/map_bearing"/>
 
@@ -148,16 +155,15 @@
                 android:id="@+id/map_receiver"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:scaleType="fitCenter"
                 android:contentDescription="@string/map_receiver"
                 android:src="@drawable/alien"
-                android:paddingHorizontal="@dimen/table_padding_start"
-                android:paddingVertical="@dimen/menu_padding_vertical"
-                app:layout_constraintHeight_max="48dp"
+                android:padding="@dimen/icon_padding"
                 app:layout_constrainedHeight="true"
                 app:layout_constrainedWidth="true"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/map_receiver_position"
+                app:layout_constraintEnd_toStartOf="@id/map_position_barrier"
                 app:layout_constraintTop_toTopOf="@id/map_receiver_position"
                 app:layout_constraintBottom_toBottomOf="@id/map_receiver_position"
                 app:layout_wrapBehaviorInParent="skipped" />
@@ -174,6 +180,7 @@
                 app:layout_constraintHorizontal_bias="1"
                 app:layout_constrainedWidth="false"
                 app:layout_constrainedHeight="false"
+                app:layout_constraintStart_toEndOf="@id/map_position_barrier"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/map_target_position"/>
 
@@ -204,12 +211,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/map_source"/>
-
-            <androidx.constraintlayout.widget.Barrier
-                android:id="@+id/map_table_center_line"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:barrierDirection="top" />
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/map_source"

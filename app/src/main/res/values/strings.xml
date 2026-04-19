@@ -106,7 +106,7 @@
     <string name="latitude_label">Latitude</string>
     <string name="longitude_label">Longitude</string>
     <string name="target_pos_label">Target</string>
-    <string name="receiver_pos_label">Me</string>
+    <string name="receiver_pos_label">Receiver</string>
     <string name="target_latitude_label">Latitude</string>
     <string name="target_longitude_label">Longitude</string>
     <string name="target_position_label">Target Position</string>
@@ -121,6 +121,8 @@
     <string name="heading_right">right</string>
     <string name="heading_ahead">ahead</string>
     <string name="heading_backwards">backwards</string>
+    <string name="receiver_motion_label">Receiver Announce</string>
+    <string name="target_motion_label">Target Announce</string>
 
     <!-- Map preload -->
     <string name="preload_site_label">Launch Site</string>

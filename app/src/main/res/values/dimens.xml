@@ -14,4 +14,6 @@
     <dimen name="map_here_marker_size">50sp</dimen>
     <dimen name="map_site_size">10pt</dimen>
     <dimen name="dialog_padding">20dp</dimen>
+    <dimen name="led_padding">3sp</dimen>
+    <dimen name="icon_padding">3sp</dimen>
 </resources>

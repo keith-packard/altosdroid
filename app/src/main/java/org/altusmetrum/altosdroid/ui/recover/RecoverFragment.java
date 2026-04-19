@@ -27,11 +27,10 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.altusmetrum.altosdroid.AltosDebug;
 import org.altusmetrum.altosdroid.AltosFragment;
 import org.altusmetrum.altosdroid.AltosValue;
+import org.altusmetrum.altosdroid.AltosVoice;
 import org.altusmetrum.altosdroid.MainActivity;
-import org.altusmetrum.altosdroid.R;
 import org.altusmetrum.altosdroid.TelemetryState;
 import org.altusmetrum.altosdroid.databinding.FragmentRecoverBinding;
 import org.altusmetrum.altoslib_14.AltosConvert;
@@ -111,6 +110,23 @@ public class RecoverFragment extends AltosFragment {
                 set_value(binding.maxGpsHeightValue, AltosConvert.height, 1, max_gps_height);
                 set_value(binding.maxGpsAltitudeValue, AltosConvert.height, 1, max_gps_altitude);
             }
+        }
+
+        double target_motion = AltosVoice.target_motion();
+
+        if (target_motion != AltosLib.MISSING) {
+            set_value(binding.targetMotionValue, AltosConvert.distance, 1, target_motion);
+            binding.targetMotionView.setVisibility(View.VISIBLE);
+        } else {
+            binding.targetMotionView.setVisibility(View.GONE);
+        }
+
+        double receiver_motion = AltosVoice.receiver_motion();
+        if (receiver_motion != AltosLib.MISSING) {
+            set_value(binding.receiverMotionValue, AltosConvert.distance, 1, receiver_motion);
+            binding.receiverMotionView.setVisibility(View.VISIBLE);
+        } else {
+            binding.receiverMotionView.setVisibility(View.GONE);
         }
     }
 
