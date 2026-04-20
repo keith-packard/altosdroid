@@ -122,11 +122,11 @@ ToDo list
 
  ✓ Reporting direction (delta from current track) in Recover view
 
- * Elevation numbers seem weird.
-
- * Add receiver and target alt to recover screen (at least for debug)
+ ✓ Add receiver and target alt to recover screen (at least for debug)
 
  ✓ Frequency selection menu should indicate the current frequency somehow
+
+ * Elevation numbers seem weird.
 
  * On the iOS application -- 'My lat/my lon' never update, along with
    related data. Restarting the app didn't fix this, but rebooting the

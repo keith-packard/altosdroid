@@ -77,11 +77,19 @@ public class RecoverFragment extends AltosFragment {
         if (state != null && state.gps != null) {
             binding.targetLatValue.setText(AltosValue.pos(state.gps.lat, "N", "S"));
             binding.targetLonValue.setText(AltosValue.pos(state.gps.lon, "E", "W"));
+            if (state.gps.alt != AltosLib.MISSING)
+                set_value(binding.targetAltValue, AltosConvert.height, 1, state.gps.alt);
+            else
+                binding.targetAltValue.setText("");
         }
 
         if (receiver_location != null) {
             binding.receiverLatValue.setText(AltosValue.pos(receiver_location.getLatitude(), "N", "S"));
             binding.receiverLonValue.setText(AltosValue.pos(receiver_location.getLongitude(), "E", "W"));
+            if (receiver_location.hasAltitude())
+                set_value(binding.receiverAltValue, AltosConvert.height, 1, receiver_location.getAltitude());
+            else
+                binding.receiverAltValue.setText("");
         }
 
         binding.maxGpsSpeedView.setVisibility(View.GONE);

@@ -134,7 +134,7 @@
             android:id="@+id/target_view"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="target_icon,target_lat_value,target_lon_value"/>
+            app:constraint_referenced_ids="target_icon,target_lat_value,target_lon_value,target_alt_value"/>
 
 	<ImageView
             android:id="@+id/target_icon"
@@ -149,7 +149,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/column_name"
             app:layout_constraintTop_toTopOf="@id/distance_row"
-            app:layout_constraintBottom_toTopOf="@id/target_lon_row"/>
+            app:layout_constraintBottom_toTopOf="@id/target_alt_row"/>
 
 	<TextView
             android:id="@+id/target_lat_value"
@@ -189,11 +189,30 @@
             app:barrierDirection="bottom"
             app:constraint_referenced_ids="target_lon_value"/>
 
+	<TextView
+            android:id="@+id/target_alt_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/PosText"
+            android:text=""
+            android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/target_lon_row"
+            app:layout_constraintBottom_toTopOf="@id/target_alt_row" />
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/target_alt_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="target_alt_value"/>
+
 	<androidx.constraintlayout.widget.Group
             android:id="@+id/receiver_view"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="receiver_icon,receiver_lat_value,receiver_lon_value"/>
+            app:constraint_referenced_ids="receiver_icon,receiver_lat_value,receiver_lon_value,receiver_alt_value"/>
 
 	<ImageView
             android:id="@+id/receiver_icon"
@@ -207,8 +226,8 @@
             app:layout_constrainedWidth="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/column_name"
-            app:layout_constraintTop_toTopOf="@id/target_lon_row"
-            app:layout_constraintBottom_toTopOf="@id/receiver_lon_row"/>
+            app:layout_constraintTop_toTopOf="@id/target_alt_row"
+            app:layout_constraintBottom_toTopOf="@id/receiver_alt_row"/>
 
 	<TextView
             android:id="@+id/receiver_lat_value"
@@ -219,7 +238,7 @@
             android:paddingVertical="@dimen/table_padding_vertical"
             app:layout_constraintStart_toStartOf="@id/column_name"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/target_lon_row"
+            app:layout_constraintTop_toTopOf="@id/target_alt_row"
             app:layout_constraintBottom_toTopOf="@id/receiver_lat_row" />
 
 	<androidx.constraintlayout.widget.Barrier
@@ -248,6 +267,25 @@
             app:barrierDirection="bottom"
             app:constraint_referenced_ids="receiver_lon_value"/>
 
+	<TextView
+            android:id="@+id/receiver_alt_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/PosText"
+            android:text=""
+            android:paddingVertical="@dimen/table_padding_vertical"
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/receiver_lon_row"
+            app:layout_constraintBottom_toTopOf="@id/receiver_alt_row"/>
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/receiver_alt_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="receiver_alt_value"/>
+
 	<androidx.constraintlayout.widget.Group
             android:id="@+id/max_height_view"
             android:layout_width="0dp"
@@ -264,7 +302,7 @@
             android:paddingVertical="@dimen/table_padding_vertical"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/column_name"
-            app:layout_constraintTop_toTopOf="@id/receiver_lon_row"
+            app:layout_constraintTop_toTopOf="@id/receiver_alt_row"
             app:layout_constraintBottom_toTopOf="@id/max_height_row" />
 
 	<TextView
@@ -275,7 +313,7 @@
             android:paddingVertical="@dimen/table_padding_vertical"
             app:layout_constraintStart_toStartOf="@id/column_name"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/receiver_lon_row"
+            app:layout_constraintTop_toTopOf="@id/receiver_alt_row"
             app:layout_constraintBottom_toTopOf="@id/max_height_row" />
 
 	<androidx.constraintlayout.widget.Barrier
