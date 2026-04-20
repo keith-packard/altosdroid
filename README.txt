@@ -126,7 +126,7 @@ ToDo list
 
  * Add receiver and target alt to recover screen (at least for debug)
 
- * Frequency selection menu should indicate the current frequency somehow
+ ✓ Frequency selection menu should indicate the current frequency somehow
 
  * On the iOS application -- 'My lat/my lon' never update, along with
    related data. Restarting the app didn't fix this, but rebooting the

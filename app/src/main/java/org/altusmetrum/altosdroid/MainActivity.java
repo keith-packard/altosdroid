@@ -220,7 +220,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     TelemetryState telemetry_state = null;
     AltosGreatCircle from_receiver;
     boolean speaking;
-    double selected_frequency = AltosLib.MISSING;
 
     public static final int SELECT_AUTO = AltosDroidPreferences.SELECT_AUTO;
     int selected_serial = SELECT_AUTO;
@@ -530,7 +529,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 startActivityForResult(serverIntent, REQUEST_MANAGE_FREQ);
             } else {
                 setFrequency(frequencies[item-1]);
-                selected_frequency = frequencies[item-1].frequency;
                 AltosDroidPreferences.set_selected_serial(SELECT_AUTO);
             }
         }
@@ -607,17 +605,23 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             final AltosFrequency[] frequencies = AltosPreferences.common_frequencies();
             String[] frequency_strings = new String[frequencies.length + 1];
             frequency_strings[0] = "Manage Frequencies";
-            for (int i = 0; i < frequencies.length; i++)
+            int checkedItem = -1;
+            for (int i = 0; i < frequencies.length; i++) {
+                if (telemetry_state != null && frequencies[i].frequency == telemetry_state.frequency)
+                    checkedItem = i + 1;
                 frequency_strings[i+1] = frequencies[i].toString();
+            }
 
             AlertDialog.Builder builder_freq = new AlertDialog.Builder(this);
             builder_freq.setTitle("Select Frequency");
-            builder_freq.setItems(frequency_strings,
-                                  new DialogInterface.OnClickListener() {
-                                      public void onClick(DialogInterface dialog, int item) {
-                                          set_selected_freq_item(item, frequencies);
-                                      }
-                                  });
+            builder_freq.setSingleChoiceItems(frequency_strings,
+                                              checkedItem,
+                                              new DialogInterface.OnClickListener() {
+                                                  public void onClick(DialogInterface dialog, int item) {
+                                                      set_selected_freq_item(item, frequencies);
+                                                      dialog.dismiss();
+                                                  }
+                                              });
             AlertDialog alert_freq = builder_freq.create();
             alert_freq.show();
 
@@ -1237,7 +1241,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     }
 
     void setFrequency(double freq) {
-        selected_frequency = AltosLib.MISSING;
         try {
             mService.send(Message.obtain(null, TelemetryService.MSG_SETFREQUENCY, freq));
             set_switch_time();
