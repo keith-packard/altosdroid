@@ -143,23 +143,23 @@ public class ConfigureDeviceActivity extends AppCompatActivity
     private void config_data(AltosConfigDataRemote config_data) {
         query_running = false;
 
-        if (binding != null) {
+        if (binding != null && config_data != null) {
 
-            binding.mainAlt.setText(AltosConvert.height.say(config_data.main_deploy));
+            binding.mainAlt.setText(AltosConvert.height.say(config_data.main_deploy), false);
             group_visible(binding.mainAltGroup, config_data.main_deploy);
 
-            binding.apogeeDelay.setText(Integer.toString(config_data.apogee_delay));
+            binding.apogeeDelay.setText(Integer.toString(config_data.apogee_delay), false);
             group_visible(binding.apogeeDelayGroup, config_data.apogee_delay);
 
-            binding.apogeeLockout.setText(Integer.toString(config_data.apogee_lockout));
+            binding.apogeeLockout.setText(Integer.toString(config_data.apogee_lockout), false);
             group_visible(binding.apogeeLockoutGroup, config_data.apogee_lockout);
 
             if (config_data.ignite_mode != AltosLib.MISSING)
-                binding.igniterMode.setText(AltosLib.ignite_mode_values[config_data.ignite_mode]);
+                binding.igniterMode.setText(AltosLib.ignite_mode_values[config_data.ignite_mode], false);
             group_visible(binding.igniterModeGroup, config_data.ignite_mode);
 
             if (config_data.pad_orientation != AltosLib.MISSING)
-                binding.padOrientation.setText(pad_orientation_values(config_data)[config_data.pad_orientation]);
+                binding.padOrientation.setText(pad_orientation_values(config_data)[config_data.pad_orientation], false);
             group_visible(binding.padOrientationGroup, config_data.pad_orientation);
 
             if (config_data.beep != AltosLib.MISSING) {
@@ -170,7 +170,7 @@ public class ConfigureDeviceActivity extends AppCompatActivity
                     int val = (int) Math.floor (AltosConvert.beep_value_to_freq(config_data.beep) + 0.5);
                     freq = Integer.toString(val);
                 }
-                binding.beeperFrequency.setText(freq);
+                binding.beeperFrequency.setText(freq, false);
             }
             group_visible(binding.beeperFrequencyGroup, config_data.beep);
 

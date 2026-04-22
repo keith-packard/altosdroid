@@ -718,7 +718,8 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
             telemetry_stop();
             stop_idle_monitor();
             try {
-                config_data = new AltosConfigDataRemote(altos_link, remote);
+                if (altos_link != null)
+                    config_data = new AltosConfigDataRemote(altos_link, remote);
             } catch (InterruptedException ie) {
             } catch (TimeoutException te) {
             }
