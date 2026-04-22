@@ -86,7 +86,7 @@
 
         <activity android:name=".ManageFrequenciesActivity"
             android:label="@string/manage_frequencies"
-            android:theme="@style/Theme.App.Dialog"
+            android:theme="@style/Theme.App"
             android:configChanges="keyboardHidden"/>
 
         <activity android:name=".PreloadMapActivity"
@@ -102,6 +102,11 @@
         <activity android:name=".IgniterActivity"
             android:label="@string/igniters"
             android:theme="@style/Theme.App.Dialog"
+            android:configChanges="keyboardHidden"/>
+
+        <activity android:name=".ConfigureDeviceActivity"
+            android:label="@string/configure"
+            android:theme="@style/Theme.App"
             android:configChanges="keyboardHidden"/>
 
         <service

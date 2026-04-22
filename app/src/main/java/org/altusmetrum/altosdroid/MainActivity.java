@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     public static final int MSG_IDLE_MODE       = 3;
     public static final int MSG_IGNITER_STATUS  = 4;
     public static final int MSG_FILE_FAILED     = 5;
+    public static final int MSG_CONFIG_DATA     = 6;
 
     // Intent request codes
     public static final int REQUEST_CONNECT_DEVICE = 1;
@@ -144,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     public static final int REQUEST_SELECT_TRACKER = 8;
     public static final int REQUEST_DELETE_TRACKER = 9;
     public static final int REQUEST_MANAGE_FREQ    = 10;
+    public static final int REQUEST_CONFIGURE_DEVICE = 11;
 
     static final int MY_PERMISSION_REQUEST = 1001;
 
@@ -609,7 +611,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             for (int i = 0; i < frequencies.length; i++) {
                 if (telemetry_state != null && frequencies[i].frequency == telemetry_state.frequency)
                     checkedItem = i + 1;
-                frequency_strings[i+1] = frequencies[i].toString();
+                frequency_strings[i+1] = frequencies[i].toShortString();
             }
 
             AlertDialog.Builder builder_freq = new AlertDialog.Builder(this);
@@ -912,37 +914,43 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         int type = data.getIntExtra(IdleModeActivity.EXTRA_IDLE_RESULT, -1);
         double frequency = data.getDoubleExtra(IdleModeActivity.EXTRA_IDLE_FREQUENCY, AltosLib.MISSING);
         Message msg;
+        Intent serverIntent;
 
         AltosDebug.debug("intent idle_mode %d", type);
         switch (type) {
-            case IdleModeActivity.IDLE_MODE_CONNECT:
-                idle_frequency(frequency);
-                msg = Message.obtain(null, TelemetryService.MSG_MONITOR_IDLE_START);
-                try {
-                    mService.send(msg);
-                } catch (RemoteException re) {
-                }
-                break;
-            case IdleModeActivity.IDLE_MODE_DISCONNECT:
-                msg = Message.obtain(null, TelemetryService.MSG_MONITOR_IDLE_STOP);
-                try {
-                    mService.send(msg);
-                } catch (RemoteException re) {
-                }
-                break;
-            case IdleModeActivity.IDLE_MODE_REBOOT:
-                idle_frequency(frequency);
-                msg = Message.obtain(null, TelemetryService.MSG_REBOOT);
-                try {
-                    mService.send(msg);
-                } catch (RemoteException re) {
-                }
-                break;
-            case IdleModeActivity.IDLE_MODE_IGNITERS:
-                idle_frequency(frequency);
-                Intent serverIntent = new Intent(this, IgniterActivity.class);
-                startActivityForResult(serverIntent, REQUEST_IGNITERS);
-                break;
+        case IdleModeActivity.IDLE_MODE_CONNECT:
+            idle_frequency(frequency);
+            msg = Message.obtain(null, TelemetryService.MSG_MONITOR_IDLE_START);
+            try {
+                mService.send(msg);
+            } catch (RemoteException re) {
+            }
+            break;
+        case IdleModeActivity.IDLE_MODE_DISCONNECT:
+            msg = Message.obtain(null, TelemetryService.MSG_MONITOR_IDLE_STOP);
+            try {
+                mService.send(msg);
+            } catch (RemoteException re) {
+            }
+            break;
+        case IdleModeActivity.IDLE_MODE_REBOOT:
+            idle_frequency(frequency);
+            msg = Message.obtain(null, TelemetryService.MSG_REBOOT);
+            try {
+                mService.send(msg);
+            } catch (RemoteException re) {
+            }
+            break;
+        case IdleModeActivity.IDLE_MODE_IGNITERS:
+            idle_frequency(frequency);
+            serverIntent = new Intent(this, IgniterActivity.class);
+            startActivityForResult(serverIntent, REQUEST_IGNITERS);
+            break;
+        case IdleModeActivity.IDLE_MODE_CONFIGURE:
+            idle_frequency(frequency);
+            serverIntent = new Intent(this, ConfigureDeviceActivity.class);
+            startActivityForResult(serverIntent, REQUEST_CONFIGURE_DEVICE);
+            break;
         }
     }
 

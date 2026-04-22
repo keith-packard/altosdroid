@@ -1,0 +1,650 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/configure_device"
+    android:text="@string/configure"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/dialog_padding"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent">
+
+    <ScrollView
+        android:id="@+id/configure_items_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/save">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/configure_items"
+            android:text="@string/configure"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/main_alt_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="main_alt_label,main_alt_layout"/>
+
+            <TextView
+                android:id="@+id/main_alt_label"
+                android:text="@string/main_alt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/main_alt_barrier"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/main_alt_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:text="@string/main_alt"
+                app:layout_constraintBottom_toTopOf="@id/main_alt_barrier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <AutoCompleteTextView
+                    android:id="@+id/main_alt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:completionThreshold="100"
+                    android:inputType="numberDecimal"
+                    android:textAppearance="@style/ValueText"
+                    android:minHeight="48dp"
+                    android:text="1000" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/main_alt_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="main_alt_label,main_alt_layout"/>
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/apogee_delay_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="apogee_delay_label,apogee_delay_layout"/>
+
+            <TextView
+                android:id="@+id/apogee_delay_label"
+                android:text="@string/apogee_delay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/main_alt_barrier"
+                app:layout_constraintBottom_toTopOf="@id/apogee_delay_barrier"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/apogee_delay_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:text="@string/apogee_delay"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toTopOf="@id/apogee_delay_barrier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/main_alt_barrier">
+
+                <AutoCompleteTextView
+                    android:id="@+id/apogee_delay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:completionThreshold="100"
+                    android:inputType="numberDecimal"
+                    android:textAppearance="@style/ValueText"
+                    android:minHeight="48dp"
+                    android:text="1.0" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/apogee_delay_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="apogee_delay_label,apogee_delay_layout"/>
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/apogee_lockout_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="apogee_lockout_label,apogee_lockout_layout"/>
+
+            <TextView
+                android:id="@+id/apogee_lockout_label"
+                android:text="@string/apogee_lockout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/apogee_delay_barrier"
+                app:layout_constraintBottom_toBottomOf="@id/apogee_lockout_barrier"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/apogee_lockout_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:text="@string/apogee_lockout"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/apogee_delay_barrier"
+                app:layout_constraintBottom_toTopOf="@id/apogee_lockout_barrier">
+
+                <AutoCompleteTextView
+                    android:id="@+id/apogee_lockout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:completionThreshold="100"
+                    android:inputType="numberDecimal"
+                    android:textAppearance="@style/ValueText"
+                    android:minHeight="48dp"
+                    android:text="1.0" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/apogee_lockout_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="apogee_lockout_label,apogee_lockout_layout"/>
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/igniter_mode_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="igniter_mode_label,igniter_mode_layout"/>
+
+            <TextView
+                android:id="@+id/igniter_mode_label"
+                android:text="@string/igniter_mode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/apogee_lockout_barrier"
+                app:layout_constraintBottom_toBottomOf="@id/igniter_mode_barrier"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/igniter_mode_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:text="@string/igniter_mode"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/apogee_lockout_barrier"
+                app:layout_constraintBottom_toTopOf="@id/igniter_mode_barrier">
+
+                <AutoCompleteTextView
+                    android:id="@+id/igniter_mode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:completionThreshold="100"
+                    android:inputType="numberDecimal"
+                    android:textAppearance="@style/ValueText"
+                    android:minHeight="48dp"
+                    android:text="1.0" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/igniter_mode_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="igniter_mode_label,igniter_mode_layout"/>
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/pad_orientation_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="pad_orientation_label,pad_orientation_layout"/>
+
+            <TextView
+                android:id="@+id/pad_orientation_label"
+                android:text="@string/pad_orientation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/igniter_mode_barrier"
+                app:layout_constraintBottom_toBottomOf="@id/pad_orientation_barrier"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/pad_orientation_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:text="@string/pad_orientation"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/igniter_mode_barrier"
+                app:layout_constraintBottom_toTopOf="@id/pad_orientation_barrier">
+
+                <AutoCompleteTextView
+                    android:id="@+id/pad_orientation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:completionThreshold="100"
+                    android:inputType="none"
+                    android:textAppearance="@style/ValueText"
+                    android:minHeight="48dp"
+                    android:text="1.0" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/pad_orientation_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="pad_orientation_label,pad_orientation_layout"/>
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/beeper_frequency_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="beeper_frequency_label,beeper_frequency_layout"/>
+
+            <TextView
+                android:id="@+id/beeper_frequency_label"
+                android:text="@string/beeper_frequency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pad_orientation_barrier"
+                app:layout_constraintBottom_toBottomOf="@id/beeper_frequency_barrier"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/beeper_frequency_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:text="@string/beeper_frequency"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/pad_orientation_barrier"
+                app:layout_constraintBottom_toTopOf="@id/beeper_frequency_barrier">
+
+                <AutoCompleteTextView
+                    android:id="@+id/beeper_frequency"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:completionThreshold="100"
+                    android:inputType="numberDecimal"
+                    android:textAppearance="@style/ValueText"
+                    android:minHeight="48dp"
+                    android:text="1.0" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/beeper_frequency_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="beeper_frequency_label,beeper_frequency_layout"/>
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/beeper_units_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="beeper_units_label,beeper_units_layout"/>
+
+            <TextView
+                android:id="@+id/beeper_units_label"
+                android:text="@string/beeper_units"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/beeper_frequency_barrier"
+                app:layout_constraintBottom_toBottomOf="@id/beeper_units_barrier"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/beeper_units_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:text="@string/beeper_units"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/beeper_frequency_barrier"
+                app:layout_constraintBottom_toTopOf="@id/beeper_units_barrier">
+
+                <AutoCompleteTextView
+                    android:id="@+id/beeper_units"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:completionThreshold="100"
+                    android:inputType="none"
+                    android:textAppearance="@style/ValueText"
+                    android:minHeight="48dp"
+                    android:text="1.0" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/beeper_units_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="beeper_units_label,beeper_units_layout"/>
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/flight_log_size_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="flight_log_size_label,flight_log_size_layout"/>
+
+            <TextView
+                android:id="@+id/flight_log_size_label"
+                android:text="@string/flight_log_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/beeper_units_barrier"
+                app:layout_constraintBottom_toBottomOf="@id/flight_log_size_barrier"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/flight_log_size_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:text="@string/flight_log_size"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/beeper_units_barrier"
+                app:layout_constraintBottom_toTopOf="@id/flight_log_size_barrier">
+
+                <AutoCompleteTextView
+                    android:id="@+id/flight_log_size"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:completionThreshold="100"
+                    android:inputType="numberDecimal"
+                    android:textAppearance="@style/ValueText"
+                    android:minHeight="48dp"
+                    android:text="1.0" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/flight_log_size_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="flight_log_size_label,flight_log_size_layout"/>
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/call_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="call_label,call"/>
+
+            <TextView
+                android:id="@+id/call_label"
+                android:text="@string/callsign_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/flight_log_size_barrier"
+                app:layout_constraintBottom_toBottomOf="@id/call_barrier"/>
+
+            <EditText
+                android:id="@+id/call"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/ValueText"
+                android:minHeight="48dp"
+                android:text="K7WQ"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/flight_log_size_barrier"
+                app:layout_constraintBottom_toBottomOf="@id/call_barrier"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/call_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="call_label,call"/>
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/frequency_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="frequency_label,frequency_layout"/>
+
+            <TextView
+                android:id="@+id/frequency_label"
+                android:text="@string/frequency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/call_barrier"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/frequency_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:text="@string/frequency"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/call_barrier"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <AutoCompleteTextView
+                    android:id="@+id/frequency"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:completionThreshold="100"
+                    android:inputType="none"
+                    android:textAppearance="@style/ValueText"
+                    android:minHeight="48dp"
+                    android:text="1.0" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/frequency_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="frequency_label,frequency_layout"/>
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.40"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/one_third"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.33"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/two_thirds"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.67"/>
+
+    <Button android:id="@+id/save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+	    android:text="@string/save"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/one_third"
+            app:layout_constraintTop_toBottomOf="@id/configure_items_view"
+            app:layout_constraintBottom_toBottomOf="parent"
+	    />
+
+    <Button android:id="@+id/reset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+	    android:text="@string/reset"
+            app:layout_constraintStart_toEndOf="@id/one_third"
+            app:layout_constraintEnd_toStartOf="@id/two_thirds"
+            app:layout_constraintTop_toBottomOf="@id/configure_items_view"
+            app:layout_constraintBottom_toBottomOf="parent"
+	    />
+
+    <Button android:id="@+id/close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+	    android:text="@string/close"
+            app:layout_constraintStart_toEndOf="@id/two_thirds"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/configure_items_view"
+            app:layout_constraintBottom_toBottomOf="parent"
+	    />
+    
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+<!--
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/THIS_group"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="THIS_label,THIS_layout"/>
+
+    <TextView
+        android:id="@+id/THIS_label"
+        android:text="@string/THIS"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/LabelText"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/guideline"
+        app:layout_constraintTop_toBottomOf="@id/PREV_barrier"
+        app:layout_constraintBottom_toBottomOf="@id/THIS_barrier"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/THIS_layout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:text="@string/THIS"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toEndOf="@id/guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/PREV_barrier"
+        app:layout_constraintBottom_toBottomOf="@id/THIS_barrier">
+
+        <AutoCompleteTextView
+            android:id="@+id/THIS"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:completionThreshold="100"
+            android:inputType="numberDecimal"
+            android:textAppearance="@style/ValueText"
+            android:minHeight="48dp"
+            android:text="1.0" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/THIS_barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="THIS_label,THIS_layout"/>
+
+-->

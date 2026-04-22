@@ -143,6 +143,15 @@
           app:layout_constraintStart_toEndOf="@id/left"
           app:layout_constraintEnd_toStartOf="@id/right"
           app:layout_constraintTop_toBottomOf="@id/reboot_idle"
+          app:layout_constraintBottom_toTopOf="@id/configure_idle"/>
+
+      <Button android:id="@+id/configure_idle"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:text="@string/configure"
+          app:layout_constraintStart_toEndOf="@id/left"
+          app:layout_constraintEnd_toStartOf="@id/right"
+          app:layout_constraintTop_toBottomOf="@id/igniters_idle"
           app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

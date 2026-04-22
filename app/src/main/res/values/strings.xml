@@ -170,11 +170,164 @@
     <string name="mhz">MHz</string>
     <string name="remove">Remove</string>
     <!-- <string name="done">OK</string> -->
-    <string name="frequency">Frequency</string>
+    <string name="frequency">Frequency(MHz)</string>
     <string name="description">Description</string>
 
     <!-- Bluetooth access denied -->
     <string name="bt_unavailable">Bluetooth Unavailable</string>
     <string name="bt_denied">Access to Bluetooth devices denied</string>
+
+    <!-- Configure Device -->
+    <string name="configure">Configure Device</string>
+    <string name="main_alt">Main Altitude</string>
+
+    <string-array name="main_alt_values_m">
+        <item>100</item>
+        <item>150</item>
+        <item>200</item>
+        <item>250</item>
+        <item>300</item>
+        <item>350</item>
+    </string-array>
+
+    <string-array name="main_alt_values_ft">
+        <item>250</item>
+        <item>500</item>
+        <item>750</item>
+        <item>1000</item>
+        <item>1250</item>
+        <item>1500</item>
+    </string-array>
+
+    <string name="apogee_delay">Apogee Delay(s)</string>
+
+    <string-array name="apogee_delay_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+
+    <string name="apogee_lockout">Apogee Lockout(s)</string>
+
+    <string-array name="apogee_lockout_values">
+        <item>0</item>
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+        <item>20</item>
+    </string-array>
+
+    <string name="igniter_mode">Igniter Mode</string>
+
+    <string-array name="igniter_mode_values">
+        <item>Dual Deploy</item>
+	<item>Redundant Apogee</item>
+	<item>Redundant Main</item>
+	<item>Separation &amp; Apogee</item>
+    </string-array>
+
+    <string name="aprs_interval">APRS Interval</string>
+
+    <string-array name="aprs_interval_values">
+        <item>Disabled</item>
+        <item>2</item>
+        <item>5</item>
+        <item>10</item>
+    </string-array>
+
+    <string name="aprs_ssid">APRS SSID</string>
+
+    <string-array name="aprs_ssid_values">
+	<item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+    </string-array>
+
+    <string name="aprs_offset">APRS Offset</string>
+
+    <string-array name="aprs_offset_values">
+	<item>0</item>
+        <item>2</item>
+        <item>4</item>
+        <item>6</item>
+        <item>8</item>
+        <item>10</item>
+        <item>12</item>
+        <item>14</item>
+        <item>16</item>
+        <item>18</item>
+    </string-array>
+
+    <string name="pad_orientation">Pad Orientation</string>
+
+    <string-array name="pad_orientation_values">
+        <item>Antenna Up</item>
+        <item>Antenna Down</item>
+    </string-array>
+
+    <string name="beeper_frequency">Beeper Frequency(Hz)</string>
+
+    <string-array name="beeper_frequency_values">
+	<item>2000</item>
+	<item>2100</item>
+	<item>2200</item>
+	<item>3750</item>
+	<item>4000</item>
+	<item>4250</item>
+    </string-array>
+
+    <string name="beeper_units">Beeper Units</string>
+
+    <string-array name="beeper_units_values">
+	<item>Meters</item>
+	<item>Feet</item>
+    </string-array>
+
+    <string name="tracker_motion">Tracker Motion</string>
+
+    <string-array name="tracker_motion_values_m">
+	<item>2</item>
+	<item>5</item>
+	<item>10</item>
+	<item>25</item>
+    </string-array>
+
+    <string-array name="tracker_motion_values_ft">
+	<item>5</item>
+	<item>20</item>
+	<item>50</item>
+	<item>100</item>
+    </string-array>
+
+    <string name="tracker_interval">Tracker Interval</string>
+
+    <string-array name="tracker_interval_values">
+	<item>1</item>
+	<item>2</item>
+	<item>5</item>
+	<item>10</item>
+    </string-array>
+
+    <string name="flight_log_size">Flight Log Size</string>
+
+    <string name="save">Save</string>
+    <string name="reset">Reset</string>
+    <string name="close">Close</string>
 
 </resources>

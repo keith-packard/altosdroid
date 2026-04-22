@@ -140,17 +140,17 @@ ToDo list
 
  * Add target configuration to Idle mode
 
-	• Main deploy altitude
-	• Apogee delay
-	• Apogee lockout
-	• Igniter firing mode
-	• Pad orientation
-	• Pyro configuration
+.	• Main deploy altitude
+.	• Apogee delay
+.	• Apogee lockout
+.	• Igniter firing mode
+.	• Pad orientation
+.	• Pyro configuration
 
-	• Beeper Frequency
-	• Maximum flight log size
+.	• Beeper Frequency
+.	• Maximum flight log size
 	• Accel calibration
-	• Beep units
+.	• Beep units
 
 	• Callsign
 	• Frequency

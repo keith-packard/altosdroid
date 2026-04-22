@@ -76,6 +76,8 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
     static final int MSG_IGNITER_QUERY     = 18;
     static final int MSG_IGNITER_FIRE      = 19;
     static final int MSG_POST_NOTIFICATION = 20;
+    static final int MSG_GET_CONFIG_DATA   = 21;
+    static final int MSG_SET_CONFIG_DATA   = 22;
 
     static final int TELEMETRY_SERVICE_ID  = 1002;
 
@@ -106,6 +108,9 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
     // Igniter bits
     AltosIgnite ignite = null;
     boolean ignite_running;
+
+    // Config bits
+    boolean config_running;
 
     Notification notification;
 
@@ -268,6 +273,14 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
             case MSG_POST_NOTIFICATION:
                 AltosDebug.debug("post notification");
                 s.post_notification();
+                break;
+            case MSG_GET_CONFIG_DATA:
+                AltosDebug.debug("get config data");
+                s.get_config_data(msg.replyTo, (Boolean) msg.obj);
+                break;
+            case MSG_SET_CONFIG_DATA:
+                AltosDebug.debug("get config data");
+                s.set_config_data((AltosConfigDataRemote) msg.obj);
                 break;
             default:
                 super.handleMessage(msg);
@@ -527,7 +540,7 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
     }
 
     private void telemetry_start() {
-        if (telemetry_reader == null && idle_monitor == null && !ignite_running) {
+        if (telemetry_reader == null && idle_monitor == null && !ignite_running && !config_running) {
             telemetry_reader = new TelemetryReader(altos_link, handler);
             telemetry_reader.start();
         }
@@ -698,11 +711,47 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
         }
     }
 
+    private synchronized void get_config_data(Messenger client, boolean remote) {
+        config_running = true;
+        AltosConfigDataRemote config_data = null;
+        try {
+            telemetry_stop();
+            stop_idle_monitor();
+            try {
+                config_data = new AltosConfigDataRemote(altos_link, remote);
+            } catch (InterruptedException ie) {
+            } catch (TimeoutException te) {
+            }
+            Message m = Message.obtain(null, MainActivity.MSG_CONFIG_DATA, config_data);
+            try {
+                client.send(m);
+            } catch (RemoteException ignored) {
+            }
+        } finally {
+            config_running = false;
+        }
+    }
+
+    private synchronized void set_config_data(AltosConfigDataRemote config_data) {
+        config_running = true;
+        try {
+            telemetry_stop();
+            stop_idle_monitor();
+            try {
+                config_data.save(altos_link);
+            } catch (InterruptedException ie) {
+            } catch (TimeoutException te) {
+            }
+        } finally {
+            config_running = false;
+        }
+    }
+
     // Timer for receiver battery voltage monitoring
     Timer receiver_voltage_timer;
 
     private void update_receiver_voltage() {
-        if (altos_link != null && idle_monitor == null && !ignite_running) {
+        if (altos_link != null && idle_monitor == null && !ignite_running && !config_running) {
             try {
                 telemetry_state.receiver_battery = altos_link.monitor_battery();
                 send_to_clients();

@@ -30,15 +30,13 @@ import android.widget.*;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.altusmetrum.altosdroid.databinding.IdleModeBinding;
 import org.altusmetrum.altoslib_14.*;
 
 public class IdleModeActivity extends AppCompatActivity {
-    private EditText callsignText;
-    private Spinner frequencyView;
-    private Button connect;
-    private Button disconnect;
-    private Button reboot;
-    private Button igniters;
+
+    private IdleModeBinding binding;
+
     private double frequency;
     private AltosFrequency[] frequencies;
 
@@ -50,6 +48,7 @@ public class IdleModeActivity extends AppCompatActivity {
     public static final int IDLE_MODE_REBOOT = 2;
     public static final int IDLE_MODE_IGNITERS = 3;
     public static final int IDLE_MODE_DISCONNECT = 4;
+    public static final int IDLE_MODE_CONFIGURE = 5;
 
     private void done(int type) {
         AltosPreferences.set_callsign(callsign());
@@ -61,7 +60,7 @@ public class IdleModeActivity extends AppCompatActivity {
     }
 
     private String callsign() {
-        return callsignText.getEditableText().toString();
+        return binding.setCallsign.getEditableText().toString();
     }
 
     public void connect_idle() {
@@ -79,6 +78,10 @@ public class IdleModeActivity extends AppCompatActivity {
 
     public void igniters_idle() {
         done(IDLE_MODE_IGNITERS);
+    }
+
+    public void configure_idle() {
+        done(IDLE_MODE_CONFIGURE);
     }
 
     @Override
@@ -128,20 +131,20 @@ public class IdleModeActivity extends AppCompatActivity {
         // setTheme(MainActivity.dialog_themes[AltosDroidPreferences.font_size()]);
         super.onCreate(savedInstanceState);
 
-        // Setup the window
-        setContentView(R.layout.idle_mode);
+        binding = IdleModeBinding.inflate(getLayoutInflater());
 
-        callsignText = (EditText) findViewById(R.id.set_callsign);
-        callsignText.setText(new StringBuffer(AltosPreferences.callsign()));
+        // Setup the window
+        setContentView(binding.getRoot());
+
+        binding.setCallsign.setText(new StringBuffer(AltosPreferences.callsign()));
 
         frequencies = AltosPreferences.common_frequencies();
         frequency = getIntent().getDoubleExtra(MainActivity.EXTRA_FREQUENCY, 0.0);
         int pos = frequency_pos(frequency, "current");
 
-        frequencyView = (Spinner) findViewById(R.id.frequency);
-        add_frequencies(frequencyView, frequencies, pos);
+        add_frequencies(binding.frequency, frequencies, pos);
 
-        frequencyView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        binding.frequency.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
                     select_frequency(pos);
                 }
@@ -149,14 +152,12 @@ public class IdleModeActivity extends AppCompatActivity {
                 }
             });
 
-        connect = (Button) findViewById(R.id.connect_idle);
-        connect.setOnClickListener(new OnClickListener() {
+        binding.connectIdle.setOnClickListener(new OnClickListener() {
                 public void onClick(View v) {
                     connect_idle();
                 }
             });
-        disconnect = (Button) findViewById(R.id.disconnect_idle);
-        disconnect.setOnClickListener(new OnClickListener() {
+        binding.disconnectIdle.setOnClickListener(new OnClickListener() {
                 public void onClick(View v) {
                     disconnect_idle();
                 }
@@ -165,20 +166,25 @@ public class IdleModeActivity extends AppCompatActivity {
         boolean	idle_mode = getIntent().getBooleanExtra(MainActivity.EXTRA_IDLE_MODE, false);
 
         if (idle_mode)
-            connect.setVisibility(View.GONE);
+            binding.connectIdle.setVisibility(View.GONE);
         else
-            disconnect.setVisibility(View.GONE);
+            binding.disconnectIdle.setVisibility(View.GONE);
 
-        reboot = (Button) findViewById(R.id.reboot_idle);
-        reboot.setOnClickListener(new OnClickListener() {
+        binding.rebootIdle.setOnClickListener(new OnClickListener() {
                 public void onClick(View v) {
                     reboot_idle();
                 }
             });
-        igniters = (Button) findViewById(R.id.igniters_idle);
-        igniters.setOnClickListener(new OnClickListener() {
+
+        binding.ignitersIdle.setOnClickListener(new OnClickListener() {
                 public void onClick(View v) {
                     igniters_idle();
+                }
+            });
+
+        binding.configureIdle.setOnClickListener(new OnClickListener() {
+                public void onClick(View v) {
+                    configure_idle();
                 }
             });
 

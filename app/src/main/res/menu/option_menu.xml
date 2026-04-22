@@ -26,7 +26,6 @@
     <item android:id="@+id/load_maps"
         android:icon="@android:drawable/ic_menu_mapmode"
         android:title="Download Maps"/>
-
     <item android:id="@+id/quit"
           android:icon="@android:drawable/ic_menu_close_clear_cancel"
           android:title="@string/quit" />
