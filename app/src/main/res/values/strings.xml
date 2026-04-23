@@ -281,7 +281,7 @@
         <item>Antenna Down</item>
     </string-array>
 
-    <string name="beeper_frequency">Beeper Frequency(Hz)</string>
+    <string name="beeper_frequency">Beeper(Hz)</string>
 
     <string-array name="beeper_frequency_values">
 	<item>2000</item>
@@ -315,7 +315,7 @@
 	<item>100</item>
     </string-array>
 
-    <string name="tracker_interval">Tracker Interval</string>
+    <string name="tracker_interval">Tracker Interval(s)</string>
 
     <string-array name="tracker_interval_values">
 	<item>1</item>
@@ -324,7 +324,16 @@
 	<item>10</item>
     </string-array>
 
-    <string name="flight_log_size">Flight Log Size</string>
+    <string name="flight_log_size">Flight Log Max(kB)</string>
+
+    <string name="radio_enable">Telem/RDF/APRS</string>
+    <string name="enable">Enable</string>
+
+    <string-array name="telemetry_rate_values">
+        <item>38400</item>
+        <item>9600</item>
+        <item>2400</item>
+    </string-array>
 
     <string name="save">Save</string>
     <string name="reset">Reset</string>

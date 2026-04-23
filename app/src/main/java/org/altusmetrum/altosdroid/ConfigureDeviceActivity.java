@@ -29,20 +29,30 @@ import android.widget.*;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.Group;
 
 import org.altusmetrum.altosdroid.databinding.ConfigureDeviceBinding;
 import org.altusmetrum.altoslib_14.*;
 
-public class ConfigureDeviceActivity extends AppCompatActivity
-                                     implements AltosUnitsListener
-{
+class MissingValueException extends Exception {
+    String field;
 
+    MissingValueException(String in_field) {
+        field = in_field;
+    }
+}
+
+public class ConfigureDeviceActivity extends AppCompatActivity
+    implements AltosUnitsListener, AltosConfigValues
+{
     ConfigureDeviceBinding binding;
 
     private Messenger service = null;
     private final Messenger messenger = new Messenger(new IncomingHandler(this));
 
     private boolean is_bound;
+
+    AltosConfigDataRemote config_data;
 
     // The Handler that gets information back from the Telemetry Service
     static class IncomingHandler extends Handler {
@@ -56,7 +66,7 @@ public class ConfigureDeviceActivity extends AppCompatActivity
             switch (msg.what) {
             case MainActivity.MSG_CONFIG_DATA:
                 @SuppressWarnings("unchecked") AltosConfigDataRemote config_data = (AltosConfigDataRemote) msg.obj;
-                ca.config_data(config_data);
+                ca.recv_config_data(config_data);
                 break;
             }
         }
@@ -94,11 +104,19 @@ public class ConfigureDeviceActivity extends AppCompatActivity
 
     boolean query_running;
 
-    private void group_visible(View view, double value) {
-        if (value == AltosLib.MISSING)
+    private void group_visible(View view, boolean visible) {
+        if (!visible)
             view.setVisibility(View.GONE);
         else
             view.setVisibility(View.VISIBLE);
+    }
+
+    private void group_visible(View view, int value) {
+        group_visible(view, value != AltosLib.MISSING);
+    }
+
+    private void group_visible(View view, double value) {
+        group_visible(view, value != AltosLib.MISSING);
     }
 
     boolean is_telemini_v1(String product) {
@@ -134,13 +152,21 @@ public class ConfigureDeviceActivity extends AppCompatActivity
     }
 
     private String[] pad_orientation_values(AltosConfigDataRemote config_data) {
-        if (has_radio(config_data.product))
-            return AltosLib.pad_orientation_values_radio;
-        else
-            return AltosLib.pad_orientation_values_no_radio;
+        return AltosLib.pad_orientation_values(has_radio(config_data.product));
     }
 
-    private void config_data(AltosConfigDataRemote config_data) {
+    private void update_config_data() {
+        if (binding != null && config_data != null) {
+            try {
+                config_data.get_values(this);
+            } catch (AltosConfigDataException cde) {
+            }
+        }
+    }
+
+    private void recv_config_data(AltosConfigDataRemote in_config_data) {
+
+        config_data = in_config_data;
         query_running = false;
 
         if (binding != null && config_data != null) {
@@ -174,7 +200,33 @@ public class ConfigureDeviceActivity extends AppCompatActivity
             }
             group_visible(binding.beeperFrequencyGroup, config_data.beep);
 
+            if (config_data.report_feet != AltosLib.MISSING)
+                binding.beeperUnits.setText(AltosLib.report_unit_values[config_data.report_feet]);
+            group_visible(binding.beeperUnitsGroup, config_data.beep);
+
+            String[] values = flightLogMaxValues(config_data);
+            setMenu(binding.flightLogSize, values);
+            group_visible(binding.flightLogSizeGroup, values != null);
+
             binding.call.setText(config_data.callsign);
+
+            double frequency = config_data.frequency();
+            if (frequency != AltosLib.MISSING) {
+                AltosFrequency naf = new AltosFrequency(frequency, String.format("%s serial %d",
+                                                                                config_data.product,
+                                                                                config_data.serial));
+                AltosFrequency af = AltosPreferences.add_common_frequency(naf);
+                binding.frequency.setText(af.toShortString());
+            }
+            group_visible(binding.frequencyGroup, frequency);
+
+            if (config_data.radio_enable != AltosLib.MISSING)
+                binding.radioEnable.setChecked(config_data.radio_enable != 0);
+            group_visible(binding.radioEnableGroup, config_data.radio_enable);
+
+//            if (config_data.telemetry_rate != AltosLib.MISSING)
+//                binding.
+
         }
     }
 
@@ -219,16 +271,20 @@ public class ConfigureDeviceActivity extends AppCompatActivity
         for (int i = 0; i < values.length; i++)
             if (text.equals(values[i]))
                 return i;
-        return -1;
+        return AltosLib.MISSING;
     }
 
-    public String[] flightLogMaxValues(int flight_log_max_limit, int storage_erase_unit) {
-        ArrayList<String> maxValues = new ArrayList<String>();
+    public String[] flightLogMaxValues(AltosConfigData config_data) {
+        int space_kb = config_data.log_space() >> 10;
+        if (space_kb == 0)
+            return null;
 
+        ArrayList<String> maxValues = new ArrayList<String>();
+        int erase_kb = config_data.storage_erase_unit >> 10;
         for (int i = 8; i >= 1; i--) {
-            int	size = flight_log_max_limit / i;
-            if (storage_erase_unit != 0)
-                size &= ~(storage_erase_unit - 1);
+            int	size = space_kb / i;
+            if (erase_kb != 0)
+                size &= ~(erase_kb - 1);
             maxValues.add(String.format("%d (%d flights)", size, i));
         }
         return maxValues.toArray(new String[0]);
@@ -307,6 +363,7 @@ public class ConfigureDeviceActivity extends AppCompatActivity
         setMenu(binding.beeperUnits, R.array.beeper_units_values);
 //        setMenu(binding.flightLogSize, R.array.flight_log_size_values);
         setMenu(binding.frequency, frequencyValues());
+        setMenu(binding.telemetryRate, R.array.telemetry_rate_values);
 
         set_units(AltosPreferences.imperial_units());
 
@@ -326,5 +383,265 @@ public class ConfigureDeviceActivity extends AppCompatActivity
         Intent intent = new Intent();
         setResult(Activity.RESULT_OK, intent);
         finish();
+    }
+
+    /* AltosConfigValues interface */
+
+    private int parse_int(String name, String s, boolean split) throws AltosConfigDataException {
+        String v = s;
+        if (split)
+            v = s.split("\\s+")[0];
+        try {
+            return Integer.parseInt(v);
+        } catch (NumberFormatException ne) {
+            throw new AltosConfigDataException("Invalid %s \"%s\"", name, s);
+        }
+    }
+
+    private double parse_double(String name, String s, boolean split) throws AltosConfigDataException {
+        String v = s;
+        if (split)
+            v = s.split("\\s+")[0];
+        try {
+            return AltosParse.parse_double_locale(v);
+        } catch (Exception e) {
+            throw new AltosConfigDataException("Invalid %s \"%s\"", name, s);
+        }
+    }
+
+    public int main_deploy() throws AltosConfigDataException {
+        String str = "<missing>";
+        try {
+            str = binding.mainAlt.getEditableText().toString();
+            return (int) AltosConvert.height.parse_locale(str);
+        } catch (Exception e) {
+            throw new AltosConfigDataException("Invalid height %s", str);
+        }
+    }
+
+    public int apogee_delay() throws AltosConfigDataException{
+        String str = "<missing>";
+        try {
+            str = binding.apogeeDelay.getEditableText().toString();
+            return parse_int("apogee delay", str, false);
+        } catch (Exception e) {
+            throw new AltosConfigDataException("Invalid apogee delay %s", str);
+        }
+    }
+
+    public int apogee_lockout() throws AltosConfigDataException{
+        String str = "<missing>";
+        try {
+            str = binding.apogeeLockout.getEditableText().toString();
+            return parse_int("apogee lockout", str, false);
+        } catch (Exception e) {
+            throw new AltosConfigDataException("Invalid apogee lockout %s", str);
+        }
+    }
+
+    public double radio_frequency() throws AltosConfigDataException {
+        if (binding.frequencyGroup.getVisibility() != View.VISIBLE)
+            return AltosLib.MISSING;
+        return parse_double("Radio frequency",
+                            binding.frequency.getEditableText().toString(),
+                            true);
+    }
+
+    public int radio_enable(){
+        if (binding.radioEnableGroup.getVisibility() != View.VISIBLE)
+            return AltosLib.MISSING;
+        return binding.radioEnable.isChecked() ? 1 : 0;
+    }
+
+    public String callsign() {
+        if (binding.callGroup.getVisibility() == View.VISIBLE)
+            return binding.call.getEditableText().toString();
+        return null;
+    }
+
+    public int telemetry_rate() throws AltosConfigDataException{
+        if (binding.telemetryRateGroup.getVisibility() != View.VISIBLE)
+            return AltosLib.MISSING;
+        return getMenu(binding.telemetryRate, R.array.telemetry_rate_values);
+    }
+
+    public int flight_log_max() throws AltosConfigDataException{
+        if (binding.flightLogSizeGroup.getVisibility() != View.VISIBLE)
+            return AltosLib.MISSING;
+        return parse_int("Flight log size",
+                         binding.flightLogSize.getEditableText().toString(),
+                         true);
+    }
+
+    public int ignite_mode(){
+        if (binding.igniterModeGroup.getVisibility() != View.VISIBLE)
+            return AltosLib.MISSING;
+        return getMenu(binding.igniterMode, R.array.igniter_mode_values);
+    }
+
+    public int pad_orientation(){
+        if (binding.padOrientationGroup.getVisibility() != View.VISIBLE)
+            return AltosLib.MISSING;
+        return getMenu(binding.padOrientation, R.array.pad_orientation_values);
+    }
+
+    public int accel_cal_plus(){
+        return AltosLib.MISSING;
+    }
+
+    public int accel_cal_minus(){
+        return AltosLib.MISSING;
+    }
+
+    public AltosPyro[] pyros() throws AltosConfigDataException{
+        return null;
+    }
+
+    public double pyro_firing_time() throws AltosConfigDataException{
+        return AltosLib.MISSING;
+    }
+
+    public int aprs_interval() throws AltosConfigDataException{
+        return AltosLib.MISSING;
+    }
+
+    public int aprs_ssid() throws AltosConfigDataException{
+        return AltosLib.MISSING;
+    }
+
+    public int aprs_format() throws AltosConfigDataException{
+        return AltosLib.MISSING;
+    }
+
+    public int aprs_offset() throws AltosConfigDataException{
+        return AltosLib.MISSING;
+    }
+
+    public int beep() throws AltosConfigDataException{
+        return AltosLib.MISSING;
+    }
+
+    public int tracker_motion() throws AltosConfigDataException{
+        return AltosLib.MISSING;
+    }
+
+    public int tracker_interval() throws AltosConfigDataException{
+        return AltosLib.MISSING;
+    }
+
+    public int radio_10mw() throws AltosConfigDataException{
+        return AltosLib.MISSING;
+    }
+
+    public boolean has_radio(){
+        return true;
+    }
+
+    public int report_feet() throws AltosConfigDataException{
+        return AltosLib.MISSING;
+    }
+
+    public int gps_receiver() throws AltosConfigDataException{
+        return AltosLib.MISSING;
+    }
+
+    /*
+     * We don't use this part of the interface, preferring to get the
+     * whole configuration in one object
+     */
+    public void set_product(String product){
+    }
+
+    public void set_version(String version){
+    }
+
+    public void set_serial(int serial){
+    }
+
+    public void set_altitude_32(int altitude_32){
+    }
+
+    public void set_main_deploy(int new_main_deploy){
+    }
+
+    public void set_apogee_delay(int new_apogee_delay){
+    }
+
+    public void set_apogee_lockout(int new_apogee_lockout){
+    }
+
+    public void set_radio_frequency(double new_radio_frequency){
+    }
+
+    public void set_radio_calibration(int new_radio_calibration){
+    }
+
+    public void set_radio_enable(int new_radio_enable){
+    }
+
+    public void set_callsign(String new_callsign){
+    }
+
+    public void set_telemetry_rate(int new_telemetry_rate){
+    }
+
+    public void set_flight_log_max(int new_flight_log_max){
+    }
+
+    public void set_flight_log_max_enabled(boolean enable){
+    }
+
+    public void set_flight_log_max_limit(int flight_log_max_limit, int storage_erase_unit){
+    }
+
+    public void set_ignite_mode(int new_ignite_mode){
+    }
+
+    public void set_pad_orientation(int new_pad_orientation){
+    }
+
+    public void set_accel_cal(int accel_cal_plus, int accel_cal_minus){
+    }
+
+    public void set_dirty(){
+    }
+
+    public void set_clean(){
+    }
+
+    public void set_pyros(AltosPyro[] new_pyros){
+    }
+
+    public void set_pyro_firing_time(double new_pyro_firing_time){
+    }
+
+    public void set_aprs_interval(int new_aprs_interval){
+    }
+
+    public void set_aprs_ssid(int new_aprs_ssid){
+    }
+
+    public void set_aprs_format(int new_aprs_format){
+    }
+
+    public void set_aprs_offset(int new_aprs_offset){
+    }
+
+    public void set_beep(int new_beep){
+    }
+
+    public void set_tracker_motion(int tracker_motion){
+    }
+
+    public void set_tracker_interval(int tracker_motion){
+    }
+
+    public void set_radio_10mw(int radio_10mw){
+    }
+
+    public void set_report_feet(int report_feet){
+    }
+
+    public void set_gps_receiver(int gps_receiver){
     }
 }
