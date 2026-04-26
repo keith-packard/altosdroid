@@ -18,9 +18,11 @@
 
 package org.altusmetrum.altosdroid;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.location.Location;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 
 import org.altusmetrum.altoslib_14.AltosConvert;
 import org.altusmetrum.altoslib_14.AltosGPS;
@@ -28,6 +30,7 @@ import org.altusmetrum.altoslib_14.AltosGreatCircle;
 import org.altusmetrum.altoslib_14.AltosLib;
 import org.altusmetrum.altoslib_14.AltosPreferences;
 import org.altusmetrum.altoslib_14.AltosState;
+import org.altusmetrum.altoslib_14.AltosVoiceListener;
 
 import java.util.Locale;
 
@@ -461,7 +464,7 @@ class GPSSpeaker extends GoNoGoSpeaker {
     boolean ready(AltosState state) { return state.gps_ready; }
 }
 
-public class AltosVoice {
+public class AltosVoice implements AltosVoiceListener {
 
     private TextToSpeech tts         = null;
     private boolean      tts_running = false;
@@ -529,13 +532,51 @@ public class AltosVoice {
         last_speak_time = now() - 100 * 1000;
     }
 
-    public AltosVoice(MainActivity a) {
+    int utteranceIndex;
+
+    class AltosProgress extends UtteranceProgressListener {
+
+        private void checkDone(String utteranceId) {
+            try {
+                int index = Integer.parseInt(utteranceId);
+                if (index == utteranceIndex)
+                    telemetryService.done_speaking();
+            } catch (Exception e) {
+            }
+        }
+
+        public void onDone(String utteranceId) {
+            checkDone(utteranceId);
+        }
+
+        public void onStart(String utteranceId) {
+        }
+
+        public void onError(String utteranceId) {
+            checkDone(utteranceId);
+        }
+
+        public void onStop(String utteranceId, boolean interrupted) {
+            checkDone(utteranceId);
+        }
+
+        AltosProgress() {
+        }
+    }
+
+    AltosProgress altosProgress = new AltosProgress();
+
+    TelemetryService telemetryService;
+
+    public AltosVoice(TelemetryService in_telemetryService) {
+        telemetryService = in_telemetryService;
         current_voice = this;
-        tts = new TextToSpeech(a, new TextToSpeech.OnInitListener() {
+        tts = new TextToSpeech(telemetryService, new TextToSpeech.OnInitListener() {
                 public void onInit(int status) {
                     if (status == TextToSpeech.SUCCESS) tts_running = true;
                 }
             });
+        tts.setOnUtteranceProgressListener(altosProgress);
         reset_last();
     }
 
@@ -543,7 +584,7 @@ public class AltosVoice {
         return AltosPreferences.voice();
     }
 
-    public synchronized void set_enable(boolean enable) {
+    private synchronized void set_enable(boolean enable) {
         if (!enable && tts_running)
             tts.stop();
     }
@@ -551,8 +592,10 @@ public class AltosVoice {
     public synchronized void speak(String s) {
         if (!tts_enabled() || !tts_running) return;
         last_speak_time = now();
-        if (!quiet)
-            tts.speak(s, TextToSpeech.QUEUE_ADD, null, null);
+        if (!quiet) {
+            String utteranceId = String.format("%d", ++utteranceIndex);
+            tts.speak(s, TextToSpeech.QUEUE_ADD, null, utteranceId);
+        }
     }
 
     public synchronized long time_since_speak() {
@@ -711,7 +754,7 @@ public class AltosVoice {
 
     public boolean tell(TelemetryState telem_state, AltosState state,
                      AltosGreatCircle from_receiver, Location receiver,
-                     AltosFragment fragment, boolean quiet) {
+                     String fragment_name, boolean quiet) {
 
         this.quiet = quiet;
 
@@ -731,11 +774,11 @@ public class AltosVoice {
 
         int	tell_mode = TELL_MODE_NONE;
 
-        if (fragment != null && fragment.name().equals(MainActivity.pad_name))
+        if (fragment_name != null && fragment_name.equals(MainActivity.pad_name))
             tell_mode = TELL_MODE_PAD;
-        else if (fragment != null && fragment.name().equals(MainActivity.flight_name))
+        else if (fragment_name != null && fragment_name.equals(MainActivity.flight_name))
             tell_mode = TELL_MODE_FLIGHT;
-        else if (fragment != null && fragment.name().equals(MainActivity.map_name))
+        else if (fragment_name != null && fragment_name.equals(MainActivity.map_name))
             tell_mode = TELL_MODE_MAP;
         else
             tell_mode = TELL_MODE_RECOVER;
@@ -787,5 +830,9 @@ public class AltosVoice {
         }
 
         return spoken;
+    }
+
+    public void voice_changed(boolean voice) {
+        set_enable(voice);
     }
 }

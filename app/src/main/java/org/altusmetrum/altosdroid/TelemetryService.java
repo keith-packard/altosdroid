@@ -32,6 +32,8 @@ import android.content.pm.PackageManager;
 import android.content.pm.ServiceInfo;
 import android.graphics.Color;
 import android.hardware.usb.UsbDevice;
+import android.location.Location;
+import android.location.LocationListener;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -54,7 +56,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeoutException;
 
-public class TelemetryService extends Service implements AltosIdleMonitorListener {
+public class TelemetryService extends Service
+    implements AltosIdleMonitorListener,
+    LocationListener {
 
     static final int MSG_REGISTER_CLIENT   = 1;
     static final int MSG_UNREGISTER_CLIENT = 2;
@@ -78,6 +82,7 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
     static final int MSG_POST_NOTIFICATION = 20;
     static final int MSG_GET_CONFIG_DATA   = 21;
     static final int MSG_SET_CONFIG_DATA   = 22;
+    static final int MSG_SET_FRAGMENT_NAME = 23;
 
     static final int TELEMETRY_SERVICE_ID  = 1002;
 
@@ -102,6 +107,11 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
     // Last data seen; send to UI when it starts
     private TelemetryState	telemetry_state;
 
+    // Text to speech system
+    AltosVoice altos_voice;
+
+    Location location = null;
+
     // Idle monitor if active
     AltosIdleMonitor idle_monitor = null;
 
@@ -113,6 +123,8 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
     boolean config_running;
 
     Notification notification;
+
+    String fragment_name = null;
 
     // Handler of incoming messages from clients.
     static class IncomingHandler extends Handler {
@@ -282,6 +294,10 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
                 AltosDebug.debug("get config data");
                 s.set_config_data((AltosConfigDataRemote) msg.obj);
                 break;
+            case MSG_SET_FRAGMENT_NAME:
+                AltosDebug.debug("set fragment name");
+                s.set_fragment_name((String) msg.obj);
+                break;
             default:
                 super.handleMessage(msg);
             }
@@ -298,6 +314,9 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
 
         // Get local Bluetooth adapter
         bluetooth_adapter = BluetoothAdapter.getDefaultAdapter();
+
+        if (altos_voice == null)
+            altos_voice = new AltosVoice(this);
 
         telemetry_state = new TelemetryState();
 
@@ -333,6 +352,7 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
                 AltosPreferences.remove_state(serial);
             }
         }
+
     }
 
     private NotificationChannel createNotificationChannel(String channelId, String channelName) {
@@ -417,6 +437,12 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
     }
     @Override
     public void onDestroy() {
+
+        // Stop the voice system
+        if (altos_voice != null) {
+            altos_voice.stop();
+            altos_voice = null;
+        }
 
         // Stop the bluetooth Comms threads
         disconnect(true);
@@ -815,12 +841,65 @@ public class TelemetryService extends Service implements AltosIdleMonitorListene
         send_to_clients();
     }
 
+    boolean speaking;
+
+    void speak() {
+        if (altos_voice != null) {
+
+            int selected_serial = AltosDroidPreferences.selected_serial();
+
+            if (selected_serial != MainActivity.SELECT_AUTO && telemetry_state.get(selected_serial) == null)
+                selected_serial = MainActivity.SELECT_AUTO;
+
+            int shown_serial = selected_serial;
+
+            if (telemetry_state.idle_mode)
+                shown_serial = telemetry_state.latest_serial;
+
+            AltosState	state = telemetry_state.get(shown_serial);
+
+            AltosGreatCircle from_receiver = null;
+
+            if (location != null && state.gps != null && state.gps.locked) {
+                double altitude = 0;
+                if (location.hasAltitude())
+                    altitude = location.getAltitude();
+                from_receiver = new AltosGreatCircle(location.getLatitude(),
+                                                     location.getLongitude(),
+                                                     altitude,
+                                                     state.gps.lat,
+                                                     state.gps.lon,
+                                                     state.gps.alt);
+            }
+
+            boolean quiet = true;
+            if (telemetry_state != null)
+                quiet = telemetry_state.quiet;
+            speaking = altos_voice.tell(telemetry_state, state, from_receiver, location, fragment_name, quiet);
+        }
+    }
+
+    public void done_speaking() {
+        speak();
+    }
+
+    private void set_fragment_name(String name) {
+        fragment_name = name;
+        speak();
+    }
 
     @Override
     public void update(AltosState state, AltosListenerState listener_state) {
         telemetry_state.put(state.cal_data().serial, state);
         telemetry_state.receiver_battery = listener_state.battery;
         send_to_clients();
+        speak();
+    }
+
+    @Override
+    public void onLocationChanged(Location in_location) {
+        location = in_location;
+        speak();
     }
 
     @Override

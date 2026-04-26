@@ -207,7 +207,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     ActivityMainBinding binding;
     boolean idle_mode = false;
-    AltosVoice altos_voice;
 
     static final String[] preferredLocationProviders = {
         LocationManager.GPS_PROVIDER,
@@ -221,7 +220,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     public static boolean location_has_gps = false;
     TelemetryState telemetry_state = null;
     AltosGreatCircle from_receiver;
-    boolean speaking;
 
     public static final int SELECT_AUTO = AltosDroidPreferences.SELECT_AUTO;
     int selected_serial = SELECT_AUTO;
@@ -506,9 +504,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         startService(new Intent(action, null, this, TelemetryService.class));
 
         doBindService();
-
-        if (altos_voice == null)
-            altos_voice = new AltosVoice(this);
     }
 
     @Override
@@ -703,10 +698,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         if ((changes & SETUP_UNITS) != 0) {
             /* nothing to do here */
         }
-        if ((changes & SETUP_VOICE) != 0) {
-            if (altos_voice != null)
-                altos_voice.set_enable(AltosPreferences.voice());
-        }
         set_switch_time();
     }
 
@@ -859,10 +850,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         //saved_state = null;
 
         doUnbindService();
-        if (altos_voice != null) {
-            altos_voice.stop();
-            altos_voice = null;
-        }
         stop_timer();
     }
 
@@ -897,6 +884,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         }
         active_fragment = (AltosFragment) fragment;
         active_fragment.set_altos_droid(this);
+        if (mService != null) {
+            Message msg = Message.obtain(null, TelemetryService.MSG_SET_FRAGMENT_NAME, active_fragment.name());
+            try {
+                mService.send(msg);
+            } catch (RemoteException re) {
+            }
+        }
         update_state(null);
     }
 
@@ -979,15 +973,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             if (b == null)
                 return false;
             return a.equals(b);
-        }
-    }
-
-    void speak() {
-        if (altos_voice != null) {
-            boolean quiet = true;
-            if (telemetry_state != null)
-                quiet = telemetry_state.quiet;
-            speaking = altos_voice.tell(telemetry_state, state, from_receiver, location, active_fragment, quiet);
         }
     }
 
@@ -1086,7 +1071,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         if (active_fragment != null) {
             active_fragment.show(telemetry_state, state, from_receiver, location);
         }
-        speak();
     }
 
     int auto_select_tracker() {
@@ -1180,8 +1164,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     void timer_tick() {
         try {
             mMessenger.send(Message.obtain(null, MSG_UPDATE_AGE));
-            if (speaking)
-                speak();
         } catch (RemoteException e) {
         }
     }
