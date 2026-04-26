@@ -229,7 +229,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:completionThreshold="100"
-                    android:inputType="numberDecimal"
+                    android:inputType="none"
                     android:textAppearance="@style/ValueText"
                     android:minHeight="48dp"
                     android:text="" />
@@ -621,7 +621,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:completionThreshold="100"
-                    android:inputType="numberDecimal"
+                    android:inputType="none"
                     android:textAppearance="@style/ValueText"
                     android:minHeight="48dp"
                     android:text="" />
@@ -636,10 +636,92 @@
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="telemetry_rate_label,telemetry_rate_layout"/>
 
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/accel_cal_plus_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="accel_cal_plus_label,accel_cal_plus"/>
+
+            <TextView
+                android:id="@+id/accel_cal_plus_label"
+                android:text="@string/accel_cal_plus_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/telemetry_rate_barrier"
+                app:layout_constraintBottom_toBottomOf="@id/accel_cal_plus_barrier"/>
+
+            <EditText
+                android:id="@+id/accel_cal_plus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/ValueText"
+                android:minHeight="48dp"
+                android:text=""
+                android:inputType="numberDecimal"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/telemetry_rate_barrier"
+                app:layout_constraintBottom_toBottomOf="@id/accel_cal_plus_barrier"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/accel_cal_plus_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="accel_cal_plus_label,accel_cal_plus"/>
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/accel_cal_minus_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="accel_cal_minus_label,accel_cal_minus"/>
+
+            <TextView
+                android:id="@+id/accel_cal_minus_label"
+                android:text="@string/accel_cal_minus_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/accel_cal_plus_barrier"
+                app:layout_constraintBottom_toBottomOf="@id/accel_cal_minus_barrier"/>
+
+            <EditText
+                android:id="@+id/accel_cal_minus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/ValueText"
+                android:minHeight="48dp"
+                android:text=""
+                android:inputType="numberDecimal"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/accel_cal_plus_barrier"
+                app:layout_constraintBottom_toBottomOf="@id/accel_cal_minus_barrier"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/accel_cal_minus_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="accel_cal_minus_label,accel_cal_minus"/>
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                app:layout_constraintTop_toBottomOf="@id/telemetry_rate_barrier"
+                app:layout_constraintTop_toBottomOf="@id/accel_cal_minus_barrier"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

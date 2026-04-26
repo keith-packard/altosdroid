@@ -26,7 +26,17 @@ public class AltosConfigDataRemote extends AltosConfigData {
     public boolean remote;
 
     public void save(AltosLink link) throws InterruptedException, TimeoutException {
-        save(link, remote);
+        boolean remote_started = false;
+        try {
+            if (remote) {
+                link.start_remote();
+                remote_started = true;
+            }
+            save(link, remote);
+        } finally {
+            if (remote_started)
+                link.stop_remote();
+        }
     }
 
     public AltosConfigDataRemote(AltosLink link, boolean in_remote) throws InterruptedException, TimeoutException {
