@@ -26,6 +26,7 @@ import android.os.Handler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.UUID;
 
 public class AltosBluetooth extends AltosDroidLink {
@@ -187,6 +188,7 @@ public class AltosBluetooth extends AltosDroidLink {
 		if (output == null)
 			return -1;
 		try {
+//                        AltosDebug.debug("BT write %s", new String(Arrays.copyOfRange(buffer, start, len)));
 			output.write(buffer, start, len);
 		} catch (IOException ie) {
 			return -1;
@@ -198,7 +200,10 @@ public class AltosBluetooth extends AltosDroidLink {
 		if (input == null)
 			return -1;
 		try {
-			return input.read(buffer, 0, len);
+                        int ret = input.read(buffer, 0, len);
+//                        if (ret >= 0)
+//                                AltosDebug.debug("BT read %s", new String(Arrays.copyOfRange(buffer, 0, ret)));
+                        return ret;
 		} catch (IOException ie) {
 			return -1;
 		}
