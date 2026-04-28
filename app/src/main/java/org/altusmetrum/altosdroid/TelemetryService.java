@@ -63,26 +63,27 @@ public class TelemetryService extends Service
     static final int MSG_REGISTER_CLIENT   = 1;
     static final int MSG_UNREGISTER_CLIENT = 2;
     static final int MSG_CONNECT           = 3;
-    static final int MSG_OPEN_USB	       = 4;
+    static final int MSG_OPEN_USB	   = 4;
     static final int MSG_CONNECTED         = 5;
     static final int MSG_CONNECT_FAILED    = 6;
     static final int MSG_DISCONNECTED      = 7;
     static final int MSG_TELEMETRY         = 8;
     static final int MSG_SETFREQUENCY      = 9;
-    static final int MSG_CRC_ERROR	       = 10;
-    static final int MSG_SETBAUD	       = 11;
-    static final int MSG_DISCONNECT	       = 12;
+    static final int MSG_CRC_ERROR	   = 10;
+    static final int MSG_SETBAUD	   = 11;
+    static final int MSG_DISCONNECT	   = 12;
     static final int MSG_DELETE_SERIAL     = 13;
     static final int MSG_BLUETOOTH_ENABLED = 14;
     static final int MSG_MONITOR_IDLE_START= 15;
     static final int MSG_MONITOR_IDLE_STOP = 16;
-    static final int MSG_REBOOT	       = 17;
+    static final int MSG_REBOOT	           = 17;
     static final int MSG_IGNITER_QUERY     = 18;
     static final int MSG_IGNITER_FIRE      = 19;
     static final int MSG_POST_NOTIFICATION = 20;
     static final int MSG_GET_CONFIG_DATA   = 21;
     static final int MSG_SET_CONFIG_DATA   = 22;
-    static final int MSG_SET_FRAGMENT_NAME = 23;
+    static final int MSG_SET_VIEW          = 23;
+    static final int MSG_GET_VIEW          = 24;
 
     static final int TELEMETRY_SERVICE_ID  = 1002;
 
@@ -173,7 +174,7 @@ public class TelemetryService extends Service
                 break;
             case MSG_SETFREQUENCY:
                 AltosDebug.debug("MSG_SETFREQUENCY");
-                s.telemetry_state.frequency = (Double) msg.obj;
+                s.telemetry_state.set_frequency((Double) msg.obj);
                 if (s.idle_monitor != null) {
                     s.idle_monitor.set_frequency(s.telemetry_state.frequency);
                 } else if (s.telemetry_state.connect == TelemetryState.CONNECT_CONNECTED) {
@@ -187,7 +188,7 @@ public class TelemetryService extends Service
                 break;
             case MSG_SETBAUD:
                 AltosDebug.debug("MSG_SETBAUD");
-                s.telemetry_state.telemetry_rate = (Integer) msg.obj;
+                s.telemetry_state.set_telemetry_rate((Integer) msg.obj);
                 if (s.telemetry_state.connect == TelemetryState.CONNECT_CONNECTED) {
                     s.altos_link.set_telemetry_rate(s.telemetry_state.telemetry_rate);
                     s.altos_link.save_telemetry_rate();
@@ -253,7 +254,7 @@ public class TelemetryService extends Service
                 break;
             case MSG_CRC_ERROR:
                 // forward crc error messages
-                s.telemetry_state.crc_errors = (Integer) msg.obj;
+                s.telemetry_state.set_crc_errors((Integer) msg.obj);
                 s.send_to_clients();
                 break;
             case MSG_BLUETOOTH_ENABLED:
@@ -294,9 +295,9 @@ public class TelemetryService extends Service
                 AltosDebug.debug("get config data");
                 s.set_config_data((AltosConfigDataRemote) msg.obj);
                 break;
-            case MSG_SET_FRAGMENT_NAME:
-                AltosDebug.debug("set fragment name");
-                s.set_fragment_name((String) msg.obj);
+            case MSG_SET_VIEW:
+                AltosDebug.debug("set view");
+                s.set_view((Integer) msg.obj);
                 break;
             default:
                 super.handleMessage(msg);
@@ -323,16 +324,9 @@ public class TelemetryService extends Service
         // Create a reference to the NotificationManager so that we can update our notifcation text later
         //mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
 
-        telemetry_state.connect = TelemetryState.CONNECT_DISCONNECTED;
-        telemetry_state.address = null;
-
         /* Pull the saved state information out of the preferences database
          */
         ArrayList<Integer> serials = AltosPreferences.list_states();
-
-        telemetry_state.latest_serial = AltosPreferences.latest_state();
-
-        telemetry_state.quiet = false;
 
         AltosDebug.debug("latest serial %d\n", telemetry_state.latest_serial);
 
@@ -422,8 +416,7 @@ public class TelemetryService extends Service
 
         /* Start bluetooth if we don't have a connection already */
         if (intent != null &&
-            (telemetry_state.connect == TelemetryState.CONNECT_NONE ||
-             telemetry_state.connect == TelemetryState.CONNECT_DISCONNECTED))
+            (telemetry_state.connect == TelemetryState.CONNECT_DISCONNECTED))
         {
             String	action = intent.getAction();
 
@@ -468,11 +461,11 @@ public class TelemetryService extends Service
             state = new AltosState(new AltosCalData());
         telem.provide_data(state);
         telemetry_state.put(telem.serial(), state);
-        telemetry_state.quiet = false;
         if (state != null) {
             AltosPreferences.set_state(state,telem.serial());
         }
         send_to_clients();
+        speak();
     }
 
     /* Construct the message to deliver to clients
@@ -587,8 +580,7 @@ public class TelemetryService extends Service
     private void disconnect(boolean notify) {
         AltosDebug.debug("disconnect(): begin");
 
-        telemetry_state.connect = TelemetryState.CONNECT_DISCONNECTED;
-        telemetry_state.address = null;
+        telemetry_state.set_connect(TelemetryState.CONNECT_DISCONNECTED, null);
 
         if (idle_monitor != null)
             stop_idle_monitor();
@@ -610,7 +602,7 @@ public class TelemetryService extends Service
             altos_link = null;
             ignite = null;
         }
-        telemetry_state.config = null;
+        telemetry_state.set_config(null);
         if (notify) {
             AltosDebug.debug("disconnect(): send message to clients");
             send_to_clients();
@@ -650,8 +642,7 @@ public class TelemetryService extends Service
 
 //        AltosDebug.debug("start_altos_bluetooth(): Connecting to %s (%s)", device.getName(), device.getAddress());
         altos_link = new AltosBluetooth(device, handler, pause);
-        telemetry_state.connect = TelemetryState.CONNECT_CONNECTING;
-        telemetry_state.address = address;
+        telemetry_state.set_connect(TelemetryState.CONNECT_CONNECTING, address);
         send_to_clients();
     }
 
@@ -661,7 +652,7 @@ public class TelemetryService extends Service
             idle_monitor = new AltosIdleMonitor(this, altos_link, true, false);
             idle_monitor.set_callsign(AltosPreferences.callsign());
             idle_monitor.set_frequency(telemetry_state.frequency);
-            telemetry_state.idle_mode = true;
+            telemetry_state.set_idle_mode(true);
             idle_monitor.start();
             send_idle_mode_to_clients();
         }
@@ -674,7 +665,7 @@ public class TelemetryService extends Service
             } catch (InterruptedException ignored) {
             }
             idle_monitor = null;
-            telemetry_state.idle_mode = false;
+            telemetry_state.set_idle_mode(false);
             telemetry_start();
             send_idle_mode_to_clients();
         }
@@ -780,7 +771,7 @@ public class TelemetryService extends Service
     private void update_receiver_voltage() {
         if (altos_link != null && idle_monitor == null && !ignite_running && !config_running) {
             try {
-                telemetry_state.receiver_battery = altos_link.monitor_battery();
+                telemetry_state.set_receiver_battery(altos_link.monitor_battery());
                 send_to_clients();
             } catch (InterruptedException ignored) {
             }
@@ -807,7 +798,7 @@ public class TelemetryService extends Service
         try {
             if (altos_link == null)
                 throw new InterruptedException("no bluetooth");
-            telemetry_state.config = altos_link.config_data();
+            telemetry_state.set_config(altos_link.config_data());
             altos_link.set_radio_frequency(telemetry_state.frequency);
             altos_link.set_telemetry_rate(telemetry_state.telemetry_rate);
         } catch (TimeoutException e) {
@@ -825,8 +816,7 @@ public class TelemetryService extends Service
         }
 
         AltosDebug.debug("connected bluetooth configured");
-        telemetry_state.connect = TelemetryState.CONNECT_CONNECTED;
-        telemetry_state.address = address;
+        telemetry_state.set_connect(TelemetryState.CONNECT_CONNECTED, address);
 
         telemetry_start();
 
@@ -875,7 +865,7 @@ public class TelemetryService extends Service
             boolean quiet = true;
             if (telemetry_state != null)
                 quiet = telemetry_state.quiet;
-            speaking = altos_voice.tell(telemetry_state, state, from_receiver, location, fragment_name, quiet);
+            speaking = altos_voice.tell(telemetry_state, state, from_receiver, location, quiet);
         }
     }
 
@@ -883,15 +873,16 @@ public class TelemetryService extends Service
         speak();
     }
 
-    private void set_fragment_name(String name) {
-        fragment_name = name;
+    private void set_view(int view) {
+        telemetry_state.set_view(view);
+        send_to_clients();
         speak();
     }
 
     @Override
     public void update(AltosState state, AltosListenerState listener_state) {
         telemetry_state.put(state.cal_data().serial, state);
-        telemetry_state.receiver_battery = listener_state.battery;
+        telemetry_state.set_receiver_battery(listener_state.battery);
         send_to_clients();
         speak();
     }
@@ -909,6 +900,5 @@ public class TelemetryService extends Service
 
     @Override
     public void failed() {
-
     }
 }

@@ -89,7 +89,7 @@ abstract class Speaker {
 
     abstract Utterance utterance(TelemetryState telem_state, AltosState state,
                                  AltosGreatCircle from_receiver, Location receiver,
-                                 boolean new_mode, int tell_mode);
+                                 boolean new_mode);
 
     boolean new_mode(boolean new_mode) {
         if (new_mode)
@@ -115,7 +115,7 @@ class StateSpeaker extends Speaker {
 
     Utterance utterance(TelemetryState telem_state, AltosState state,
                         AltosGreatCircle from_receiver, Location receiver,
-                        boolean new_mode, int tell_mode) {
+                        boolean new_mode) {
         pending_state = state.state();
 
         if (new_mode(new_mode))
@@ -154,7 +154,7 @@ class PyroSpeaker extends Speaker {
 
     Utterance utterance(TelemetryState telem_state, AltosState state,
                         AltosGreatCircle from_receiver, Location receiver,
-                        boolean new_mode, int tell_mode) {
+                        boolean new_mode) {
 
         if (new_mode(new_mode))
             last_pyro_fired = 0;
@@ -191,7 +191,7 @@ class HeightSpeaker extends Speaker {
 
     Utterance utterance(TelemetryState telem_state, AltosState state,
                         AltosGreatCircle from_receiver, Location receiver,
-                        boolean new_mode, int tell_mode) {
+                        boolean new_mode) {
 
         if (new_mode(new_mode))
             last_height = AltosLib.MISSING;
@@ -239,7 +239,7 @@ class SpeedSpeaker extends Speaker {
 
     Utterance utterance(TelemetryState telem_state, AltosState state,
                         AltosGreatCircle from_receiver, Location receiver,
-                        boolean new_mode, int tell_mode) {
+                        boolean new_mode) {
 
         if (new_mode(new_mode))
             last_speed = AltosLib.MISSING;
@@ -360,7 +360,7 @@ class TrackSpeaker extends Speaker {
 
     Utterance utterance(TelemetryState telem_state, AltosState state,
                         AltosGreatCircle from_receiver, Location receiver,
-                        boolean new_mode, int tell_mode) {
+                        boolean new_mode) {
 
         if (new_mode(new_mode)) {
             last_target = null;
@@ -379,7 +379,7 @@ class TrackSpeaker extends Speaker {
             String message;
             String direction = null;
 
-            if (tell_mode == AltosVoice.TELL_MODE_RECOVER)
+            if (telem_state.view == TelemetryState.VIEW_RECOVER)
                 direction = MainActivity.direction(pending_track, pending_receiver);
 
             if (direction != null) {
@@ -426,7 +426,7 @@ abstract class GoNoGoSpeaker extends Speaker {
 
     Utterance utterance(TelemetryState telem_state, AltosState state,
                         AltosGreatCircle from_receiver, Location receiver,
-                        boolean new_mode, int tell_mode) {
+                        boolean new_mode) {
 
         new_mode = new_mode(new_mode);
 
@@ -469,12 +469,6 @@ public class AltosVoice implements AltosVoiceListener {
     private TextToSpeech tts         = null;
     private boolean      tts_running = false;
 
-    static final int TELL_MODE_NONE = 0;
-    static final int TELL_MODE_PAD = 1;
-    static final int TELL_MODE_FLIGHT = 2;
-    static final int TELL_MODE_MAP = 3;
-    static final int TELL_MODE_RECOVER = 4;
-
     static final int TELL_STEP_NONE = 0;
     static final int TELL_STEP_STATE = 1;
     static final int TELL_STEP_SPEED = 2;
@@ -483,8 +477,8 @@ public class AltosVoice implements AltosVoiceListener {
 
     static AltosVoice current_voice;
 
-    private int		last_tell_mode;
-    private int		last_tell_serial = AltosLib.MISSING;
+    private int		last_view;
+    private int		last_view_serial = AltosLib.MISSING;
     private long	last_speak_time;
     private boolean	quiet = false;
 
@@ -528,7 +522,6 @@ public class AltosVoice implements AltosVoiceListener {
     }
 
     private void reset_last() {
-        last_tell_mode = TELL_MODE_NONE;
         last_speak_time = now() - 100 * 1000;
     }
 
@@ -753,8 +746,8 @@ public class AltosVoice implements AltosVoiceListener {
     }
 
     public boolean tell(TelemetryState telem_state, AltosState state,
-                     AltosGreatCircle from_receiver, Location receiver,
-                     String fragment_name, boolean quiet) {
+                        AltosGreatCircle from_receiver, Location receiver,
+                        boolean quiet) {
 
         this.quiet = quiet;
 
@@ -764,36 +757,25 @@ public class AltosVoice implements AltosVoiceListener {
 
         if (is_speaking()) return true;
 
-        int	tell_serial = last_tell_serial;
+        int	view_serial = last_view_serial;
 
         if (state != null)
-            tell_serial = state.cal_data().serial;
+            view_serial = state.cal_data().serial;
 
-        if (tell_serial != last_tell_serial)
+        if (view_serial != last_view_serial)
             reset_last();
-
-        int	tell_mode = TELL_MODE_NONE;
-
-        if (fragment_name != null && fragment_name.equals(MainActivity.pad_name))
-            tell_mode = TELL_MODE_PAD;
-        else if (fragment_name != null && fragment_name.equals(MainActivity.flight_name))
-            tell_mode = TELL_MODE_FLIGHT;
-        else if (fragment_name != null && fragment_name.equals(MainActivity.map_name))
-            tell_mode = TELL_MODE_MAP;
-        else
-            tell_mode = TELL_MODE_RECOVER;
 
         Speaker[] speakers = null;
 
-        switch (tell_mode) {
-        case TELL_MODE_PAD:
+        switch (telem_state.view) {
+        case TelemetryState.VIEW_PAD:
             speakers = pad_speakers;
             break;
-        case TELL_MODE_FLIGHT:
-        case TELL_MODE_MAP:
+        case TelemetryState.VIEW_FLIGHT:
+        case TelemetryState.VIEW_MAP:
             speakers = flight_speakers;
             break;
-        case TELL_MODE_RECOVER:
+        case TelemetryState.VIEW_RECOVER:
             speakers = recover_speakers;
             break;
         }
@@ -802,10 +784,10 @@ public class AltosVoice implements AltosVoiceListener {
 
         if (speakers != null && state != null) {
             Utterance utterance = null;
-            boolean new_mode = tell_mode != last_tell_mode;
+            boolean new_mode = telem_state.view != last_view;
 
             for (int i = 0; i < speakers.length; i++) {
-                Utterance pending = speakers[i].utterance(telem_state, state, from_receiver, receiver, new_mode, tell_mode);
+                Utterance pending = speakers[i].utterance(telem_state, state, from_receiver, receiver, new_mode);
                 if (pending != null) {
                     if (utterance == null || pending.score > utterance.score)
                         utterance = pending;
@@ -825,8 +807,8 @@ public class AltosVoice implements AltosVoiceListener {
         }
 
         if (spoken) {
-            last_tell_mode = tell_mode;
-            last_tell_serial = tell_serial;
+            last_view = telem_state.view;
+            last_view_serial = view_serial;
         }
 
         return spoken;

@@ -164,5 +164,5 @@ public class FlightFragment extends AltosFragment {
     }
 
     @Override
-    public String name() { return MainActivity.flight_name; }
+    public int view() { return TelemetryState.VIEW_FLIGHT; }
 }

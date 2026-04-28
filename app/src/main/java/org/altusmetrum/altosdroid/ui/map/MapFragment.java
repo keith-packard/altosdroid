@@ -351,5 +351,5 @@ public class MapFragment extends AltosFragment
     }
 
     @Override
-    public String name() { return MainActivity.map_name; }
+    public int view() { return TelemetryState.VIEW_MAP; }
 }

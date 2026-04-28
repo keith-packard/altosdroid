@@ -176,6 +176,6 @@ public class PadFragment extends AltosFragment {
     }
 
     @Override
-    public String name() { return MainActivity.pad_name; }
+    public int view() { return TelemetryState.VIEW_PAD; }
 }
 

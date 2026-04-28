@@ -139,5 +139,5 @@ public class RecoverFragment extends AltosFragment {
     }
 
     @Override
-    public String name() { return MainActivity.recover_name; }
+    public int view() { return TelemetryState.VIEW_RECOVER; }
 }
