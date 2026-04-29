@@ -107,9 +107,6 @@ public class FlightFragment extends AltosFragment {
 		double gps_altitude = AltosLib.MISSING;
 		double gps_height = AltosLib.MISSING;
 		double gps_speed = AltosLib.MISSING;
-		gps_altitude = state.gps_altitude();
-		gps_height = state.gps_height();
-		gps_speed = state.gps_speed();
 		if (state.gps.locked) {
 		    gps_altitude = state.gps_altitude();
 		    gps_height = state.gps_height();

@@ -109,7 +109,9 @@
     <string name="receiver_pos_label">Receiver</string>
     <string name="target_latitude_label">Latitude</string>
     <string name="target_longitude_label">Longitude</string>
+    <string name="target_altitude_label">Altitude</string>
     <string name="target_position_label">Target Position</string>
+    <string name="set_pad_altitude">Set My Altitude</string>
     <string name="receiver_latitude_label">Latitude</string>
     <string name="receiver_longitude_label">Longitude</string>
     <string name="receiver_altitude_label">Altitude</string>

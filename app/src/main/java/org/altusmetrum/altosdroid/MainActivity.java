@@ -116,7 +116,7 @@ class SavedState {
     }
 }
 
-public class MainActivity extends AppCompatActivity implements LocationListener,
+public class MainActivity extends AppCompatActivity implements
                                                     ActivityCompat.OnRequestPermissionsResultCallback,
                                                     AltosUnitsListener,
                                                     AltosDroidSelectedSerialListener {
@@ -205,6 +205,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     NavController nav_controller;
     public AltosFragment active_fragment;
     int active_view = TelemetryState.VIEW_UNKNOWN;
+    long active_view_time;
 
     ActivityMainBinding binding;
     boolean idle_mode = false;
@@ -217,8 +218,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         null
     };
 
-    public Location location = null;
-    public static boolean location_has_gps = false;
+//    public Location location = null;
+//    public static boolean location_has_gps = false;
     TelemetryState telemetry_state = null;
     AltosGreatCircle from_receiver;
 
@@ -289,12 +290,18 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 }
 
                 if (active_view != TelemetryState.VIEW_UNKNOWN) {
-                    if (mService != null) {
-                        Message msg = Message.obtain(null, TelemetryService.MSG_SET_VIEW, active_view);
-                        try {
-                            mService.send(msg);
-                        } catch (RemoteException re) {
-                        }
+                    Message msg = Message.obtain(null, TelemetryService.MSG_SET_VIEW, active_view);
+                    try {
+                        mService.send(msg);
+                    } catch (RemoteException re) {
+                    }
+                }
+
+                if (locationManager != null) {
+                    Message msg = Message.obtain(null, TelemetryService.MSG_ENABLE_LOCATION, locationManager);
+                    try {
+                        mService.send(msg);
+                    } catch (RemoteException re) {
                     }
                 }
 
@@ -382,16 +389,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         NavigationUI.setupWithNavController(binding.navView, nav_controller);
 
         fm.registerFragmentLifecycleCallbacks(new FragmentCallbacks(this), true);
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        this.location = location;
-        update_ui(telemetry_state, state, false);
     }
 
     public boolean can_bluetooth() {
@@ -717,41 +714,19 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         }
     }
 
+    LocationManager locationManager;
+
     private void enable_location_updates(boolean do_update) {
         // Listen for GPS and Network position updates
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
         if (locationManager != null)
         {
-            List<String> locationProviders = locationManager.getAllProviders();
-
-            String selectedLocationProvider = null;
-
-            /* Record whether we have GPS at all */
-            for (String locationProvider : locationProviders)
-                if (locationProvider.equals(LocationManager.GPS_PROVIDER)) {
-                    location_has_gps = true;
-                    break;
-                }
-
-            /* Now go find the best of the available location providers */
-            for (String pref : preferredLocationProviders) {
-                for (String locationProvider : locationProviders) {
-                    if (pref == null || pref.equals(locationProvider)) {
-                        selectedLocationProvider = locationProvider;
-                        break;
-                    }
-                }
-                if (selectedLocationProvider != null)
-                    break;
-            }
-
-            if (selectedLocationProvider != null) {
-                AltosDebug.debug("Using location provider %s\n", selectedLocationProvider);
+            if (mService != null) {
+                Message msg = Message.obtain(null, TelemetryService.MSG_ENABLE_LOCATION, locationManager);
                 try {
-                    locationManager.requestLocationUpdates(selectedLocationProvider, 1000, 1, this);
-                    location = locationManager.getLastKnownLocation(selectedLocationProvider);
-                } catch (SecurityException|IllegalArgumentException e) {
+                    mService.send(msg);
+                } catch (RemoteException re) {
                 }
             }
         }
@@ -830,10 +805,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         AltosDebug.debug("- ON PAUSE -");
 
         super.onPause();
-
-        // Stop listening for location updates
-        if (perm_access_fine_location.have)
-            ((LocationManager) getSystemService(Context.LOCATION_SERVICE)).removeUpdates(this);
     }
 
     @Override
@@ -886,6 +857,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         }
         active_fragment = (AltosFragment) fragment;
         active_view = active_fragment.view();
+        active_view_time = System.currentTimeMillis();
         active_fragment.set_altos_droid(this);
         if (mService != null) {
             Message msg = Message.obtain(null, TelemetryService.MSG_SET_VIEW, active_view);
@@ -978,7 +950,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         }
     }
 
-    void change_view(int new_view) {
+    void change_view(int new_view, long new_view_time) {
         int next_menu_id;
         int active_menu_id = nav_controller.getCurrentDestination().getId();
         switch(telemetry_state.view) {
@@ -1014,17 +986,22 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         int prev_state = saved_state == null ? AltosLib.ao_flight_invalid : saved_state.state;
         from_receiver = null;
 
-        if (telemetry_state.view != active_view)
-            change_view(telemetry_state.view);
+        if (telemetry_state != null &&
+            telemetry_state.view != TelemetryState.VIEW_UNKNOWN &&
+            telemetry_state.view != active_view &&
+            telemetry_state.view_time > active_view_time)
+        {
+            change_view(telemetry_state.view, telemetry_state.view_time);
+        }
 
         if (state != null) {
 
-            if (location != null && state.gps != null && state.gps.locked) {
+            if (telemetry_state.receiver_location != null && state.gps != null && state.gps.locked) {
                 double altitude = 0;
-                if (location.hasAltitude())
-                    altitude = location.getAltitude();
-                from_receiver = new AltosGreatCircle(location.getLatitude(),
-                                                     location.getLongitude(),
+                if (telemetry_state.receiver_location.hasAltitude())
+                    altitude = telemetry_state.receiver_location.getAltitude();
+                from_receiver = new AltosGreatCircle(telemetry_state.receiver_location.getLatitude(),
+                                                     telemetry_state.receiver_location.getLongitude(),
                                                      altitude,
                                                      state.gps.lat,
                                                      state.gps.lon,
@@ -1056,7 +1033,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         }
 
         if (active_fragment != null) {
-            active_fragment.show(telemetry_state, state, from_receiver, location);
+            active_fragment.show(telemetry_state, state, from_receiver, telemetry_state.receiver_location);
         }
     }
 
@@ -1275,9 +1252,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         Intent intent = new Intent(this, PreloadMapActivity.class);
         double latitude = AltosLib.MISSING;
         double longitude = AltosLib.MISSING;
-        if (location != null) {
-            latitude = location.getLatitude();
-            longitude = location.getLongitude();
+        if (telemetry_state != null && telemetry_state.receiver_location != null) {
+            latitude = telemetry_state.receiver_location.getLatitude();
+            longitude = telemetry_state.receiver_location.getLongitude();
         }
         intent.putExtra(PreloadMapActivity.EXTRA_LATITUDE, latitude);
         intent.putExtra(PreloadMapActivity.EXTRA_LONGITUDE, longitude);

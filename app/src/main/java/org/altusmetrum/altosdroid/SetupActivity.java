@@ -267,7 +267,7 @@ public class SetupActivity extends AppCompatActivity {
         }
 
         TextView version = (TextView) findViewById(R.id.version);
-        version.setText(String.format("Version %s (%d) GPS: %s", version_name, version_code, MainActivity.location_has_gps ? "yes" : "no"));
+        version.setText(String.format("Version %s (%d) GPS: %s", version_name, version_code, TelemetryService.location_has_gps ? "yes" : "no"));
 
         // Set result for when the user backs out
         setResult(Activity.RESULT_CANCELED);

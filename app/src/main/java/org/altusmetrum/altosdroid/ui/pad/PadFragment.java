@@ -63,6 +63,9 @@ public class PadFragment extends AltosFragment {
     private GoNoGoLights gps_ready_lights;
     private AltosVoltMeter [] ignite_meters;
 
+    private double target_altitude = AltosLib.MISSING;
+    private TelemetryState last_telem_state;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         PadViewModel padViewModel =
@@ -90,7 +93,14 @@ public class PadFragment extends AltosFragment {
 
         ignite_meters = local_igniters;
 
+        binding.setPadAltitude.setOnClickListener(v -> setPadAltitude());
+
         return root;
+    }
+
+    void setPadAltitude() {
+        if (target_altitude != AltosLib.MISSING && last_telem_state != null)
+            last_telem_state.set_gps_ground_altitude(target_altitude);
     }
 
     @Override
@@ -165,13 +175,47 @@ public class PadFragment extends AltosFragment {
         // report our location if available
         if (receiver_location != null) {
             double altitude = AltosLib.MISSING;
-            if (receiver_location.hasAltitude())
-                altitude = receiver_location.getAltitude();
-            String lat_text = AltosValue.pos(receiver_location.getLatitude(), "N", "S");
-            String lon_text = AltosValue.pos(receiver_location.getLongitude(), "E", "W");
+            if (telem_state.gps_ground_altitude != AltosLib.MISSING)
+                altitude = telem_state.gps_ground_altitude;
+            else if (telem_state.receiver_location.hasAltitude())
+                altitude = telem_state.receiver_location.getAltitude();
+            String lat_text = AltosValue.pos(telem_state.receiver_location.getLatitude(), "N", "S");
+            String lon_text = AltosValue.pos(telem_state.receiver_location.getLongitude(), "E", "W");
             binding.receiverLatValue.setText(lat_text);
             binding.receiverLonValue.setText(lon_text);
             set_value(binding.receiverAltValue, AltosConvert.height, 1, altitude);
+        }
+
+        // report target location if available
+        if (state != null && state.gps != null && state.gps.lat != AltosLib.MISSING && state.gps.locked) {
+            double altitude = state.gps.alt;
+            String lat_text = AltosValue.pos(state.gps.lat, "N", "S");
+            String lon_text = AltosValue.pos(state.gps.lon, "E", "W");
+            binding.targetLatValue.setText(lat_text);
+            binding.targetLonValue.setText(lon_text);
+            set_value(binding.targetAltValue, AltosConvert.height, 1, altitude);
+            binding.targetPosView.setVisibility(View.VISIBLE);
+
+            /*
+             * For TeleGPS, when using a ground station without GPS, provide a way to
+             * set the pad altitude from the target GPS altitude instead of
+             * letting the state machine pick some random altitude
+             */
+            if (state.state() == AltosLib.ao_flight_stateless &&
+                telem_state != null &&
+                !telem_state.receiver_has_gps && altitude != AltosLib.MISSING)
+            {
+                binding.setPadAltitude.setVisibility(View.VISIBLE);
+                binding.targetAltLabel.setVisibility(View.GONE);
+                last_telem_state = telem_state;
+                target_altitude = altitude;
+            } else {
+                binding.setPadAltitude.setVisibility(View.GONE);
+                binding.targetAltLabel.setVisibility(View.VISIBLE);
+            }
+
+        } else {
+            binding.targetPosView.setVisibility(View.GONE);
         }
     }
 

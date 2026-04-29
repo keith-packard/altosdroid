@@ -34,7 +34,9 @@ import android.graphics.Color;
 import android.hardware.usb.UsbDevice;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -52,6 +54,7 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeoutException;
@@ -83,7 +86,7 @@ public class TelemetryService extends Service
     static final int MSG_GET_CONFIG_DATA   = 21;
     static final int MSG_SET_CONFIG_DATA   = 22;
     static final int MSG_SET_VIEW          = 23;
-    static final int MSG_GET_VIEW          = 24;
+    static final int MSG_ENABLE_LOCATION   = 24;
 
     static final int TELEMETRY_SERVICE_ID  = 1002;
 
@@ -110,8 +113,6 @@ public class TelemetryService extends Service
 
     // Text to speech system
     AltosVoice altos_voice;
-
-    Location location = null;
 
     // Idle monitor if active
     AltosIdleMonitor idle_monitor = null;
@@ -299,6 +300,9 @@ public class TelemetryService extends Service
                 AltosDebug.debug("set view");
                 s.set_view((Integer) msg.obj);
                 break;
+            case MSG_ENABLE_LOCATION:
+                AltosDebug.debug("enable location");
+                s.enable_location((LocationManager) msg.obj);
             default:
                 super.handleMessage(msg);
             }
@@ -439,6 +443,10 @@ public class TelemetryService extends Service
 
         // Stop the bluetooth Comms threads
         disconnect(true);
+
+        // Stop listening for location updates
+        if (locationManager != null)
+            locationManager.removeUpdates(this);
 
         // Demote us from the foreground, and cancel the persistent notification.
         stopForeground(true);
@@ -850,12 +858,12 @@ public class TelemetryService extends Service
 
             AltosGreatCircle from_receiver = null;
 
-            if (location != null && state.gps != null && state.gps.locked) {
+            if (telemetry_state.receiver_location != null && state != null && state.gps != null && state.gps.locked) {
                 double altitude = 0;
-                if (location.hasAltitude())
-                    altitude = location.getAltitude();
-                from_receiver = new AltosGreatCircle(location.getLatitude(),
-                                                     location.getLongitude(),
+                if (telemetry_state.receiver_location.hasAltitude())
+                    altitude = telemetry_state.receiver_location.getAltitude();
+                from_receiver = new AltosGreatCircle(telemetry_state.receiver_location.getLatitude(),
+                                                     telemetry_state.receiver_location.getLongitude(),
                                                      altitude,
                                                      state.gps.lat,
                                                      state.gps.lon,
@@ -863,9 +871,8 @@ public class TelemetryService extends Service
             }
 
             boolean quiet = true;
-            if (telemetry_state != null)
-                quiet = telemetry_state.quiet;
-            speaking = altos_voice.tell(telemetry_state, state, from_receiver, location, quiet);
+            quiet = telemetry_state.quiet;
+            speaking = altos_voice.tell(telemetry_state, state, from_receiver, telemetry_state.receiver_location, quiet);
         }
     }
 
@@ -879,6 +886,46 @@ public class TelemetryService extends Service
         speak();
     }
 
+    LocationManager locationManager;
+
+    static public boolean location_has_gps;
+
+    private void enable_location(LocationManager in_locationManager) {
+        locationManager = in_locationManager;
+
+        List<String> locationProviders = locationManager.getAllProviders();
+
+        String selectedLocationProvider = null;
+
+        /* Record whether we have GPS at all */
+        for (String locationProvider : locationProviders)
+            if (locationProvider.equals(LocationManager.GPS_PROVIDER)) {
+                location_has_gps = true;
+                break;
+            }
+
+        /* Now go find the best of the available location providers */
+        for (String pref : MainActivity.preferredLocationProviders) {
+            for (String locationProvider : locationProviders) {
+                if (pref == null || pref.equals(locationProvider)) {
+                    selectedLocationProvider = locationProvider;
+                    break;
+                }
+            }
+            if (selectedLocationProvider != null)
+                break;
+        }
+
+        if (selectedLocationProvider != null) {
+            AltosDebug.debug("Using location provider %s\n", selectedLocationProvider);
+            try {
+                locationManager.requestLocationUpdates(selectedLocationProvider, 1000, 1, this);
+                telemetry_state.set_receiver_location(locationManager.getLastKnownLocation(selectedLocationProvider), location_has_gps);
+            } catch (SecurityException|IllegalArgumentException e) {
+            }
+        }
+    }
+
     @Override
     public void update(AltosState state, AltosListenerState listener_state) {
         telemetry_state.put(state.cal_data().serial, state);
@@ -888,10 +935,15 @@ public class TelemetryService extends Service
     }
 
     @Override
-    public void onLocationChanged(Location in_location) {
-        location = in_location;
+    public void onLocationChanged(Location location) {
+        telemetry_state.set_receiver_location(location, location_has_gps);
+        send_to_clients();
         speak();
     }
+
+//    @Override
+//    public void onStatusChanged(String provider, int status, Bundle extras) {
+//    }
 
     @Override
     public void error(String reason) {

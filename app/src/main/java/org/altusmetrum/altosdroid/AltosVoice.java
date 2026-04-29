@@ -224,6 +224,7 @@ class HeightSpeaker extends Speaker {
 
     void commit() {
         super.commit();
+        AltosDebug.debug("Height from %f to %f\n", last_height, pending_height);
         last_height = pending_height;
     }
 
@@ -423,12 +424,16 @@ abstract class GoNoGoSpeaker extends Speaker {
 
     abstract String name();
     abstract boolean ready(AltosState state);
+    abstract boolean valid(AltosState state);
 
     Utterance utterance(TelemetryState telem_state, AltosState state,
                         AltosGreatCircle from_receiver, Location receiver,
                         boolean new_mode) {
 
         new_mode = new_mode(new_mode);
+
+        if (!valid(state))
+            return null;
 
         pending_ready = ready(state);
         if (pending_ready != last_ready || new_mode) {
@@ -451,16 +456,19 @@ abstract class GoNoGoSpeaker extends Speaker {
 
 class ApogeeSpeaker extends GoNoGoSpeaker {
     String name() { return "apogee"; }
+    boolean valid(AltosState state) { return state.apogee_voltage != AltosLib.MISSING; }
     boolean ready(AltosState state) { return state.apogee_voltage >= AltosLib.ao_igniter_good; }
 }
 
 class MainSpeaker extends GoNoGoSpeaker {
     String name() { return "main"; }
+    boolean valid(AltosState state) { return state.main_voltage != AltosLib.MISSING; }
     boolean ready(AltosState state) { return state.main_voltage >= AltosLib.ao_igniter_good; }
 }
 
 class GPSSpeaker extends GoNoGoSpeaker {
     String name() { return "G P S"; }
+    boolean valid(AltosState state) { return state.gps != null; }
     boolean ready(AltosState state) { return state.gps_ready; }
 }
 
@@ -587,6 +595,7 @@ public class AltosVoice implements AltosVoiceListener {
         last_speak_time = now();
         if (!quiet) {
             String utteranceId = String.format("%d", ++utteranceIndex);
+            AltosDebug.debug("speak %s\n", s);
             tts.speak(s, TextToSpeech.QUEUE_ADD, null, utteranceId);
         }
     }
@@ -745,7 +754,7 @@ public class AltosVoice implements AltosVoiceListener {
         return current_voice.trackSpeaker.target_motion;
     }
 
-    public boolean tell(TelemetryState telem_state, AltosState state,
+    public synchronized boolean tell(TelemetryState telem_state, AltosState state,
                         AltosGreatCircle from_receiver, Location receiver,
                         boolean quiet) {
 

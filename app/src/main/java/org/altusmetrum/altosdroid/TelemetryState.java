@@ -18,6 +18,8 @@
 
 package org.altusmetrum.altosdroid;
 
+import android.location.Location;
+
 import java.util.*;
 import org.altusmetrum.altoslib_14.*;
 
@@ -33,6 +35,7 @@ public class TelemetryState implements AltosDroidSelectedSerialListener {
     public static final int VIEW_MAP             = 4;
 
     public int                  view;
+    public long                 view_time;
 
     public int		        connect;
     public DeviceAddress	address;
@@ -40,9 +43,9 @@ public class TelemetryState implements AltosDroidSelectedSerialListener {
     public int		        crc_errors;
     public double		receiver_battery;
     public double		frequency;
+    public double               gps_ground_altitude;
     public int		        telemetry_rate;
 
-    private boolean             prev_locked;
     private int                 prev_state;
 
     public boolean		idle_mode;
@@ -54,6 +57,9 @@ public class TelemetryState implements AltosDroidSelectedSerialListener {
     public long                 selected_serial_time;
     public int                  shown_serial;
     public AltosState           state;
+
+    public Location             receiver_location;
+    public boolean              receiver_has_gps;
 
     public int		        latest_serial;
     public long		        latest_received_time;
@@ -107,11 +113,23 @@ public class TelemetryState implements AltosDroidSelectedSerialListener {
 
     public void set_view(int in_view) {
         view = in_view;
+        view_time = System.currentTimeMillis();
         update_state();
     }
 
     public void set_idle_mode(boolean in_idle) {
         idle_mode = in_idle;
+    }
+
+    public void set_gps_ground_altitude(double altitude) {
+        gps_ground_altitude = altitude;
+    }
+
+    public void set_receiver_location(Location location, boolean from_gps) {
+        receiver_location = location;
+        receiver_has_gps = from_gps;
+        if (from_gps && location.hasAltitude())
+            gps_ground_altitude = location.getAltitude();
     }
 
     public Set<Integer> keySet() {
@@ -169,17 +187,10 @@ public class TelemetryState implements AltosDroidSelectedSerialListener {
             if (state.state() == AltosLib.ao_flight_stateless) {
                 boolean locked = false;
 
-                if(state.gps != null)
+                if(state.gps != null) {
                     locked = state.gps.locked;
-                if (prev_locked != locked) {
-                    if (locked) {
-                        if (view == VIEW_PAD || view == VIEW_UNKNOWN)
-                            view = VIEW_FLIGHT;
-                    } else {
-                        if (view == VIEW_FLIGHT || view == VIEW_UNKNOWN)
-                            view = VIEW_PAD;
-                    }
-                    prev_locked = locked;
+                    if (gps_ground_altitude != AltosLib.MISSING)
+                        state.set_gps_ground_altitude(gps_ground_altitude);
                 }
             } else {
                 if (prev_state != state.state()) {
@@ -190,12 +201,16 @@ public class TelemetryState implements AltosDroidSelectedSerialListener {
                     case AltosLib.ao_flight_coast:
                     case AltosLib.ao_flight_drogue:
                     case AltosLib.ao_flight_main:
-                        if (view == VIEW_PAD || view == VIEW_UNKNOWN)
+                        if (view == VIEW_PAD || view == VIEW_UNKNOWN) {
                             view = VIEW_FLIGHT;
+                            view_time = System.currentTimeMillis();
+                        }
                         break;
                     case AltosLib.ao_flight_landed:
-                        if (view == VIEW_FLIGHT || view == VIEW_UNKNOWN)
+                        if (view == VIEW_FLIGHT || view == VIEW_UNKNOWN) {
                             view = VIEW_FLIGHT;
+                            view_time = System.currentTimeMillis();
+                        }
                         break;
                     }
                     prev_state = state.state();
@@ -215,6 +230,7 @@ public class TelemetryState implements AltosDroidSelectedSerialListener {
         frequency = AltosPreferences.frequency(0);
         telemetry_rate = AltosPreferences.telemetry_rate(0);
         latest_serial = AltosPreferences.latest_state();
+        gps_ground_altitude = AltosLib.MISSING;
         AltosDroidPreferences.register_selected_serial_listener(this);
         selected_serial = AltosDroidPreferences.selected_serial();
         selected_serial_time = AltosDroidPreferences.selected_serial_time();

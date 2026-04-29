@@ -974,5 +974,129 @@
             app:barrierDirection="bottom"
             app:constraint_referenced_ids="receiver_alt_label,receiver_alt_value"/>
 
+	<androidx.constraintlayout.widget.Group
+            android:id="@+id/target_pos_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="target_lat_label,target_lat_value,target_lon_label,target_lon_value,target_alt_label,target_alt_value"/>
+
+	<ImageView
+            android:id="@+id/target_icon"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="fitCenter"
+            android:padding="@dimen/led_padding"
+            android:contentDescription="Receiver Position"
+            android:src="@drawable/flight_orange"
+            app:layout_constrainedHeight="true"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/column_good"
+            app:layout_constraintTop_toTopOf="@id/receiver_alt_row"
+            app:layout_constraintBottom_toTopOf="@id/target_alt_row"/>
+
+	<TextView
+            android:id="@+id/target_lat_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/LabelText"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            android:text="@string/target_latitude_label"
+            app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/receiver_alt_row"
+            app:layout_constraintBottom_toTopOf="@id/target_lat_row"/>
+
+	<TextView
+            android:id="@+id/target_lat_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            android:text=""
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/receiver_alt_row"
+            app:layout_constraintBottom_toTopOf="@id/target_lat_row"/>
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/target_lat_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="target_lat_label,target_lat_value"/>
+
+	<TextView
+            android:id="@+id/target_lon_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/LabelText"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            android:text="@string/target_longitude_label"
+	    app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/target_lat_row"
+            app:layout_constraintBottom_toTopOf="@id/target_lon_row"/>
+
+	<TextView
+            android:id="@+id/target_lon_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            android:text=""
+            app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/target_lat_row"
+            app:layout_constraintBottom_toTopOf="@id/target_lon_row"/>
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/target_lon_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="target_lon_label,target_lon_value"/>
+
+	<TextView
+            android:id="@+id/target_alt_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/LabelText"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            android:text="@string/target_altitude_label"
+	    app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/target_lon_row"
+            app:layout_constraintBottom_toTopOf="@id/target_alt_row" />
+
+        <Button
+            android:id="@+id/set_pad_altitude"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="@string/set_pad_altitude"
+            android:visibility="gone"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="@id/column_good"
+            app:layout_constraintEnd_toStartOf="@id/column_name"
+            app:layout_constraintTop_toTopOf="@id/target_lon_row"
+            app:layout_constraintBottom_toTopOf="@id/target_alt_row"/>
+
+	<TextView
+            android:id="@+id/target_alt_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/table_padding_vertical"
+            android:text=""
+	    app:layout_constraintStart_toStartOf="@id/column_name"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/target_lon_row"
+            app:layout_constraintBottom_toTopOf="@id/target_alt_row"/>
+
+	<androidx.constraintlayout.widget.Barrier
+            android:id="@+id/target_alt_row"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="target_alt_label,target_alt_value"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
