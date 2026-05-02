@@ -54,6 +54,18 @@ public abstract class AltosDroidLink extends AltosLink {
         }
     }
 
+    public void run() {
+        AltosDebug.debug("Starting");
+        try {
+            input_loop();
+        } catch (InterruptedException e) {
+            AltosDebug.debug("Interrupted");
+        } finally {
+            AltosDebug.debug("Finally");
+        }
+        AltosDebug.debug("Exiting");
+    }
+
     public double frequency() {
         return frequency;
     }
@@ -82,8 +94,10 @@ public abstract class AltosDroidLink extends AltosLink {
 
     void connected() throws InterruptedException {
         input_thread = new Thread(this);
+        input_thread.setName("AltosInputThread");
         input_thread.start();
         output_thread = new Thread(new OutputThread());
+        output_thread.setName("AltosOutputThread");
         output_thread.start();
 
         // Configure the newly connected device for telemetry
@@ -132,14 +146,26 @@ public abstract class AltosDroidLink extends AltosLink {
         synchronized(this) {
 
             if (input_thread != null) {
-                AltosDebug.debug("close(): stopping input_thread");
+//                AltosDebug.debug("close(): stopping input_thread");
                 try {
-                    AltosDebug.debug("close(): input_thread.interrupt().....");
+//                    AltosDebug.debug("close(): input_thread.interrupt().....");
                     input_thread.interrupt();
-                    AltosDebug.debug("close(): input_thread.join().....");
+//                    AltosDebug.debug("close(): input_thread.join().....");
                     input_thread.join();
+//                    AltosDebug.debug("close(): input_thread done");
                 } catch (Exception e) {}
                 input_thread = null;
+            }
+            if (output_thread != null) {
+//                AltosDebug.debug("close(): stopping output_thread");
+                try {
+//                    AltosDebug.debug("close(): output_thread.interrupt().....");
+                    output_thread.interrupt();
+//                    AltosDebug.debug("close(): output_thread.join().....");
+                    output_thread.join();
+//                    AltosDebug.debug("close(): output_thread done");
+                } catch (Exception e) {}
+                output_thread = null;
             }
             notifyAll();
         }
@@ -160,15 +186,15 @@ public abstract class AltosDroidLink extends AltosLink {
     private final byte[] debug_chars = new byte[buffer_size];
     private int debug_off;
 
-    private void debug_input(byte b) {
-        if (b == '\n') {
-            AltosDebug.debug("            " + new String(debug_chars, 0, debug_off));
-            debug_off = 0;
-        } else {
-            if (debug_off < buffer_size)
-                debug_chars[debug_off++] = b;
-        }
-    }
+//    private void debug_input(byte b) {
+//        if (b == '\n') {
+//            AltosDebug.debug("            " + new String(debug_chars, 0, debug_off));
+//            debug_off = 0;
+//        } else {
+//            if (debug_off < buffer_size)
+//                debug_chars[debug_off++] = b;
+//        }
+//    }
 
     private void disconnected() {
         if (closed()) {
@@ -194,8 +220,8 @@ public abstract class AltosDroidLink extends AltosLink {
             }
             buffer_off = 0;
         }
-//		if (AltosDebug.D)
-//			debug_input(in_buffer[buffer_off]);
+//        if (AltosDebug.D)
+//            debug_input(in_buffer[buffer_off]);
         return in_buffer[buffer_off++];
     }
 
@@ -225,7 +251,7 @@ public abstract class AltosDroidLink extends AltosLink {
 
     public void print(String data) {
         byte[] bytes = data.getBytes();
-//		AltosDebug.debug(data.replace('\n', '\\'));
+//	AltosDebug.debug(data.replace('\n', '\\'));
         for (byte b : bytes)
             putchar(b);
     }

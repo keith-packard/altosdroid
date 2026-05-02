@@ -38,7 +38,9 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
@@ -87,6 +89,9 @@ public class TelemetryService extends Service
     static final int MSG_SET_CONFIG_DATA   = 22;
     static final int MSG_SET_VIEW          = 23;
     static final int MSG_ENABLE_LOCATION   = 24;
+    static final int MSG_UPDATE_TELEM      = 25;
+    static final int MSG_MONITOR_BATTERY   = 26;
+    static final int MSG_DONE_SPEAKING     = 27;
 
     static final int TELEMETRY_SERVICE_ID  = 1002;
 
@@ -96,8 +101,10 @@ public class TelemetryService extends Service
     //private NotificationManager mNM;
 
     ArrayList<Messenger> clients = new ArrayList<>(); // Keeps track of all current registered clients.
-    final Handler   handler   = new IncomingHandler(this);
-    final Messenger messenger = new Messenger(handler); // Target we publish for clients to send messages to IncomingHandler.
+    HandlerThread handler_thread;
+    Looper handler_looper;
+    Handler handler;
+    Messenger messenger; // Target we publish for clients to send messages to IncomingHandler.
 
     // Name of the connected device
     DeviceAddress address;
@@ -130,92 +137,103 @@ public class TelemetryService extends Service
 
     // Handler of incoming messages from clients.
     static class IncomingHandler extends Handler {
-        private final WeakReference<TelemetryService> service;
-        IncomingHandler(TelemetryService s) { service = new WeakReference<>(s); }
+
+        private final TelemetryService service;
+
+        IncomingHandler(Looper looper, TelemetryService s) {
+            super(looper);
+            service = s;
+        }
 
         @Override
         public void handleMessage(@NonNull Message msg) {
             DeviceAddress address;
 
-            TelemetryService s = service.get();
+            TelemetryService s = service;
             AltosDroidLink bt;
-            if (s == null)
-                return;
 
             switch (msg.what) {
 
                 /* Messages from application */
             case MSG_REGISTER_CLIENT:
+//                AltosDebug.debug("MSG_REGISTER_CLIENT");
                 s.add_client(msg.replyTo);
                 break;
             case MSG_UNREGISTER_CLIENT:
+//                AltosDebug.debug("MSG_UNREGISTER_CLIENT");
                 s.remove_client(msg.replyTo);
                 break;
             case MSG_CONNECT:
-                AltosDebug.debug("Connect command received");
+//                AltosDebug.debug("MSG_CONNECT");
                 address = (DeviceAddress) msg.obj;
                 AltosDroidPreferences.set_active_device(address);
                 s.start_altos_bluetooth(address, false);
                 break;
             case MSG_OPEN_USB:
-                AltosDebug.debug("Open USB command received");
+//                AltosDebug.debug("MSG_OPEN_USB");
                 UsbDevice device = (UsbDevice) msg.obj;
-                s.start_usb(device);
+                address = new DeviceAddress(DeviceAddress.ADDRESS_USB, DeviceAddress.NAME_USB);
+                AltosDroidPreferences.set_active_device(address);
+                s.start_altos_usb(device, address);
                 break;
             case MSG_DISCONNECT:
-                AltosDebug.debug("Disconnect command received");
+//                AltosDebug.debug("MSG_DISCONNECT");
                 s.address = null;
                 if (!(Boolean) msg.obj)
                     AltosDroidPreferences.set_active_device(null);
                 s.disconnect(true);
                 break;
             case MSG_DELETE_SERIAL:
-                AltosDebug.debug("Delete Serial command received");
+//                AltosDebug.debug("MSG_DELETE_SERIAL");
                 s.delete_serial((Integer) msg.obj);
                 break;
             case MSG_SETFREQUENCY:
-                AltosDebug.debug("MSG_SETFREQUENCY");
-                s.telemetry_state.set_frequency((Double) msg.obj);
-                if (s.idle_monitor != null) {
-                    s.idle_monitor.set_frequency(s.telemetry_state.frequency);
-                } else if (s.telemetry_state.connect == TelemetryState.CONNECT_CONNECTED) {
-                    try {
-                        s.altos_link.set_radio_frequency(s.telemetry_state.frequency);
-                        s.altos_link.save_frequency();
-                    } catch (InterruptedException | TimeoutException ignored) {
+//                AltosDebug.debug("MSG_SETFREQUENCY");
+                if (s.is_basestation) {
+                    s.telemetry_state.set_frequency((Double) msg.obj);
+                    if (s.idle_monitor != null) {
+                        s.idle_monitor.set_frequency(s.telemetry_state.frequency);
+                    } else if (s.telemetry_state.connect == TelemetryState.CONNECT_CONNECTED) {
+                        try {
+                            s.altos_link.set_radio_frequency(s.telemetry_state.frequency);
+                            s.altos_link.save_frequency();
+                        } catch (InterruptedException | TimeoutException ignored) {
+                        }
                     }
+                    s.send_telem_to_clients();
                 }
-                s.send_to_clients();
                 break;
             case MSG_SETBAUD:
-                AltosDebug.debug("MSG_SETBAUD");
-                s.telemetry_state.set_telemetry_rate((Integer) msg.obj);
-                if (s.telemetry_state.connect == TelemetryState.CONNECT_CONNECTED) {
-                    s.altos_link.set_telemetry_rate(s.telemetry_state.telemetry_rate);
-                    s.altos_link.save_telemetry_rate();
+//                AltosDebug.debug("MSG_SETBAUD");
+                if (s.is_basestation) {
+                    s.telemetry_state.set_telemetry_rate((Integer) msg.obj);
+                    if (s.telemetry_state.connect == TelemetryState.CONNECT_CONNECTED) {
+                        s.altos_link.set_telemetry_rate(s.telemetry_state.telemetry_rate);
+                        s.altos_link.save_telemetry_rate();
+                    }
+                    s.send_telem_to_clients();
                 }
-                s.send_to_clients();
                 break;
 
                 /*
                  *Messages from AltosBluetooth
                  */
             case MSG_CONNECTED:
-                AltosDebug.debug("MSG_CONNECTED");
+//                AltosDebug.debug("MSG_CONNECTED");
                 bt = (AltosDroidLink) msg.obj;
 
                 if (bt != s.altos_link) {
                     AltosDebug.debug("Stale message");
                     break;
                 }
-                AltosDebug.debug("Connected to device");
+//                AltosDebug.debug("Connected to device");
                 try {
                     s.connected();
                 } catch (InterruptedException ignored) {
                 }
                 break;
             case MSG_CONNECT_FAILED:
-                AltosDebug.debug("MSG_CONNECT_FAILED");
+//                AltosDebug.debug("MSG_CONNECT_FAILED");
                 bt = (AltosDroidLink) msg.obj;
 
                 if (bt != s.altos_link) {
@@ -230,9 +248,8 @@ public class TelemetryService extends Service
                 }
                 break;
             case MSG_DISCONNECTED:
-
                 /* This can be sent by either AltosDroidLink or TelemetryReader */
-                AltosDebug.debug("MSG_DISCONNECTED");
+//                AltosDebug.debug("MSG_DISCONNECTED");
                 bt = (AltosDroidLink) msg.obj;
 
                 if (bt != s.altos_link) {
@@ -241,7 +258,8 @@ public class TelemetryService extends Service
                 }
                 if (s.address != null) {
                     AltosDebug.debug("Connection lost... retrying");
-                    s.start_altos_bluetooth(s.address, true);
+                    if (!s.address.is_usb())
+                        s.start_altos_bluetooth(s.address, true);
                 } else {
                     s.disconnect(true);
                 }
@@ -251,61 +269,77 @@ public class TelemetryService extends Service
                  * Messages from TelemetryReader
                  */
             case MSG_TELEMETRY:
+//                AltosDebug.debug("MSG_TELEMETRY");
                 s.telemetry((AltosTelemetry) msg.obj);
                 break;
             case MSG_CRC_ERROR:
+//                AltosDebug.debug("MSG_CRC_ERROR");
                 // forward crc error messages
                 s.telemetry_state.set_crc_errors((Integer) msg.obj);
-                s.send_to_clients();
+                s.send_telem_to_clients();
                 break;
             case MSG_BLUETOOTH_ENABLED:
-                AltosDebug.debug("TelemetryService notes that BT is now enabled");
+//                AltosDebug.debug("MSG_BLUETOOTH_ENABLED");
                 address = AltosDroidPreferences.active_device();
-                if (address != null && !address.address.startsWith("USB"))
+                if (address != null && !address.is_usb())
                     s.start_altos_bluetooth(address, false);
                 break;
             case MSG_MONITOR_IDLE_START:
-                AltosDebug.debug("start monitor idle");
+//                AltosDebug.debug("MSG_MONITOR_IDLE_START");
                 s.start_idle_monitor();
                 break;
             case MSG_MONITOR_IDLE_STOP:
-                AltosDebug.debug("stop monitor idle");
+//                AltosDebug.debug("MSG_MONITOR_IDLE_STOP");
                 s.stop_idle_monitor();
                 break;
             case MSG_REBOOT:
-                AltosDebug.debug("reboot");
+//                AltosDebug.debug("MSG_REBOOT");
                 s.reboot_remote();
                 break;
             case MSG_IGNITER_QUERY:
-                AltosDebug.debug("igniter query");
+//                AltosDebug.debug("MSG_IGNITER_QUERY");
                 s.igniter_query(msg.replyTo);
                 break;
             case MSG_IGNITER_FIRE:
-                AltosDebug.debug("igniter fire");
+//                AltosDebug.debug("MSG_IGNITER_FIRE");
                 s.igniter_fire((String) msg.obj);
                 break;
             case MSG_POST_NOTIFICATION:
-                AltosDebug.debug("post notification");
+//                AltosDebug.debug("MSG_POST_NOTIFICATION");
                 s.post_notification();
                 break;
             case MSG_GET_CONFIG_DATA:
-                AltosDebug.debug("get config data");
+//                AltosDebug.debug("MSG_GET_CONFIG_DATA");
                 s.get_config_data(msg.replyTo, (Boolean) msg.obj);
                 break;
             case MSG_SET_CONFIG_DATA:
-                AltosDebug.debug("get config data");
+//                AltosDebug.debug("MSG_SET_CONFIG_DATA");
                 s.set_config_data((AltosConfigDataRemote) msg.obj);
                 break;
             case MSG_SET_VIEW:
-                AltosDebug.debug("set view");
+//                AltosDebug.debug("MSG_SET_VIEW");
                 s.set_view((Integer) msg.obj);
                 break;
             case MSG_ENABLE_LOCATION:
-                AltosDebug.debug("enable location");
-                s.enable_location((LocationManager) msg.obj);
+//                AltosDebug.debug("MSG_ENABLE_LOCATION");
+                s.enable_location();
+                break;
+            case MSG_UPDATE_TELEM:
+//                AltosDebug.debug("MSG_UPDATE_TELEM");
+                s.update_telem();
+                break;
+            case MSG_MONITOR_BATTERY:
+//                AltosDebug.debug("MSG_MONITOR_BATTERY");
+                s.monitor_battery();
+                break;
+            case MSG_DONE_SPEAKING:
+//                AltosDebug.debug("MSG_DONE_SPEAKING");
+                s.speak();
+                break;
             default:
                 super.handleMessage(msg);
             }
+//            AltosDebug.debug("TelemetryHandler handleMessage done");
         }
     }
 
@@ -317,13 +351,20 @@ public class TelemetryService extends Service
         // Initialise preferences
         AltosDroidPreferences.init(this);
 
+        telemetry_state = new TelemetryState();
+
+        handler_thread = new HandlerThread("TelemetryHandler");
+        handler_thread.setName("TelemetryHandler");
+        handler_thread.start();
+        handler_looper = handler_thread.getLooper();
+        handler = new IncomingHandler(handler_looper, this);
+        messenger = new Messenger(handler);
+
         // Get local Bluetooth adapter
         bluetooth_adapter = BluetoothAdapter.getDefaultAdapter();
 
         if (altos_voice == null)
             altos_voice = new AltosVoice(this);
-
-        telemetry_state = new TelemetryState();
 
         // Create a reference to the NotificationManager so that we can update our notifcation text later
         //mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
@@ -426,7 +467,7 @@ public class TelemetryService extends Service
 
             if (action.equals(MainActivity.ACTION_BLUETOOTH)) {
                 DeviceAddress address = AltosDroidPreferences.active_device();
-                if (address != null && !address.address.startsWith("USB"))
+                if (address != null && !address.is_usb())
                     start_altos_bluetooth(address, false);
             }
         }
@@ -447,6 +488,8 @@ public class TelemetryService extends Service
         // Stop listening for location updates
         if (locationManager != null)
             locationManager.removeUpdates(this);
+
+        handler_thread.quit();
 
         // Demote us from the foreground, and cancel the persistent notification.
         stopForeground(true);
@@ -472,42 +515,36 @@ public class TelemetryService extends Service
         if (state != null) {
             AltosPreferences.set_state(state,telem.serial());
         }
-        send_to_clients();
-        speak();
-    }
-
-    /* Construct the message to deliver to clients
-     */
-    private Message message() {
-        if (telemetry_state == null)
-            AltosDebug.debug("telemetry_state null!");
-        return Message.obtain(null, MainActivity.MSG_STATE, telemetry_state);
+        notify_update_telem();
     }
 
     /* A new friend has connected
      */
     private void add_client(Messenger client) {
-
+        check_thread("add_client");
         clients.add(client);
         AltosDebug.debug("Client bound to service");
 
         /* On connect, send the current state to the new client
          */
-        send_to_client(client);
+        send_telem_to_client(client);
         send_idle_mode_to_client(client);
 
         /* If we've got an address from a previous session, then
          * go ahead and try to reconnect to the device
          */
-        if (address != null && telemetry_state.connect == TelemetryState.CONNECT_DISCONNECTED) {
-            AltosDebug.debug("Reconnecting now...");
-            start_altos_bluetooth(address, false);
+        if (telemetry_state.connect == TelemetryState.CONNECT_DISCONNECTED) {
+            if (address != null && !address.is_usb()) {
+                AltosDebug.debug("Reconnecting now...");
+                start_altos_bluetooth(address, false);
+            }
         }
     }
 
     /* A client has disconnected, clean up
      */
     private void remove_client(Messenger client) {
+        check_thread("remove_client");
         clients.remove(client);
         AltosDebug.debug("Client unbound from service");
 
@@ -521,8 +558,16 @@ public class TelemetryService extends Service
         }
     }
 
-    private void send_to_client(Messenger client) {
-        Message m = message();
+    private void check_thread(String where) {
+//        AltosDebug.debug("check_thread %s", where);
+        if (Thread.currentThread() != handler_thread) {
+            AltosDebug.error("running %s from thread %s", where, Thread.currentThread().getName());
+        }
+    }
+
+    private void send_telem_to_client(Messenger client) {
+        check_thread("send_telem_to_client");
+        Message m = Message.obtain(null, MainActivity.MSG_STATE, telemetry_state);
         try {
             client.send(m);
         } catch (RemoteException e) {
@@ -531,9 +576,9 @@ public class TelemetryService extends Service
         }
     }
 
-    private void send_to_clients() {
+    private void send_telem_to_clients() {
         for (Messenger client : clients)
-            send_to_client(client);
+            send_telem_to_client(client);
     }
 
     private void send_idle_mode_to_client(Messenger client) {
@@ -549,6 +594,21 @@ public class TelemetryService extends Service
     private void send_idle_mode_to_clients() {
         for (Messenger client : clients)
             send_idle_mode_to_client(client);
+    }
+
+    private void send_tracker_connected_to_client(Messenger client) {
+        Message m = Message.obtain(null, MainActivity.MSG_TRACKER_CONNECTED, telemetry_state.config);
+        try {
+            client.send(m);
+        } catch (RemoteException e) {
+            AltosDebug.error("Client %s disappeared", client.toString());
+            remove_client(client);
+        }
+    }
+
+    private void send_tracker_connected_to_clients() {
+        for (Messenger client : clients)
+            send_tracker_connected_to_client(client);
     }
 
     private void send_file_failed_to_client(Messenger client, File f) {
@@ -567,13 +627,27 @@ public class TelemetryService extends Service
     }
 
     private void telemetry_start() {
+        check_thread("telemetry_start");
         if (telemetry_reader == null && idle_monitor == null && !ignite_running && !config_running) {
             telemetry_reader = new TelemetryReader(altos_link, handler);
             telemetry_reader.start();
+            AltosDebug.debug("connected TelemetryReader started");
         }
+        if (telemetry_logger == null) {
+            telemetry_logger = new TelemetryLogger(this, altos_link);
+        }
+        start_receiver_voltage_timer();
     }
 
     private void telemetry_stop() {
+        stop_receiver_voltage_timer();
+
+        if (telemetry_logger != null) {
+            AltosDebug.debug("disconnect(): stopping TelemetryLogger");
+            telemetry_logger.stop();
+            telemetry_logger = null;
+        }
+
         if (telemetry_reader != null) {
             AltosDebug.debug("disconnect(): stopping TelemetryReader");
             telemetry_reader.interrupt();
@@ -596,24 +670,20 @@ public class TelemetryService extends Service
         if (altos_link != null)
             altos_link.closing();
 
-        stop_receiver_voltage_timer();
-
         telemetry_stop();
-        if (telemetry_logger != null) {
-            AltosDebug.debug("disconnect(): stopping TelemetryLogger");
-            telemetry_logger.stop();
-            telemetry_logger = null;
-        }
+
         if (altos_link != null) {
             AltosDebug.debug("disconnect(): stopping AltosDroidLink");
             altos_link.close();
             altos_link = null;
             ignite = null;
         }
+
         telemetry_state.set_config(null);
+
         if (notify) {
             AltosDebug.debug("disconnect(): send message to clients");
-            send_to_clients();
+            send_telem_to_clients();
             if (clients.isEmpty()) {
                 AltosDebug.debug("disconnect(): no clients, terminating");
                 stopSelf();
@@ -621,21 +691,19 @@ public class TelemetryService extends Service
         }
     }
 
-    private void start_usb(UsbDevice device) {
-        AltosUsb	d = new AltosUsb(this, device, handler);
-
+    private void start_altos_usb(UsbDevice device, DeviceAddress address) {
         disconnect(false);
-        altos_link = d;
-        try {
-            connected();
-        } catch (InterruptedException ignored) {
-        }
+
+        this.address = address;
+        altos_link = new AltosUsb(this, device, handler);
+        telemetry_state.set_connect(TelemetryState.CONNECT_CONNECTING, address);
+        send_telem_to_clients();
     }
 
     private void delete_serial(int serial) {
         telemetry_state.remove(serial);
         AltosPreferences.remove_state(serial);
-        send_to_clients();
+        send_telem_to_clients();
     }
 
     private void start_altos_bluetooth(DeviceAddress address, boolean pause) {
@@ -651,15 +719,17 @@ public class TelemetryService extends Service
 //        AltosDebug.debug("start_altos_bluetooth(): Connecting to %s (%s)", device.getName(), device.getAddress());
         altos_link = new AltosBluetooth(device, handler, pause);
         telemetry_state.set_connect(TelemetryState.CONNECT_CONNECTING, address);
-        send_to_clients();
+        send_telem_to_clients();
     }
 
     private void start_idle_monitor() {
         if (altos_link != null && idle_monitor == null) {
             telemetry_stop();
-            idle_monitor = new AltosIdleMonitor(this, altos_link, true, false);
-            idle_monitor.set_callsign(AltosPreferences.callsign());
-            idle_monitor.set_frequency(telemetry_state.frequency);
+            idle_monitor = new AltosIdleMonitor(this, altos_link, is_basestation, false);
+            if (is_basestation) {
+                idle_monitor.set_callsign(AltosPreferences.callsign());
+                idle_monitor.set_frequency(telemetry_state.frequency);
+            }
             telemetry_state.set_idle_mode(true);
             idle_monitor.start();
             send_idle_mode_to_clients();
@@ -670,11 +740,13 @@ public class TelemetryService extends Service
         if (idle_monitor != null) {
             try {
                 idle_monitor.abort();
+                altos_link.flush_input();
             } catch (InterruptedException ignored) {
             }
             idle_monitor = null;
             telemetry_state.set_idle_mode(false);
-            telemetry_start();
+            if (is_basestation)
+                telemetry_start();
             send_idle_mode_to_clients();
         }
     }
@@ -710,9 +782,9 @@ public class TelemetryService extends Service
             try {
                 status_map = ignite.status();
             } catch (InterruptedException ie) {
-                AltosDebug.debug("ignite.status interrupted");
+//                AltosDebug.debug("ignite.status interrupted");
             } catch (TimeoutException te) {
-                AltosDebug.debug("ignite.status timeout");
+//                AltosDebug.debug("ignite.status timeout");
             }
         } finally {
             ignite_running = false;
@@ -737,6 +809,7 @@ public class TelemetryService extends Service
     }
 
     private synchronized void get_config_data(Messenger client, boolean remote) {
+        remote = is_basestation;
         config_running = true;
         AltosConfigDataRemote config_data = null;
         try {
@@ -746,11 +819,14 @@ public class TelemetryService extends Service
                 if (altos_link != null)
                     config_data = new AltosConfigDataRemote(altos_link, remote);
             } catch (InterruptedException ie) {
+//                AltosDebug.debug("get_config_data interrupted");
             } catch (TimeoutException te) {
+//                AltosDebug.debug("get_config_data timeout");
             }
             Message m = Message.obtain(null, MainActivity.MSG_CONFIG_DATA, config_data);
             try {
                 client.send(m);
+//                AltosDebug.debug("MSG_CONFIG_DATA sent config data is %b", config_data != null);
             } catch (RemoteException ignored) {
             }
         } finally {
@@ -778,11 +854,7 @@ public class TelemetryService extends Service
 
     private void update_receiver_voltage() {
         if (altos_link != null && idle_monitor == null && !ignite_running && !config_running) {
-            try {
-                telemetry_state.set_receiver_battery(altos_link.monitor_battery());
-                send_to_clients();
-            } catch (InterruptedException ignored) {
-            }
+            notify_monitor_battery();
         }
     }
 
@@ -801,20 +873,25 @@ public class TelemetryService extends Service
         }
     }
 
+    public boolean is_basestation;
+
     private void connected() throws InterruptedException {
-        AltosDebug.debug("connected top");
+//        AltosDebug.debug("connected top");
         try {
             if (altos_link == null)
-                throw new InterruptedException("no bluetooth");
+                throw new InterruptedException("no connected device");
             telemetry_state.set_config(altos_link.config_data());
-            altos_link.set_radio_frequency(telemetry_state.frequency);
-            altos_link.set_telemetry_rate(telemetry_state.telemetry_rate);
+            is_basestation = telemetry_state.config.is_basestation();
+            if (is_basestation) {
+                altos_link.set_radio_frequency(telemetry_state.frequency);
+                altos_link.set_telemetry_rate(telemetry_state.telemetry_rate);
+            }
         } catch (TimeoutException e) {
             // If this timed out, then we really want to retry it, but
             // probably safer to just retry the connection from scratch.
-            AltosDebug.debug("connected timeout");
-            if (address != null) {
-                AltosDebug.debug("connected timeout, retrying");
+//            AltosDebug.debug("connected timeout");
+            if (address != null && !address.is_usb()) {
+//                AltosDebug.debug("connected timeout, retrying");
                 start_altos_bluetooth(address, true);
             } else {
                 handler.obtainMessage(MSG_CONNECT_FAILED).sendToTarget();
@@ -823,25 +900,21 @@ public class TelemetryService extends Service
             return;
         }
 
-        AltosDebug.debug("connected bluetooth configured");
+//        AltosDebug.debug("connected device configured");
         telemetry_state.set_connect(TelemetryState.CONNECT_CONNECTED, address);
+        send_telem_to_clients();
 
-        telemetry_start();
+        if (is_basestation)
+            telemetry_start();
+        else
+            send_tracker_connected_to_clients();
 
-        AltosDebug.debug("connected TelemetryReader started");
-
-        telemetry_logger = new TelemetryLogger(this, altos_link);
-
-        start_receiver_voltage_timer();
-
-        AltosDebug.debug("Notify UI of connection");
-
-        send_to_clients();
     }
 
     boolean speaking;
 
-    void speak() {
+    private void speak() {
+        check_thread("speak");
         if (altos_voice != null) {
 
             int selected_serial = AltosDroidPreferences.selected_serial();
@@ -877,21 +950,24 @@ public class TelemetryService extends Service
     }
 
     public void done_speaking() {
-        speak();
+        try {
+            messenger.send(Message.obtain(null, MSG_DONE_SPEAKING));
+        } catch(RemoteException e) {
+        }
     }
 
     private void set_view(int view) {
+        check_thread("set_view");
         telemetry_state.set_view(view);
-        send_to_clients();
-        speak();
+        notify_update_telem();
     }
 
     LocationManager locationManager;
 
     static public boolean location_has_gps;
 
-    private void enable_location(LocationManager in_locationManager) {
-        locationManager = in_locationManager;
+    private void enable_location() {
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
         List<String> locationProviders = locationManager.getAllProviders();
 
@@ -926,19 +1002,44 @@ public class TelemetryService extends Service
         }
     }
 
+    private void update_telem() {
+        send_telem_to_clients();
+        speak();
+    }
+
+    private void notify_update_telem() {
+        try {
+            messenger.send(Message.obtain(null, MSG_UPDATE_TELEM));
+        } catch(RemoteException e) {
+        }
+    }
+
+    private void monitor_battery() {
+        try {
+            telemetry_state.set_receiver_battery(altos_link.monitor_battery());
+            update_telem();
+        } catch (InterruptedException ignored) {
+        }
+    }
+
+    private void notify_monitor_battery() {
+        try {
+            messenger.send(Message.obtain(null, MSG_MONITOR_BATTERY));
+        } catch(RemoteException e) {
+        }
+    }
+
     @Override
     public void update(AltosState state, AltosListenerState listener_state) {
         telemetry_state.put(state.cal_data().serial, state);
         telemetry_state.set_receiver_battery(listener_state.battery);
-        send_to_clients();
-        speak();
+        notify_update_telem();
     }
 
     @Override
     public void onLocationChanged(Location location) {
         telemetry_state.set_receiver_location(location, location_has_gps);
-        send_to_clients();
-        speak();
+        notify_update_telem();
     }
 
 //    @Override

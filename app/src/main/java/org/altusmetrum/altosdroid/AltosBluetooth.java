@@ -31,7 +31,7 @@ import java.util.UUID;
 
 public class AltosBluetooth extends AltosDroidLink {
 
-	private ConnectThread    connect_thread = null;
+	private BluetoothConnectThread    connect_thread = null;
 
 	private final BluetoothDevice device;
 	private BluetoothSocket socket;
@@ -46,7 +46,7 @@ public class AltosBluetooth extends AltosDroidLink {
 		this.handler = handler;
 		this.pause = pause;
 
-		connect_thread = new ConnectThread();
+		connect_thread = new BluetoothConnectThread();
 		connect_thread.start();
 	}
 
@@ -82,7 +82,7 @@ public class AltosBluetooth extends AltosDroidLink {
 		input = null;
 		output = null;
 		handler.obtainMessage(TelemetryService.MSG_CONNECT_FAILED, this).sendToTarget();
-		AltosDebug.error("ConnectThread: Failed to establish connection");
+		AltosDebug.error("BluetoothConnectThread: Failed to establish connection");
 	}
 
 	void close_device() {
@@ -129,11 +129,11 @@ public class AltosBluetooth extends AltosDroidLink {
 		}
 	}
 
-	private class ConnectThread extends Thread {
+	private class BluetoothConnectThread extends Thread {
 
 		public void run() {
-			AltosDebug.debug("ConnectThread: BEGIN (pause %b)", pause);
-			setName("ConnectThread");
+			setName("BluetoothConnectThread");
+			AltosDebug.debug("BluetoothConnectThread: BEGIN (pause %b)", pause);
 
 			if (pause) {
 				try {
@@ -180,7 +180,7 @@ public class AltosBluetooth extends AltosDroidLink {
 				connect_failed();
 			}
 
-			AltosDebug.debug("ConnectThread: completed");
+			AltosDebug.debug("BluetoothConnectThread: completed");
 		}
 	}
 

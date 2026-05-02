@@ -224,7 +224,7 @@ class HeightSpeaker extends Speaker {
 
     void commit() {
         super.commit();
-        AltosDebug.debug("Height from %f to %f\n", last_height, pending_height);
+//        AltosDebug.debug("Height from %f to %f\n", last_height, pending_height);
         last_height = pending_height;
     }
 
@@ -472,7 +472,7 @@ class GPSSpeaker extends GoNoGoSpeaker {
     boolean ready(AltosState state) { return state.gps_ready; }
 }
 
-public class AltosVoice implements AltosVoiceListener {
+public class AltosVoice extends UtteranceProgressListener implements AltosVoiceListener {
 
     private TextToSpeech tts         = null;
     private boolean      tts_running = false;
@@ -535,37 +535,32 @@ public class AltosVoice implements AltosVoiceListener {
 
     int utteranceIndex;
 
-    class AltosProgress extends UtteranceProgressListener {
-
-        private void checkDone(String utteranceId) {
-            try {
-                int index = Integer.parseInt(utteranceId);
-                if (index == utteranceIndex)
-                    telemetryService.done_speaking();
-            } catch (Exception e) {
-            }
-        }
-
-        public void onDone(String utteranceId) {
-            checkDone(utteranceId);
-        }
-
-        public void onStart(String utteranceId) {
-        }
-
-        public void onError(String utteranceId) {
-            checkDone(utteranceId);
-        }
-
-        public void onStop(String utteranceId, boolean interrupted) {
-            checkDone(utteranceId);
-        }
-
-        AltosProgress() {
+    private synchronized void checkDone(String utteranceId, String from) {
+//        AltosDebug.debug("AltosVoice %s checkDone done %s cur %d", from, utteranceId, utteranceIndex);
+        try {
+            int index = Integer.parseInt(utteranceId);
+            if (index == utteranceIndex)
+                telemetryService.done_speaking();
+        } catch (Exception e) {
+            AltosDebug.debug("Exception in checkDone");
         }
     }
 
-    AltosProgress altosProgress = new AltosProgress();
+    public void onDone(String utteranceId) {
+        checkDone(utteranceId, "onDone");
+    }
+
+    public void onStart(String utteranceId) {
+        AltosDebug.debug("AltosVoice onStart %s cur %d", utteranceId, utteranceIndex);
+    }
+
+    public void onError(String utteranceId) {
+        checkDone(utteranceId, "onError");
+    }
+
+    public void onStop(String utteranceId, boolean interrupted) {
+        checkDone(utteranceId, "onStop");
+    }
 
     TelemetryService telemetryService;
 
@@ -577,7 +572,7 @@ public class AltosVoice implements AltosVoiceListener {
                     if (status == TextToSpeech.SUCCESS) tts_running = true;
                 }
             });
-        tts.setOnUtteranceProgressListener(altosProgress);
+        tts.setOnUtteranceProgressListener(this);
         reset_last();
     }
 
@@ -595,7 +590,7 @@ public class AltosVoice implements AltosVoiceListener {
         last_speak_time = now();
         if (!quiet) {
             String utteranceId = String.format("%d", ++utteranceIndex);
-            AltosDebug.debug("speak %s\n", s);
+//            AltosDebug.debug("AltosVoice speak %s %s\n", utteranceId, s);
             tts.speak(s, TextToSpeech.QUEUE_ADD, null, utteranceId);
         }
     }

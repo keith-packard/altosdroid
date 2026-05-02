@@ -548,7 +548,7 @@
                 android:id="@+id/radio_enable_group"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:constraint_referenced_ids="radio_enable_label,radio_enable_layout"/>
+                app:constraint_referenced_ids="radio_enable_label,radio_enable"/>
 
             <TextView
                 android:id="@+id/radio_enable_label"
@@ -582,7 +582,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:barrierDirection="bottom"
-                app:constraint_referenced_ids="radio_enable_label,radio_enable_layout"/>
+                app:constraint_referenced_ids="radio_enable_label,radio_enable"/>
 
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/telemetry_rate_group"

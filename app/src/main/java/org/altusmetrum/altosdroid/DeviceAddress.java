@@ -22,9 +22,16 @@ public class DeviceAddress {
     public String	address;
     public String	name;
 
+    static final String ADDRESS_USB = "USB";
+    static final String NAME_USB = "USB";
+
     public DeviceAddress(String address, String name) {
         this.address = address;
         this.name = name;
+    }
+
+    public boolean is_usb() {
+        return address.startsWith(ADDRESS_USB);
     }
 
     public boolean equals(Object o) {

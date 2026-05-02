@@ -70,17 +70,18 @@ public class ConfigureDeviceActivity extends AppCompatActivity
 
     // The Handler that gets information back from the Telemetry Service
     static class IncomingHandler extends Handler {
-        private final WeakReference<ConfigureDeviceActivity> config_activity;
-        IncomingHandler(ConfigureDeviceActivity ca) { config_activity = new WeakReference<ConfigureDeviceActivity>(ca); }
+        private final ConfigureDeviceActivity config_activity;
+        IncomingHandler(ConfigureDeviceActivity ca) {
+            config_activity = ca;
+        }
 
         @Override
         public void handleMessage(Message msg) {
-            ConfigureDeviceActivity ca = config_activity.get();
-
             switch (msg.what) {
             case MainActivity.MSG_CONFIG_DATA:
-                @SuppressWarnings("unchecked") AltosConfigDataRemote config_data = (AltosConfigDataRemote) msg.obj;
-                ca.recv_config_data(config_data);
+                AltosDebug.debug("MSG_CONFIG_DATA");
+                AltosConfigDataRemote config_data = (AltosConfigDataRemote) msg.obj;
+                config_activity.recv_config_data(config_data);
                 break;
             }
         }
@@ -185,6 +186,8 @@ public class ConfigureDeviceActivity extends AppCompatActivity
 
         if (binding != null && config_data != null) {
 
+            setTitle(String.format("Configure %s %d", config_data.product, config_data.serial));
+
             binding.mainAlt.setText(AltosConvert.height.say(config_data.main_deploy), false);
             group_visible(binding.mainAltGroup, config_data.main_deploy);
 
@@ -261,52 +264,33 @@ public class ConfigureDeviceActivity extends AppCompatActivity
         }
     }
 
-    private void do_query_data() {
+    private void query_data() {
+        if (service == null || query_running)
+            return;
+        query_running = true;
         try {
             Message msg = Message.obtain(null, TelemetryService.MSG_GET_CONFIG_DATA);
             msg.replyTo = messenger;
             msg.obj = (Boolean) true;
-            if (service == null) {
-                synchronized(ConfigureDeviceActivity.this) {
-                    query_running = false;
-                }
-            } else
-                service.send(msg);
+            service.send(msg);
         } catch (RemoteException re) {
             AltosDebug.debug("config_data query thread failed");
-            synchronized(ConfigureDeviceActivity.this) {
-                query_running = false;
-            }
+            query_running = false;
         }
     }
 
-    private void query_data() {
-        query_running = true;
-        Thread thread = new Thread(new Runnable() {
-                public void run() {
-                    do_query_data();
-                }
-            });
-        thread.start();
-    }
-
     private void save_data(AltosConfigData new_data) {
-        Thread thread = new Thread(new Runnable() {
-                public void run() {
-                    try {
-                        Message msg = Message.obtain(null, TelemetryService.MSG_SET_CONFIG_DATA);
-                        msg.replyTo = messenger;
-                        msg.obj = new_data;
-                        if (service != null) {
-                            service.send(msg);
-                            do_query_data();
-                        }
-                    } catch (RemoteException re) {
-                        AltosDebug.debug("save_data thread failed");
-                    }
-                }
-            });
-        thread.start();
+        if (service == null)
+            return;
+        try {
+            Message msg = Message.obtain(null, TelemetryService.MSG_SET_CONFIG_DATA);
+            msg.replyTo = messenger;
+            msg.obj = new_data;
+            service.send(msg);
+            query_data();
+        } catch (RemoteException re) {
+            AltosDebug.debug("save_data thread failed");
+        }
     }
 
     private void setMenu(AutoCompleteTextView view, String[] values) {

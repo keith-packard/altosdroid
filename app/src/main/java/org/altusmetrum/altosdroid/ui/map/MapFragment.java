@@ -23,6 +23,8 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Message;
+import android.os.RemoteException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -341,8 +343,13 @@ public class MapFragment extends AltosFragment
         if (sites != null)
             mapInterface.set_launch_sites(sites);
         binding.mapView.setDisplayedChild(child);
-        if (altos_droid != null)
-            altos_droid.update_state(null);
+        if (altos_droid != null) {
+            try {
+                Message m = Message.obtain(null, MainActivity.MSG_STATE, null);
+                altos_droid.mMessenger.send(m);
+            } catch (RemoteException e) {
+            }
+        }
     }
 
     public void notify_launch_sites(List<AltosLaunchSite> sites) {

@@ -134,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements
     public static final int MSG_IGNITER_STATUS  = 4;
     public static final int MSG_FILE_FAILED     = 5;
     public static final int MSG_CONFIG_DATA     = 6;
+    public static final int MSG_TRACKER_CONNECTED = 7;
 
     // Intent request codes
     public static final int REQUEST_CONNECT_DEVICE = 1;
@@ -207,6 +208,8 @@ public class MainActivity extends AppCompatActivity implements
     int active_view = TelemetryState.VIEW_UNKNOWN;
     long active_view_time;
 
+    private Thread main_thread = Thread.currentThread();
+
     ActivityMainBinding binding;
     boolean idle_mode = false;
 
@@ -238,41 +241,55 @@ public class MainActivity extends AppCompatActivity implements
     // Service
     private boolean mIsBound = false;
     private Messenger mService;
-    final Messenger mMessenger = new Messenger(new IncomingHandler(this));
+    public final Messenger mMessenger = new Messenger(new IncomingHandler(this));
+
+    private void notify_update_state() {
+        try {
+            Message m = Message.obtain(null, MainActivity.MSG_STATE, null);
+            mMessenger.send(m);
+        } catch (RemoteException e) {
+        }
+    }
 
     @Override
     public void units_changed(boolean imperial_units) {
-        update_state(null);
+        notify_update_state();
     }
 
     // The Handler that gets information back from the Telemetry Service
     static class IncomingHandler extends Handler {
-        private final WeakReference<MainActivity> mAltosDroid;
-        IncomingHandler(MainActivity ad) { mAltosDroid = new WeakReference<MainActivity>(ad); }
+        private MainActivity activity;
+
+        IncomingHandler(MainActivity in_activity) {
+            activity = in_activity;
+        }
 
         @Override
         public void handleMessage(Message msg) {
-            MainActivity ad = mAltosDroid.get();
-
             switch (msg.what) {
             case MSG_STATE:
-                if (msg.obj == null) {
-                    AltosDebug.debug("telemetry_state null!");
-                    return;
-                }
-                ad.update_state((TelemetryState) msg.obj);
+//                AltosDebug.debug("MSG_STATE");
+                activity.update_state((TelemetryState) msg.obj);
                 break;
             case MSG_UPDATE_AGE:
-                ad.update_age();
+//                AltosDebug.debug("MSG_UPDATE_AGE");
+                activity.update_age();
                 break;
             case MSG_IDLE_MODE:
-                ad.idle_mode = (Boolean) msg.obj;
-                ad.update_state(null);
+//                AltosDebug.debug("MSG_IDLE_MODE");
+                activity.idle_mode = (Boolean) msg.obj;
+                activity.update_state(null);
                 break;
             case MSG_FILE_FAILED:
-                ad.file_failed((File) msg.obj);
+//                AltosDebug.debug("MSG_FILE_FAILED");
+                activity.file_failed((File) msg.obj);
+                break;
+            case MSG_TRACKER_CONNECTED:
+//                AltosDebug.debug("MSG_TRACKER_CONNECTED");
+                activity.tracker_connected((AltosConfigData) msg.obj);
                 break;
             }
+//            AltosDebug.debug("handleMessage done");
         }
     }
 
@@ -297,8 +314,8 @@ public class MainActivity extends AppCompatActivity implements
                     }
                 }
 
-                if (locationManager != null) {
-                    Message msg = Message.obtain(null, TelemetryService.MSG_ENABLE_LOCATION, locationManager);
+                if (perm_access_fine_location.have) {
+                    Message msg = Message.obtain(null, TelemetryService.MSG_ENABLE_LOCATION);
                     try {
                         mService.send(msg);
                     } catch (RemoteException re) {
@@ -314,6 +331,7 @@ public class MainActivity extends AppCompatActivity implements
                 }
                 if (perm_post_notifications.have)
                     postNotification();
+                AltosDebug.debug("onServiceConnected done\n");
             }
 
             public void onServiceDisconnected(ComponentName className) {
@@ -325,8 +343,18 @@ public class MainActivity extends AppCompatActivity implements
 
     void doBindService() {
         AltosDebug.debug("doBindService\n");
-        bindService(new Intent(this, TelemetryService.class), mConnection, Context.BIND_AUTO_CREATE);
-        mIsBound = true;
+
+        if (!mIsBound) {
+            try {
+                // Start Telemetry Service
+                String	action = start_with_usb ? ACTION_USB : ACTION_BLUETOOTH;
+                startService(new Intent(action, null, this, TelemetryService.class));
+                bindService(new Intent(this, TelemetryService.class), mConnection, Context.BIND_AUTO_CREATE);
+                mIsBound = true;
+            } catch (Exception e) {
+                AltosDebug.debug("Cannot start telemetry service");
+            }
+        }
     }
 
     void doUnbindService() {
@@ -391,7 +419,7 @@ public class MainActivity extends AppCompatActivity implements
         fm.registerFragmentLifecycleCallbacks(new FragmentCallbacks(this), true);
     }
 
-    public boolean can_bluetooth() {
+    private boolean can_bluetooth() {
         checkPermissions();
         /* Allow either old or new permission values */
         if ((perm_bluetooth_connect.have||perm_bluetooth.have) &&
@@ -416,20 +444,31 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private boolean check_usb() {
-        UsbDevice	device = AltosUsb.find_device(this, AltosLib.product_basestation);
+//        check_thread("check_usb");
+
+        UsbDevice	device = AltosUsb.find_device(this, AltosLib.product_any);
 
         if (device != null) {
             Intent		i = new Intent(this, MainActivity.class);
             int		flag;
 
-            if (android.os.Build.VERSION.SDK_INT >= 31) // android.os.Build.VERSION_CODES.S
-                flag = 33554432; // PendingIntent.FLAG_MUTABLE
-            else
-                flag = 0;
-            PendingIntent pi = PendingIntent.getActivity(this, 0, new Intent("hello world", null, this, MainActivity.class), flag);
+            UsbManager	manager = (UsbManager) this.getSystemService(Context.USB_SERVICE);
 
-            if (AltosUsb.request_permission(this, device, pi)) {
+            if (manager.hasPermission(device)) {
+                AltosDebug.debug("Already have permission for USB device " + device.toString());
                 connectUsb(device);
+                return true;
+            } else {
+                AltosDebug.debug("request permission for USB device " + device.toString());
+
+                if (android.os.Build.VERSION.SDK_INT >= 31) // android.os.Build.VERSION_CODES.S
+                    flag = 33554432; // PendingIntent.FLAG_MUTABLE
+                else
+                    flag = 0;
+
+                PendingIntent pi = PendingIntent.getActivity(this, 0, new Intent(ACTION_USB, null, this, MainActivity.class), flag);
+
+                manager.requestPermission(device, pi);
             }
             start_with_usb = true;
             return true;
@@ -447,6 +486,8 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void noticeIntent(Intent intent) {
+//        check_thread("noticeIntent");
+
         /* Ok, this is pretty convenient.
          *
          * When a USB device is plugged in, and our 'hotplug'
@@ -491,25 +532,23 @@ public class MainActivity extends AppCompatActivity implements
             AltosDebug.debug("Starting by looking for bluetooth devices");
             ensureBluetooth();
         }
+        AltosDebug.debug("noticeIntent done");
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        AltosDebug.debug("onStart");
         noticeIntent(getIntent());
-
-        // Start Telemetry Service
-        String	action = start_with_usb ? ACTION_USB : ACTION_BLUETOOTH;
-
-        startService(new Intent(action, null, this, TelemetryService.class));
-
-        doBindService();
+        AltosDebug.debug("onStart done");
     }
 
     @Override
     public void onNewIntent(Intent intent) {
+        AltosDebug.debug("onNewIntent");
         super.onNewIntent(intent);
         noticeIntent(intent);
+        AltosDebug.debug("onNewIntent done");
     }
 
     @Override
@@ -519,7 +558,8 @@ public class MainActivity extends AppCompatActivity implements
         return true;
     }
 
-    void set_selected_freq_item(int item, AltosFrequency[] frequencies) {
+    private void set_selected_freq_item(int item, AltosFrequency[] frequencies) {
+//        check_thread("set_selected_freq_item");
         if (item >= 0) {
             if (item == 0) {
                 Intent serverIntent = new Intent(MainActivity.this, ManageFrequenciesActivity.class);
@@ -531,7 +571,7 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    Tracker[] current_trackers(boolean include_auto) {
+    private Tracker[] current_trackers(boolean include_auto) {
         int	num_trackers = 0;
 
         if (include_auto)
@@ -561,6 +601,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        AltosDebug.debug("onOptionsItemSelected");
         Intent serverIntent = null;
         int itemId = item.getItemId();
         if (itemId == R.id.connect_scan) {
@@ -637,12 +678,12 @@ public class MainActivity extends AppCompatActivity implements
             return true;
         }
         if (itemId == R.id.idle_mode) {
-              serverIntent = new Intent(this, IdleModeActivity.class);
-              serverIntent.putExtra(EXTRA_IDLE_MODE, idle_mode);
-              if (telemetry_state != null && telemetry_state.frequency != AltosLib.MISSING)
-                  serverIntent.putExtra(EXTRA_FREQUENCY, telemetry_state.frequency);
-              startActivityForResult(serverIntent, REQUEST_IDLE_MODE);
-              return true;
+            serverIntent = new Intent(this, IdleModeActivity.class);
+            serverIntent.putExtra(EXTRA_IDLE_MODE, idle_mode);
+            if (telemetry_state != null && telemetry_state.frequency != AltosLib.MISSING)
+                serverIntent.putExtra(EXTRA_FREQUENCY, telemetry_state.frequency);
+            startActivityForResult(serverIntent, REQUEST_IDLE_MODE);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -688,19 +729,16 @@ public class MainActivity extends AppCompatActivity implements
 
         AltosDebug.debug("note_setup_changes changes %d\n", changes);
 
-        if ((changes & SETUP_BAUD) != 0) {
-            try {
-                mService.send(Message.obtain(null, TelemetryService.MSG_SETBAUD,
-                    AltosPreferences.telemetry_rate(1)));
-            } catch (RemoteException re) {
-            }
-        }
+        if ((changes & SETUP_BAUD) != 0)
+            setBaud(AltosPreferences.telemetry_rate(1));
+
         if ((changes & SETUP_UNITS) != 0) {
             /* nothing to do here */
         }
     }
 
     private void connectUsb(UsbDevice device) {
+//        check_thread("connectUsb");
         if (mService == null)
             pending_usb_device = device;
         else {
@@ -714,27 +752,6 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    LocationManager locationManager;
-
-    private void enable_location_updates(boolean do_update) {
-        // Listen for GPS and Network position updates
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
-        if (locationManager != null)
-        {
-            if (mService != null) {
-                Message msg = Message.obtain(null, TelemetryService.MSG_ENABLE_LOCATION, locationManager);
-                try {
-                    mService.send(msg);
-                } catch (RemoteException re) {
-                }
-            }
-        }
-
-        if (do_update)
-            update_ui(telemetry_state, state, true);
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] new_permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, new_permissions, grantResults);
@@ -746,7 +763,13 @@ public class MainActivity extends AppCompatActivity implements
                             AltosDebug.debug("permission %s now granted\n", permissions[j].name);
                             permissions[j].have = true;
                             if (permissions[j] == perm_access_fine_location) {
-                                enable_location_updates(true);
+                                if (mService != null) {
+                                    Message msg = Message.obtain(null, TelemetryService.MSG_ENABLE_LOCATION);
+                                    try {
+                                        mService.send(msg);
+                                    } catch (RemoteException re) {
+                                    }
+                                }
                                 if (map_online != null)
                                     map_online.position_permission();
                             } else if (permissions[j] == perm_post_notifications) {
@@ -793,11 +816,13 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onResume() {
+        AltosDebug.debug("- ON RESUME -");
+
         super.onResume();
 
+        doBindService();
+
         checkPermissions();
-        if (perm_access_fine_location.have)
-            enable_location_updates(false);
     }
 
     @Override
@@ -805,6 +830,8 @@ public class MainActivity extends AppCompatActivity implements
         AltosDebug.debug("- ON PAUSE -");
 
         super.onPause();
+
+        stop_timer();
     }
 
     @Override
@@ -818,15 +845,14 @@ public class MainActivity extends AppCompatActivity implements
     public void onDestroy() {
         AltosDebug.debug("--- ON DESTROY ---");
 
-        super.onDestroy();
-
-        //saved_state = null;
-
         doUnbindService();
-        stop_timer();
+
+        super.onDestroy();
     }
 
     private void connectDevice(String name, String address) {
+        if (mService == null)
+            return;
         try {
             DeviceAddress deviceAddress = new DeviceAddress(address, name);
             mService.send(Message.obtain(null, TelemetryService.MSG_CONNECT, deviceAddress));
@@ -836,6 +862,8 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void disconnectDevice(boolean remember) {
+        if (mService == null)
+            return;
         try {
             mService.send(Message.obtain(null, TelemetryService.MSG_DISCONNECT, remember));
         } catch (RemoteException e) {
@@ -844,6 +872,8 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void postNotification() {
+        if (mService == null)
+            return;
         try {
             mService.send(Message.obtain(null, TelemetryService.MSG_POST_NOTIFICATION));
         } catch (RemoteException e) {
@@ -852,6 +882,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     void setActiveFragment(Fragment fragment) {
+//        check_thread("setActiveFragment");
         if (!(fragment instanceof AltosFragment)) {
             return;
         }
@@ -879,6 +910,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void idle_mode(Intent data) {
+//        check_thread("idle_mode");
         int type = data.getIntExtra(IdleModeActivity.EXTRA_IDLE_RESULT, -1);
         double frequency = data.getDoubleExtra(IdleModeActivity.EXTRA_IDLE_FREQUENCY, AltosLib.MISSING);
         Message msg;
@@ -888,25 +920,31 @@ public class MainActivity extends AppCompatActivity implements
         switch (type) {
         case IdleModeActivity.IDLE_MODE_CONNECT:
             idle_frequency(frequency);
-            msg = Message.obtain(null, TelemetryService.MSG_MONITOR_IDLE_START);
-            try {
-                mService.send(msg);
-            } catch (RemoteException re) {
+            if (mService != null) {
+                msg = Message.obtain(null, TelemetryService.MSG_MONITOR_IDLE_START);
+                try {
+                    mService.send(msg);
+                } catch (RemoteException re) {
+                }
             }
             break;
         case IdleModeActivity.IDLE_MODE_DISCONNECT:
-            msg = Message.obtain(null, TelemetryService.MSG_MONITOR_IDLE_STOP);
-            try {
-                mService.send(msg);
-            } catch (RemoteException re) {
+            if (mService != null) {
+                msg = Message.obtain(null, TelemetryService.MSG_MONITOR_IDLE_STOP);
+                try {
+                    mService.send(msg);
+                } catch (RemoteException re) {
+                }
             }
             break;
         case IdleModeActivity.IDLE_MODE_REBOOT:
-            idle_frequency(frequency);
-            msg = Message.obtain(null, TelemetryService.MSG_REBOOT);
-            try {
-                mService.send(msg);
-            } catch (RemoteException re) {
+            if (mService != null) {
+                idle_frequency(frequency);
+                msg = Message.obtain(null, TelemetryService.MSG_REBOOT);
+                try {
+                    mService.send(msg);
+                } catch (RemoteException re) {
+                }
             }
             break;
         case IdleModeActivity.IDLE_MODE_IGNITERS:
@@ -940,7 +978,7 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    boolean same_string(String a, String b) {
+    private boolean same_string(String a, String b) {
         if (a == null) {
             return b == null;
         } else {
@@ -950,7 +988,17 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    void change_view(int new_view, long new_view_time) {
+    private void tracker_connected(AltosConfigData config_data) {
+//        check_thread("tracker_connected");
+        Intent serverIntent;
+        serverIntent = new Intent(this, IdleModeActivity.class);
+        serverIntent.putExtra(EXTRA_IDLE_MODE, idle_mode);
+        serverIntent.putExtra(EXTRA_FREQUENCY, (double) AltosLib.MISSING);
+//        startActivityForResult(serverIntent, REQUEST_IDLE_MODE);
+
+    }
+
+    private void change_view(int new_view, long new_view_time) {
         int next_menu_id;
         int active_menu_id = nav_controller.getCurrentDestination().getId();
         switch(telemetry_state.view) {
@@ -977,7 +1025,7 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    void update_ui(TelemetryState new_telemetry_state, AltosState new_state, boolean quiet) {
+    private void update_ui(TelemetryState new_telemetry_state, AltosState new_state, boolean quiet) {
         //AltosDebug.debug("update_ui");
         if (new_state != null)
             this.state = new_state;
@@ -1037,7 +1085,18 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    public void update_state(TelemetryState new_telemetry_state) {
+//    private void check_thread(String where) {
+//        AltosDebug.debug("check_thread %s", where);
+//        if (Thread.currentThread() != main_thread) {
+//            AltosDebug.error("running %s from thread %s", where, Thread.currentThread().getName());
+//        }
+//    }
+
+    private void update_state(TelemetryState new_telemetry_state) {
+//        check_thread("update_state");
+
+//        AltosDebug.debug("update_state");
+
         if (new_telemetry_state != null)
             telemetry_state = new_telemetry_state;
 
@@ -1052,30 +1111,14 @@ public class MainActivity extends AppCompatActivity implements
         start_timer();
     }
 
-    void set_screen_on(int age) {
-        if (age < 60)
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        else
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-    }
-    int state_age(long received_time) {
+    private int state_age(long received_time) {
         return (int) ((System.currentTimeMillis() - received_time + 500) / 1000);
     }
 
-    static String age_string(int age) {
-        String	text;
-        if (age < 60)
-            text = String.format(Locale.getDefault(), "%ds", age);
-        else if (age < 60 * 60)
-            text = String.format(Locale.getDefault(), "%dm", age / 60);
-        else if (age < 60 * 60 * 24)
-            text = String.format(Locale.getDefault(), "%dh", age / (60 * 60));
-        else
-            text = String.format(Locale.getDefault(), "%dd", age / (24 * 60 * 60));
-        return text;
-    }
-    void update_age() {
-        //AltosDebug.debug("update_age");
+    private int age_style;
+
+    private void update_age() {
+//        check_thread("update_age");
         if (saved_state != null) {
             int age = state_age(saved_state.received_time);
 
@@ -1086,29 +1129,31 @@ public class MainActivity extends AppCompatActivity implements
             else if (age >= 10)
                 style = R.style.AgeWarn;
 
-            binding.ageValue.setTextAppearance(style);
-
-            set_screen_on(age);
+            if (style != age_style) {
+                binding.ageValue.setTextAppearance(style);
+//                age_style = style;
+            }
 
             binding.ageValue.setText(age_string(age));
         }
+//        AltosDebug.debug("update_age done");
     }
 
-    void timer_tick() {
+    private void timer_tick() {
         try {
             mMessenger.send(Message.obtain(null, MSG_UPDATE_AGE));
         } catch (RemoteException e) {
         }
     }
 
-    void start_timer() {
+    private void start_timer() {
         if (timer == null) {
             timer = new Timer();
             timer.schedule(new TimerTask(){ public void run() {timer_tick();}}, 1000L, 1000L);
         }
     }
 
-    void stop_timer() {
+    private void stop_timer() {
         if (timer != null) {
             timer.cancel();
             timer.purge();
@@ -1116,28 +1161,37 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    public void setTitle(String title) {
+    private void setTitle(String title) {
+//        check_thread("setTitle");
         super.setTitle(title);
         getSupportActionBar().setTitle(title);
     }
 
-    void update_title(TelemetryState telemetry_state, AltosState state) {
+    private void update_title(TelemetryState telemetry_state, AltosState state) {
+//        check_thread("update_title");
         String title;
         switch (telemetry_state.connect) {
         case TelemetryState.CONNECT_CONNECTED:
             if (telemetry_state.config != null) {
-                title= String.format(Locale.getDefault(), "S/N %d %6.3f MHz", telemetry_state.config.serial,
-                                     telemetry_state.frequency);
-                if (telemetry_state.telemetry_rate != AltosLib.ao_telemetry_rate_38400)
-                    title = title.concat(String.format(Locale.getDefault(), " %d bps",
-                                                       AltosLib.ao_telemetry_rate_values[telemetry_state.telemetry_rate]));
-                if (idle_mode)
-                    title = title.concat(" (idle)");
-                else if (telemetry_state.selected_serial == SELECT_AUTO)
-                    title = title.concat(" (auto)");
-                else
-                    title = title.concat(String.format(Locale.getDefault(), " (%d)",
-                                                       telemetry_state.selected_serial));
+                if (telemetry_state.config.is_basestation()) {
+                    title= String.format(Locale.getDefault(), "S/N %d %6.3f MHz",
+                                         telemetry_state.config.serial,
+                                         telemetry_state.frequency);
+                    if (telemetry_state.telemetry_rate != AltosLib.ao_telemetry_rate_38400)
+                        title = title.concat(String.format(Locale.getDefault(), " %d bps",
+                                                           AltosLib.ao_telemetry_rate_values[telemetry_state.telemetry_rate]));
+                    if (idle_mode)
+                        title = title.concat(" (idle)");
+                    else if (telemetry_state.selected_serial == SELECT_AUTO)
+                        title = title.concat(" (auto)");
+                    else
+                        title = title.concat(String.format(Locale.getDefault(), " (%d)",
+                                                           telemetry_state.selected_serial));
+                } else {
+                    title = String.format("%s %d", telemetry_state.config.product, telemetry_state.config.serial);
+                    if (idle_mode)
+                        title = title.concat(" (idle)");
+                }
             } else {
                 title = getString(R.string.title_connected_to);
             }
@@ -1158,25 +1212,29 @@ public class MainActivity extends AppCompatActivity implements
         setTitle(title);
     }
 
-    void setFrequency(double freq) {
+    private void setFrequency(double freq) {
+        if (mService == null)
+            return;
         try {
             mService.send(Message.obtain(null, TelemetryService.MSG_SETFREQUENCY, freq));
         } catch (RemoteException e) {
         }
     }
 
-    void setFrequency(AltosFrequency frequency) {
+    private void setFrequency(AltosFrequency frequency) {
         setFrequency (frequency.frequency);
     }
 
-    void setBaud(int baud) {
+    private void setBaud(int baud) {
+        if (mService == null)
+            return;
         try {
             mService.send(Message.obtain(null, TelemetryService.MSG_SETBAUD, baud));
         } catch (RemoteException e) {
         }
     }
 
-    void setBaud(String baud) {
+    private void setBaud(String baud) {
         try {
             int	value = Integer.parseInt(baud);
             int	rate = AltosLib.ao_telemetry_rate_38400;
@@ -1196,7 +1254,7 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    void select_tracker(int serial, double frequency) {
+    private void select_tracker(int serial, double frequency) {
 
         AltosDebug.debug("select tracker %d %7.3f\n", serial, frequency);
 
@@ -1212,26 +1270,28 @@ public class MainActivity extends AppCompatActivity implements
         AltosDroidPreferences.set_selected_serial(serial);
     }
 
-    void select_tracker(Intent data) {
+    private void select_tracker(Intent data) {
         int serial = data.getIntExtra(SelectTrackerActivity.EXTRA_SERIAL_NUMBER, 0);
         double frequency = data.getDoubleExtra(SelectTrackerActivity.EXTRA_FREQUENCY, 0.0);
         select_tracker(serial, frequency);
     }
 
-    void delete_track(int serial) {
+    private void delete_track(int serial) {
+        if (mService == null)
+            return;
         try {
             mService.send(Message.obtain(null, TelemetryService.MSG_DELETE_SERIAL, serial));
         } catch (Exception ex) {
         }
     }
 
-    void delete_track(Intent data) {
+    private void delete_track(Intent data) {
         int serial = data.getIntExtra(SelectTrackerActivity.EXTRA_SERIAL_NUMBER, 0);
         if (serial != 0)
             delete_track(serial);
     }
 
-    void start_select_tracker(Tracker[] select_trackers, int title_id, int request) {
+    private void start_select_tracker(Tracker[] select_trackers, int title_id, int request) {
         Intent intent = new Intent(this, SelectTrackerActivity.class);
         AltosDebug.debug("put title id 0x%x %s", title_id, getResources().getString(title_id));
         intent.putExtra(EXTRA_TRACKERS_TITLE, title_id);
@@ -1244,11 +1304,11 @@ public class MainActivity extends AppCompatActivity implements
         startActivityForResult(intent, request);
     }
 
-    void start_select_tracker(Tracker[] select_trackers) {
+    private void start_select_tracker(Tracker[] select_trackers) {
         start_select_tracker(select_trackers, R.string.select_tracker, REQUEST_SELECT_TRACKER);
     }
 
-    void start_preload_maps() {
+    private void start_preload_maps() {
         Intent intent = new Intent(this, PreloadMapActivity.class);
         double latitude = AltosLib.MISSING;
         double longitude = AltosLib.MISSING;
@@ -1260,6 +1320,7 @@ public class MainActivity extends AppCompatActivity implements
         intent.putExtra(PreloadMapActivity.EXTRA_LONGITUDE, longitude);
         startActivityForResult(intent, REQUEST_PRELOAD_MAPS);
     }
+
     public void touch_trackers(Integer[] serials) {
         Tracker[] my_trackers = new Tracker[serials.length];
 
@@ -1270,8 +1331,21 @@ public class MainActivity extends AppCompatActivity implements
         start_select_tracker(my_trackers);
     }
 
-    static String direction(AltosGreatCircle from_receiver,
-                            Location receiver) {
+    public static String age_string(int age) {
+        String	text;
+        if (age < 60)
+            text = String.format(Locale.getDefault(), "%ds", age);
+        else if (age < 60 * 60)
+            text = String.format(Locale.getDefault(), "%dm", age / 60);
+        else if (age < 60 * 60 * 24)
+            text = String.format(Locale.getDefault(), "%dh", age / (60 * 60));
+        else
+            text = String.format(Locale.getDefault(), "%dd", age / (24 * 60 * 60));
+        return text;
+    }
+
+    public static String direction(AltosGreatCircle from_receiver,
+                             Location receiver) {
         if (from_receiver == null)
             return null;
 
@@ -1316,6 +1390,7 @@ public class MainActivity extends AppCompatActivity implements
         paint.setColor(Color.WHITE);
         canvas.drawText(text, x, y, paint);
     }
+
     public static void draw_text(Context context, Canvas canvas, String text, float x, float y, Paint.Align align) {
         draw_text(context, canvas, text, x, y, R.dimen.map_text_size, align);
     }

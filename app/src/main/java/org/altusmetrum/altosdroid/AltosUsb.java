@@ -30,73 +30,109 @@ import android.os.Handler;
 
 import org.altusmetrum.altoslib_14.AltosLib;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 
 public class AltosUsb extends AltosDroidLink {
 
-
-    private Thread           input_thread   = null;
-
     private final Handler handler;
+    private Context context;
 
     private UsbManager manager;
     private UsbDevice device;
     private UsbDeviceConnection connection;
     private UsbInterface iface;
-    private UsbEndpoint		in, out;
+    private UsbEndpoint in, out;
 
-    private InputStream input;
-    private OutputStream output;
+    private UsbConnectThread connect_thread = null;
 
     // Constructor
     public AltosUsb(Context context, UsbDevice device, Handler handler) {
         super(handler);
-//		set_debug(D);
         this.handler = handler;
+        this.device = device;
+        this.context = context;
 
-        iface = null;
+        connect_thread = new UsbConnectThread();
+        connect_thread.start();
+    }
+
+    public void close() {
+        super.close();
+        close_device();
+        connection = null;
         in = null;
         out = null;
+    }
 
-        int	niface = device.getInterfaceCount();
+    void connected() {
+        if (closed()) {
+            AltosDebug.debug("connected after closed");
+            return;
+        }
+        try {
+            synchronized(this) {
+                super.connected();
+            }
+        } catch (InterruptedException ie) {
+            connect_failed();
+        }
+    }
 
-        for (int i = 0; i < niface; i++) {
+    private class UsbConnectThread extends Thread {
 
-            iface = device.getInterface(i);
+        public void run() {
+            setName("UsbConnectThread");
+            AltosDebug.debug("UsbConnectThread: BEGIN");
 
+            iface = null;
             in = null;
             out = null;
 
-            int nendpoints = iface.getEndpointCount();
+            int	niface = device.getInterfaceCount();
 
-            for (int e = 0; e < nendpoints; e++) {
-                UsbEndpoint endpoint = iface.getEndpoint(e);
+            for (int i = 0; i < niface; i++) {
 
-                if (endpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK) {
-                    switch (endpoint.getDirection()) {
-                    case UsbConstants.USB_DIR_OUT:
-                        out = endpoint;
-                        break;
-                    case UsbConstants.USB_DIR_IN:
-                        in = endpoint;
-                        break;
+                iface = device.getInterface(i);
+
+                in = null;
+                out = null;
+
+                int nendpoints = iface.getEndpointCount();
+
+                for (int e = 0; e < nendpoints; e++) {
+                    UsbEndpoint endpoint = iface.getEndpoint(e);
+
+                    if (endpoint.getType() == UsbConstants.USB_ENDPOINT_XFER_BULK) {
+                        switch (endpoint.getDirection()) {
+                        case UsbConstants.USB_DIR_OUT:
+                            out = endpoint;
+                            break;
+                        case UsbConstants.USB_DIR_IN:
+                            in = endpoint;
+                            break;
+                        }
                     }
                 }
+
+                if (in != null && out != null)
+                    break;
             }
 
-            if (in != null && out != null)
-                break;
-        }
+            if (in == null || out == null) {
+                connect_failed();
+                return;
+            }
 
-        if (in != null && out != null) {
             AltosDebug.debug("\tin %s out %s\n", in.toString(), out.toString());
 
             manager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
 
             if (manager == null) {
                 AltosDebug.debug("USB_SERVICE failed");
+                connect_failed();
                 return;
             }
 
@@ -104,20 +140,31 @@ public class AltosUsb extends AltosDroidLink {
 
             if (connection == null) {
                 AltosDebug.debug("openDevice failed");
+                connect_failed();
                 return;
             }
 
             if (!connection.claimInterface(iface, true)) {
                 AltosDebug.debug("claimInterface failed");
+                connect_failed();
                 return;
             }
 
-            input_thread = new Thread(this);
-            input_thread.start();
-            // Configure the newly connected device for telemetry
-            print("~\nE 0\n");
-            set_monitor(false);
+            connected();
+
+            AltosDebug.debug("UsbConnectThread: completed");
         }
+    }
+
+    private void connect_failed() {
+        if (closed()) {
+            AltosDebug.debug("connect_failed after closed");
+            return;
+        }
+
+        close_device();
+        handler.obtainMessage(TelemetryService.MSG_CONNECT_FAILED, this).sendToTarget();
+        AltosDebug.error("AltosUsb: Failed to establish connection");
     }
 
     static private boolean isAltusMetrum(UsbDevice device) {
@@ -156,20 +203,6 @@ public class AltosUsb extends AltosDroidLink {
             return true;
 
         return want_product == have_product;
-    }
-
-    static public boolean request_permission(Context context, UsbDevice device, PendingIntent pi) {
-        UsbManager	manager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
-
-        if (manager.hasPermission(device)) {
-            AltosDebug.debug("Already have permission for USB device " + device.toString());
-            return true;
-        }
-
-        AltosDebug.debug("request permission for USB device " + device.toString());
-
-        manager.requestPermission(device, pi);
-        return false;
     }
 
     static public UsbDevice find_device(Context context, int match_product) {
@@ -215,26 +248,37 @@ public class AltosUsb extends AltosDroidLink {
     }
 
     int read(byte[] buffer, int len) {
-        if (connection == null)
-            return 0;
-        int ret = connection.bulkTransfer(in, buffer, len, 0);
-        if (ret < 0) {
-            AltosDebug.debug("read(%d) failed %d\n", len, ret);
-            return ret;
+        for (;;) {
+            if (connection == null)
+                return -1;
+
+            int ret = connection.bulkTransfer(in, buffer, len, 1000);
+            if (ret > 0) {
+//                AltosDebug.debug("read(%d) = %d '%s'\n", len, ret, new String(buffer, 0, ret));
+                return ret;
+//            } else {
+//                AltosDebug.debug("USB read timeout");
+            }
         }
-//        AltosDebug.debug("read(%d) = %d '%s'\n", len, ret, new String(buffer, 0, ret));
-        return ret;
     }
 
     int write(byte[] buffer, int start, int len) {
-        if (connection == null)
-            return 0;
 //        AltosDebug.debug("write %d '%s'\n", len, new String(buffer, start, len));
 
-        int ret = connection.bulkTransfer(out, buffer, start, len, 0);
-        if (ret != len)
-            AltosDebug.debug("write failed %d\n", ret);
-        return ret;
+        int remain = len;
+        while (remain > 0) {
+            if (connection == null)
+                return -1;
+
+            int ret = connection.bulkTransfer(out, buffer, start, remain, 1000);
+            if (ret > 0) {
+                start += ret;
+                remain -= ret;
+//            } else {
+//                AltosDebug.debug("USB write timeout");
+            }
+        }
+        return len;
     }
 
     // Stubs of required methods when extending AltosLink

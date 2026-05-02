@@ -40,17 +40,19 @@ public class AltosDebug {
 		}
 	}
 
+        static public String name() { return Thread.currentThread().getName(); }
+
 	static public void info(String format, Object ... arguments) {
-		Log.i(TAG, String.format(format, arguments));
+		Log.i(TAG, name() + " " + String.format(format, arguments));
 	}
 
 	static public void debug(String format, Object ... arguments) {
 		if (D)
-			Log.d(TAG, String.format(format, arguments));
+			Log.d(TAG, name() + " " + String.format(format, arguments));
 	}
 
 	static public void error(String format, Object ... arguments) {
-		Log.e(TAG, String.format(format, arguments));
+		Log.e(TAG, name() + " " + String.format(format, arguments));
 	}
 
 	static public void trace(String format, Object ... arguments) {
