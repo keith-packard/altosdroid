@@ -994,7 +994,7 @@ public class MainActivity extends AppCompatActivity implements
         serverIntent = new Intent(this, IdleModeActivity.class);
         serverIntent.putExtra(EXTRA_IDLE_MODE, idle_mode);
         serverIntent.putExtra(EXTRA_FREQUENCY, (double) AltosLib.MISSING);
-//        startActivityForResult(serverIntent, REQUEST_IDLE_MODE);
+        startActivityForResult(serverIntent, REQUEST_IDLE_MODE);
 
     }
 

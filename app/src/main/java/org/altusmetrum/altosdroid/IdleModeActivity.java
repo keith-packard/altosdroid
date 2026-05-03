@@ -136,21 +136,29 @@ public class IdleModeActivity extends AppCompatActivity {
         // Setup the window
         setContentView(binding.getRoot());
 
-        binding.setCallsign.setText(new StringBuffer(AltosPreferences.callsign()));
-
-        frequencies = AltosPreferences.common_frequencies();
         frequency = getIntent().getDoubleExtra(MainActivity.EXTRA_FREQUENCY, 0.0);
-        int pos = frequency_pos(frequency, "current");
 
-        add_frequencies(binding.frequency, frequencies, pos);
+        if (frequency == AltosLib.MISSING) {
+            binding.setCallsignGroup.setVisibility(View.GONE);
+            binding.frequencyGroup.setVisibility(View.GONE);
+        } else {
+            binding.setCallsignGroup.setVisibility(View.VISIBLE);
+            binding.frequencyGroup.setVisibility(View.VISIBLE);
+            binding.setCallsign.setText(new StringBuffer(AltosPreferences.callsign()));
 
-        binding.frequency.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                    select_frequency(pos);
-                }
-                public void onNothingSelected(AdapterView<?> parent) {
-                }
-            });
+            frequencies = AltosPreferences.common_frequencies();
+            int pos = frequency_pos(frequency, "current");
+
+            add_frequencies(binding.frequency, frequencies, pos);
+
+            binding.frequency.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                        select_frequency(pos);
+                    }
+                    public void onNothingSelected(AdapterView<?> parent) {
+                    }
+                });
+        }
 
         binding.connectIdle.setOnClickListener(new OnClickListener() {
                 public void onClick(View v) {
