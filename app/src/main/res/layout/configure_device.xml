@@ -912,7 +912,110 @@
                 app:constraint_referenced_ids="aprs_format_label,aprs_format_layout"/>
 
 <!-- tracker motion -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/tracker_motion_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="tracker_motion_label,tracker_motion_layout"/>
+
+            <TextView
+                android:id="@+id/tracker_motion_label"
+                android:text="@string/tracker_motion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/aprs_format_barrier"
+                app:layout_constraintBottom_toTopOf="@id/tracker_motion_barrier"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tracker_motion_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:text="@string/tracker_motion"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toTopOf="@id/tracker_motion_barrier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/aprs_format_barrier">
+
+                <AutoCompleteTextView
+                    android:id="@+id/tracker_motion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:completionThreshold="100"
+                    android:inputType="numberDecimal"
+                    android:textAppearance="@style/ValueText"
+                    android:minHeight="48dp"
+                    android:text="" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/tracker_motion_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="tracker_motion_label,tracker_motion_layout"/>
+
 <!-- tracker interval -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/tracker_interval_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="tracker_interval_label,tracker_interval_layout"/>
+
+            <TextView
+                android:id="@+id/tracker_interval_label"
+                android:text="@string/tracker_interval"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/tracker_motion_barrier"
+                app:layout_constraintBottom_toTopOf="@id/tracker_interval_barrier"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tracker_interval_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:text="@string/tracker_interval"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toTopOf="@id/tracker_interval_barrier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/tracker_motion_barrier">
+
+                <AutoCompleteTextView
+                    android:id="@+id/tracker_interval"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:completionThreshold="100"
+                    android:inputType="numberDecimal"
+                    android:textAppearance="@style/ValueText"
+                    android:minHeight="48dp"
+                    android:text="" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/tracker_interval_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="tracker_interval_label,tracker_interval_layout"/>
 
 <!-- accel cal + -->
 
@@ -931,7 +1034,7 @@
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/guideline"
-                app:layout_constraintTop_toBottomOf="@id/aprs_format_barrier"
+                app:layout_constraintTop_toBottomOf="@id/tracker_interval_barrier"
                 app:layout_constraintBottom_toBottomOf="@id/accel_cal_plus_barrier"/>
 
             <EditText
@@ -945,7 +1048,7 @@
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toEndOf="@id/guideline"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/aprs_format_barrier"
+                app:layout_constraintTop_toBottomOf="@id/tracker_interval_barrier"
                 app:layout_constraintBottom_toBottomOf="@id/accel_cal_plus_barrier"/>
 
             <androidx.constraintlayout.widget.Barrier
@@ -999,6 +1102,61 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="accel_cal_minus_label,accel_cal_minus"/>
+
+<!-- pyro firing time -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/pyro_firing_time_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="pyro_firing_time_label,pyro_firing_time_layout"/>
+
+            <TextView
+                android:id="@+id/pyro_firing_time_label"
+                android:text="@string/pyro_firing_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/accel_cal_minus_barrier"
+                app:layout_constraintBottom_toTopOf="@id/pyro_firing_time_barrier"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/pyro_firing_time_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:text="@string/pyro_firing_time"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toTopOf="@id/pyro_firing_time_barrier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/accel_cal_minus_barrier">
+
+                <AutoCompleteTextView
+                    android:id="@+id/pyro_firing_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:completionThreshold="100"
+                    android:inputType="numberDecimal"
+                    android:textAppearance="@style/ValueText"
+                    android:minHeight="48dp"
+                    android:text="" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/pyro_firing_time_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="pyro_firing_time_label,pyro_firing_time_layout"/>
+
+<!-- end of configuration items -->
 
             <View
                 android:layout_width="match_parent"

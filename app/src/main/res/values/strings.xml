@@ -261,8 +261,8 @@
         <item>15</item>
     </string-array>
 
-    <string name="radio_10mw">Limit transmit to 10mW</string>
-    <string name="limited">Limited</string>
+    <string name="radio_10mw">Max TX Power</string>
+    <string name="limited">Limited to 10mW</string>
 
     <string name="aprs_offset">APRS Offset</string>
 
@@ -349,6 +349,17 @@
 
     <string name="accel_cal_plus_label">Accel Cal +</string>
     <string name="accel_cal_minus_label">Accel Cal -</string>
+
+    <string name="pyro_firing_time">Pyro Firing Time(s)</string>
+
+    <string-array name="pyro_firing_time_values">
+	<item>0.050</item>
+        <item>0.100</item>
+        <item>0.250</item>
+        <item>0.500</item>
+        <item>1.0</item>
+        <item>2.0</item>
+    </string-array>
 
     <string name="save">Save</string>
     <string name="reset">Reset</string>

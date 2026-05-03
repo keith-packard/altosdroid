@@ -240,10 +240,12 @@ public class ConfigureDeviceActivity extends AppCompatActivity
                     log_size = max_strings[i];
             }
             if (log_size == null)
-                log_size = String.format("%d", log_kb);
+                log_size = Integer.toString(log_kb);
             setMenu(binding.flightLogSize, max_strings);
             binding.flightLogSize.setText(log_size, false);
-            group_visible(binding.flightLogSizeGroup, config_data.flight_log_max);
+            group_visible(binding.flightLogSizeGroup,
+                          config_data.flight_log_max != AltosLib.MISSING &&
+                          config_data.flight_log_max_enabled());
 
             /* call sign */
             binding.call.setText(config_data.callsign);
@@ -279,24 +281,33 @@ public class ConfigureDeviceActivity extends AppCompatActivity
                 if (config_data.aprs_interval == 0)
                     setMenuItem(binding.aprsInterval, R.array.aprs_interval_values, config_data.aprs_interval);
                 else
-                    binding.aprsInterval.setText(String.format("%d", config_data.aprs_interval), false);
+                    binding.aprsInterval.setText(Integer.toString(config_data.aprs_interval), false);
             }
             group_visible(binding.aprsIntervalGroup, config_data.aprs_interval);
 
             /* APRS offset */
             if (config_data.aprs_offset != AltosLib.MISSING)
-                binding.aprsOffset.setText(String.format("%d", config_data.aprs_offset), false);
+                binding.aprsOffset.setText(Integer.toString(config_data.aprs_offset), false);
             group_visible(binding.aprsOffsetGroup, config_data.aprs_offset);
 
             /* APRS SSID */
             if (config_data.aprs_ssid != AltosLib.MISSING)
-                binding.aprsSsid.setText(String.format("%d", config_data.aprs_ssid), false);
+                binding.aprsSsid.setText(Integer.toString(config_data.aprs_ssid), false);
             group_visible(binding.aprsSsidGroup, config_data.aprs_ssid);
 
             /* APRS format */
             if (config_data.aprs_format != AltosLib.MISSING)
                 setMenuItem(binding.aprsFormat, R.array.aprs_format_values, config_data.aprs_format);
             group_visible(binding.aprsIntervalGroup, config_data.aprs_interval);
+
+            /* Tracker Motion */
+            if (config_data.tracker_motion != AltosLib.MISSING)
+                binding.trackerMotion.setText(AltosConvert.height.say(config_data.tracker_motion), false);
+            group_visible(binding.trackerMotionGroup, config_data.tracker_motion);
+
+            if (config_data.tracker_interval != AltosLib.MISSING)
+                binding.trackerInterval.setText(Integer.toString(config_data.tracker_interval), false);
+            group_visible(binding.trackerIntervalGroup, config_data.tracker_interval);
 
             /* accel cal + */
             binding.accelCalPlus.setText(Integer.toString(config_data.accel_cal_plus));
@@ -305,6 +316,10 @@ public class ConfigureDeviceActivity extends AppCompatActivity
             /* accel cal - */
             binding.accelCalMinus.setText(Integer.toString(config_data.accel_cal_minus));
             group_visible(binding.accelCalMinusGroup, config_data.accel_cal_minus);
+
+            /* pyro firing time */
+            binding.pyroFiringTime.setText(Double.toString(config_data.pyro_firing_time));
+            group_visible(binding.pyroFiringTimeGroup, config_data.pyro_firing_time);
         }
     }
 
@@ -391,14 +406,20 @@ public class ConfigureDeviceActivity extends AppCompatActivity
         if (binding == null)
             return;
 
-        if (imperial_units)
+        if (imperial_units) {
             setMenu(binding.mainDeploy, R.array.main_deploy_values_ft);
-        else
+            setMenu(binding.trackerMotion, R.array.tracker_motion_values_ft);
+        } else {
             setMenu(binding.mainDeploy, R.array.main_deploy_values_m);
+            setMenu(binding.trackerMotion, R.array.tracker_motion_values_m);
+        }
 
         binding.mainDeployLabel.setText(String.format("%s(%s)",
                                                    getResources().getString(R.string.main_deploy),
                                                    AltosConvert.height.parse_units()));
+        binding.trackerMotionLabel.setText(String.format("%s(%s)",
+                                                         getResources().getString(R.string.tracker_motion),
+                                                         AltosConvert.height.parse_units()));
     }
 
     @Override
@@ -448,7 +469,8 @@ public class ConfigureDeviceActivity extends AppCompatActivity
             binding.beeperUnits, binding.flightLogSize, binding.call,
             binding.frequency, binding.telemetryRate, binding.aprsInterval,
             binding.aprsOffset, binding.aprsSsid, binding.aprsFormat,
-            binding.accelCalPlus, binding.accelCalMinus,
+            binding.trackerMotion, binding.trackerInterval,
+            binding.accelCalPlus, binding.accelCalMinus, binding.pyroFiringTime,
         };
 
         resetTextViews = _resetTextViews;
@@ -473,6 +495,8 @@ public class ConfigureDeviceActivity extends AppCompatActivity
         setMenu(binding.aprsOffset, R.array.aprs_offset_values);
         setMenu(binding.aprsSsid, R.array.aprs_ssid_values);
         setMenu(binding.aprsFormat, R.array.aprs_format_values);
+        setMenu(binding.trackerInterval, R.array.tracker_interval_values);
+        setMenu(binding.pyroFiringTime, R.array.pyro_firing_time_values);
 
         set_units(AltosPreferences.imperial_units());
 
@@ -539,25 +563,17 @@ public class ConfigureDeviceActivity extends AppCompatActivity
     public int apogee_delay() throws AltosConfigDataException{
         if (config_data.apogee_delay == AltosLib.MISSING)
             return AltosLib.MISSING;
-        String str = "<missing>";
-        try {
-            str = binding.apogeeDelay.getEditableText().toString();
-            return parse_int("apogee delay", str, false);
-        } catch (Exception e) {
-            throw new AltosConfigDataException("Invalid apogee delay %s", str);
-        }
+        return parse_int("apogee delay",
+                         binding.apogeeDelay.getEditableText().toString(),
+                         false);
     }
 
     public int apogee_lockout() throws AltosConfigDataException{
         if (config_data.apogee_lockout == AltosLib.MISSING)
             return AltosLib.MISSING;
-        String str = "<missing>";
-        try {
-            str = binding.apogeeLockout.getEditableText().toString();
-            return parse_int("apogee lockout", str, false);
-        } catch (Exception e) {
-            throw new AltosConfigDataException("Invalid apogee lockout %s", str);
-        }
+        return parse_int("apogee lockout",
+                         binding.apogeeLockout.getEditableText().toString(),
+                         false);
     }
 
     public double radio_frequency() throws AltosConfigDataException {
@@ -590,7 +606,7 @@ public class ConfigureDeviceActivity extends AppCompatActivity
         return getMenuItem(binding.telemetryRate, R.array.telemetry_rate_values);
     }
 
-    public int flight_log_max() throws AltosConfigDataException{
+    public int flight_log_max() throws AltosConfigDataException {
         if (config_data.flight_log_max == AltosLib.MISSING)
             return AltosLib.MISSING;
         return parse_int("Flight log size",
@@ -598,87 +614,67 @@ public class ConfigureDeviceActivity extends AppCompatActivity
                          true);
     }
 
-    public int ignite_mode(){
+    public int ignite_mode() {
         if (config_data.ignite_mode == AltosLib.MISSING)
             return AltosLib.MISSING;
         return getMenuItem(binding.igniterMode, R.array.igniter_mode_values);
     }
 
-    public int pad_orientation(){
+    public int pad_orientation() {
         if (config_data.pad_orientation == AltosLib.MISSING)
             return AltosLib.MISSING;
         return getMenuItem(binding.padOrientation, R.array.pad_orientation_values);
     }
 
-    public int accel_cal_plus(){
+    public int accel_cal_plus() throws AltosConfigDataException {
         if (config_data.accel_cal_plus == AltosLib.MISSING)
             return AltosLib.MISSING;
-        try {
-            return parse_int("Accel Cal +",
-                             binding.accelCalPlus.getEditableText().toString(),
-                             false);
-        } catch (Exception e) {
-            return AltosLib.MISSING;
-        }
+        return parse_int("Accel Cal +",
+                         binding.accelCalPlus.getEditableText().toString(),
+                         false);
     }
 
-    public int accel_cal_minus(){
+    public int accel_cal_minus() throws AltosConfigDataException {
         if (config_data.accel_cal_minus == AltosLib.MISSING)
             return AltosLib.MISSING;
-        try {
-            return parse_int("Accel Cal -",
-                             binding.accelCalMinus.getEditableText().toString(),
-                             false);
-        } catch (Exception e) {
-            return AltosLib.MISSING;
-        }
+        return parse_int("Accel Cal -",
+                         binding.accelCalMinus.getEditableText().toString(),
+                         false);
     }
 
-    public int aprs_interval() throws AltosConfigDataException{
+    public int aprs_interval() throws AltosConfigDataException {
         if (config_data.aprs_interval == AltosLib.MISSING)
             return AltosLib.MISSING;
         String str = "<missing>";
-        try {
-            str = binding.aprsInterval.getEditableText().toString();
-            if (str.toLowerCase().startsWith("disabled"))
-                return 0;
-            return parse_int("APRS Interval", str, false);
-        } catch (Exception e) {
-            return AltosLib.MISSING;
-        }
+        str = binding.aprsInterval.getEditableText().toString();
+        if (str.toLowerCase().startsWith("disabled"))
+            return 0;
+        return parse_int("APRS Interval", str, false);
     }
 
-    public int aprs_ssid() throws AltosConfigDataException{
+    public int aprs_ssid() throws AltosConfigDataException {
         if (config_data.aprs_ssid == AltosLib.MISSING)
             return AltosLib.MISSING;
-        String str = "<missing>";
-        try {
-            str = binding.aprsSsid.getEditableText().toString();
-            return parse_int("APRS SSID", str, false);
-        } catch (Exception e) {
-            return AltosLib.MISSING;
-        }
+        return parse_int("APRS SSID",
+                         binding.aprsSsid.getEditableText().toString(),
+                         false);
     }
 
-    public int aprs_format() throws AltosConfigDataException{
+    public int aprs_format() throws AltosConfigDataException {
         if (config_data.aprs_format == AltosLib.MISSING)
             return AltosLib.MISSING;
         return getMenuItem(binding.aprsFormat, R.array.aprs_format_values);
     }
 
-    public int aprs_offset() throws AltosConfigDataException{
+    public int aprs_offset() throws AltosConfigDataException {
         if (config_data.aprs_offset == AltosLib.MISSING)
             return AltosLib.MISSING;
-        String str = "<missing>";
-        try {
-            str = binding.aprsOffset.getEditableText().toString();
-            return parse_int("APRS Offset", str, false);
-        } catch (Exception e) {
-            return AltosLib.MISSING;
-        }
+        return parse_int("APRS Offset",
+                         binding.aprsOffset.getEditableText().toString(),
+                         false);
     }
 
-    public int beep() throws AltosConfigDataException{
+    public int beep() throws AltosConfigDataException {
         if (binding.beeperFrequencyGroup.getVisibility() != View.VISIBLE)
             return AltosLib.MISSING;
         String value = binding.beeperFrequency.getEditableText().toString();
@@ -687,38 +683,41 @@ public class ConfigureDeviceActivity extends AppCompatActivity
                                                          false));
     }
 
-    public AltosPyro[] pyros() throws AltosConfigDataException{
+    public AltosPyro[] pyros() throws AltosConfigDataException {
         return null;
     }
 
-    public double pyro_firing_time() throws AltosConfigDataException{
+    public double pyro_firing_time() throws AltosConfigDataException {
         if (config_data.pyro_firing_time == AltosLib.MISSING)
             return AltosLib.MISSING;
-//        return parse_double("Pyro channel firing time",
-//                            binding.pyroFiringTime.getEditableText().toString(),
-//                            true);
-        return AltosLib.MISSING;
+        return parse_double("Pyro channel firing time",
+                            binding.pyroFiringTime.getEditableText().toString(),
+                            false);
     }
 
-    public int tracker_motion() throws AltosConfigDataException{
+    public int tracker_motion() throws AltosConfigDataException {
         if (config_data.tracker_motion == AltosLib.MISSING)
             return AltosLib.MISSING;
-        return AltosLib.MISSING;
+        return parse_int("APRS Offset",
+                         binding.trackerMotion.getEditableText().toString(),
+                         false);
     }
 
-    public int tracker_interval() throws AltosConfigDataException{
+    public int tracker_interval() throws AltosConfigDataException {
         if (config_data.tracker_interval == AltosLib.MISSING)
             return AltosLib.MISSING;
-        return binding.radio10mw.isChecked() ? 1 : 0;
+        return parse_int("APRS Offset",
+                         binding.trackerInterval.getEditableText().toString(),
+                         false);
     }
 
-    public int radio_10mw() throws AltosConfigDataException{
+    public int radio_10mw() throws AltosConfigDataException {
         if (config_data.radio_10mw == AltosLib.MISSING)
             return AltosLib.MISSING;
         return AltosLib.MISSING;
     }
 
-    public boolean has_radio(){
+    public boolean has_radio() {
         return config_data.has_radio();
     }
 
@@ -738,99 +737,99 @@ public class ConfigureDeviceActivity extends AppCompatActivity
      * We don't use this part of the interface, preferring to get the
      * whole configuration in one object
      */
-    public void set_product(String product){
+    public void set_product(String product) {
     }
 
-    public void set_version(String version){
+    public void set_version(String version) {
     }
 
-    public void set_serial(int serial){
+    public void set_serial(int serial) {
     }
 
-    public void set_altitude_32(int altitude_32){
+    public void set_altitude_32(int altitude_32) {
     }
 
-    public void set_main_deploy(int new_main_deploy){
+    public void set_main_deploy(int new_main_deploy) {
     }
 
-    public void set_apogee_delay(int new_apogee_delay){
+    public void set_apogee_delay(int new_apogee_delay) {
     }
 
-    public void set_apogee_lockout(int new_apogee_lockout){
+    public void set_apogee_lockout(int new_apogee_lockout) {
     }
 
-    public void set_radio_frequency(double new_radio_frequency){
+    public void set_radio_frequency(double new_radio_frequency) {
     }
 
-    public void set_radio_calibration(int new_radio_calibration){
+    public void set_radio_calibration(int new_radio_calibration) {
     }
 
-    public void set_radio_enable(int new_radio_enable){
+    public void set_radio_enable(int new_radio_enable) {
     }
 
-    public void set_callsign(String new_callsign){
+    public void set_callsign(String new_callsign) {
     }
 
-    public void set_telemetry_rate(int new_telemetry_rate){
+    public void set_telemetry_rate(int new_telemetry_rate) {
     }
 
-    public void set_flight_log_max(int new_flight_log_max){
+    public void set_flight_log_max(int new_flight_log_max) {
     }
 
-    public void set_flight_log_max_enabled(boolean enable){
+    public void set_flight_log_max_enabled(boolean enable) {
     }
 
-    public void set_flight_log_max_limit(int flight_log_max_limit, int storage_erase_unit){
+    public void set_flight_log_max_limit(int flight_log_max_limit, int storage_erase_unit) {
     }
 
-    public void set_ignite_mode(int new_ignite_mode){
+    public void set_ignite_mode(int new_ignite_mode) {
     }
 
-    public void set_pad_orientation(int new_pad_orientation){
+    public void set_pad_orientation(int new_pad_orientation) {
     }
 
-    public void set_accel_cal(int accel_cal_plus, int accel_cal_minus){
+    public void set_accel_cal(int accel_cal_plus, int accel_cal_minus) {
     }
 
-    public void set_dirty(){
+    public void set_dirty() {
     }
 
-    public void set_clean(){
+    public void set_clean() {
     }
 
-    public void set_pyros(AltosPyro[] new_pyros){
+    public void set_pyros(AltosPyro[] new_pyros) {
     }
 
-    public void set_pyro_firing_time(double new_pyro_firing_time){
+    public void set_pyro_firing_time(double new_pyro_firing_time) {
     }
 
-    public void set_aprs_interval(int new_aprs_interval){
+    public void set_aprs_interval(int new_aprs_interval) {
     }
 
-    public void set_aprs_ssid(int new_aprs_ssid){
+    public void set_aprs_ssid(int new_aprs_ssid) {
     }
 
-    public void set_aprs_format(int new_aprs_format){
+    public void set_aprs_format(int new_aprs_format) {
     }
 
-    public void set_aprs_offset(int new_aprs_offset){
+    public void set_aprs_offset(int new_aprs_offset) {
     }
 
-    public void set_beep(int new_beep){
+    public void set_beep(int new_beep) {
     }
 
-    public void set_tracker_motion(int tracker_motion){
+    public void set_tracker_motion(int tracker_motion) {
     }
 
-    public void set_tracker_interval(int tracker_motion){
+    public void set_tracker_interval(int tracker_motion) {
     }
 
-    public void set_radio_10mw(int radio_10mw){
+    public void set_radio_10mw(int radio_10mw) {
     }
 
-    public void set_report_feet(int report_feet){
+    public void set_report_feet(int report_feet) {
     }
 
-    public void set_gps_receiver(int gps_receiver){
+    public void set_gps_receiver(int gps_receiver) {
     }
 }

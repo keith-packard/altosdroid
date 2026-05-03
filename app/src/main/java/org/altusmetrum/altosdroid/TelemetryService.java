@@ -996,7 +996,9 @@ public class TelemetryService extends Service
             AltosDebug.debug("Using location provider %s\n", selectedLocationProvider);
             try {
                 locationManager.requestLocationUpdates(selectedLocationProvider, 1000, 1, this);
-                telemetry_state.set_receiver_location(locationManager.getLastKnownLocation(selectedLocationProvider), location_has_gps);
+                Location location = locationManager.getLastKnownLocation(selectedLocationProvider);
+                if (location != null)
+                    telemetry_state.set_receiver_location(location, location_has_gps);
             } catch (SecurityException|IllegalArgumentException e) {
             }
         }
