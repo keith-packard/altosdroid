@@ -29,6 +29,7 @@ import android.widget.*;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.constraintlayout.widget.Group;
 
 import org.altusmetrum.altosdroid.databinding.ConfigureDeviceBinding;
@@ -188,23 +189,29 @@ public class ConfigureDeviceActivity extends AppCompatActivity
 
             setTitle(String.format("Configure %s %d", config_data.product, config_data.serial));
 
-            binding.mainAlt.setText(AltosConvert.height.say(config_data.main_deploy), false);
-            group_visible(binding.mainAltGroup, config_data.main_deploy);
+            /* main altitude */
+            binding.mainDeploy.setText(AltosConvert.height.say(config_data.main_deploy), false);
+            group_visible(binding.mainDeployGroup, config_data.main_deploy);
 
+            /* apogee delay */
             binding.apogeeDelay.setText(Integer.toString(config_data.apogee_delay), false);
             group_visible(binding.apogeeDelayGroup, config_data.apogee_delay);
 
+            /* apogee lockout */
             binding.apogeeLockout.setText(Integer.toString(config_data.apogee_lockout), false);
             group_visible(binding.apogeeLockoutGroup, config_data.apogee_lockout);
 
+            /* igniter mode */
             if (config_data.ignite_mode != AltosLib.MISSING)
                 binding.igniterMode.setText(AltosLib.ignite_mode_values[config_data.ignite_mode], false);
             group_visible(binding.igniterModeGroup, config_data.ignite_mode);
 
+            /* pad orientation */
             if (config_data.pad_orientation != AltosLib.MISSING)
                 binding.padOrientation.setText(pad_orientation_values(config_data)[config_data.pad_orientation], false);
             group_visible(binding.padOrientationGroup, config_data.pad_orientation);
 
+            /* beeper frequency */
             if (config_data.beep != AltosLib.MISSING) {
                 String freq;
                 if (config_data.beep == 0)
@@ -217,10 +224,12 @@ public class ConfigureDeviceActivity extends AppCompatActivity
             }
             group_visible(binding.beeperFrequencyGroup, config_data.beep);
 
+            /* beeper units */
             if (config_data.report_feet != AltosLib.MISSING)
                 binding.beeperUnits.setText(AltosLib.report_unit_values[config_data.report_feet], false);
             group_visible(binding.beeperUnitsGroup, config_data.beep);
 
+            /* flight log size */
             FlightLogSize[] max_values = flightLogMaxValues(config_data);
             String[] max_strings = new String[max_values.length];
             String log_size = null;
@@ -236,8 +245,10 @@ public class ConfigureDeviceActivity extends AppCompatActivity
             binding.flightLogSize.setText(log_size, false);
             group_visible(binding.flightLogSizeGroup, config_data.flight_log_max);
 
+            /* call sign */
             binding.call.setText(config_data.callsign);
 
+            /* frequency */
             double frequency = config_data.frequency();
             if (frequency != AltosLib.MISSING) {
                 AltosFrequency naf = new AltosFrequency(frequency, String.format("%s serial %d",
@@ -248,17 +259,50 @@ public class ConfigureDeviceActivity extends AppCompatActivity
             }
             group_visible(binding.frequencyGroup, frequency);
 
+            /* radio enable */
             if (config_data.radio_enable != AltosLib.MISSING)
                 binding.radioEnable.setChecked(config_data.radio_enable != 0);
             group_visible(binding.radioEnableGroup, config_data.radio_enable);
 
+            /* radio 10mW */
+            if (config_data.radio_10mw != AltosLib.MISSING)
+                binding.radio10mw.setChecked(config_data.radio_10mw != 0);
+            group_visible(binding.radio10mwGroup, config_data.radio_10mw);
+
+            /* telemetry rate */
             if (config_data.telemetry_rate != AltosLib.MISSING)
                 setMenuItem(binding.telemetryRate, R.array.telemetry_rate_values, config_data.telemetry_rate);
             group_visible(binding.telemetryRateGroup, config_data.telemetry_rate);
 
+            /* APRS interval */
+            if (config_data.aprs_interval != AltosLib.MISSING) {
+                if (config_data.aprs_interval == 0)
+                    setMenuItem(binding.aprsInterval, R.array.aprs_interval_values, config_data.aprs_interval);
+                else
+                    binding.aprsInterval.setText(String.format("%d", config_data.aprs_interval), false);
+            }
+            group_visible(binding.aprsIntervalGroup, config_data.aprs_interval);
+
+            /* APRS offset */
+            if (config_data.aprs_offset != AltosLib.MISSING)
+                binding.aprsOffset.setText(String.format("%d", config_data.aprs_offset), false);
+            group_visible(binding.aprsOffsetGroup, config_data.aprs_offset);
+
+            /* APRS SSID */
+            if (config_data.aprs_ssid != AltosLib.MISSING)
+                binding.aprsSsid.setText(String.format("%d", config_data.aprs_ssid), false);
+            group_visible(binding.aprsSsidGroup, config_data.aprs_ssid);
+
+            /* APRS format */
+            if (config_data.aprs_format != AltosLib.MISSING)
+                setMenuItem(binding.aprsFormat, R.array.aprs_format_values, config_data.aprs_format);
+            group_visible(binding.aprsIntervalGroup, config_data.aprs_interval);
+
+            /* accel cal + */
             binding.accelCalPlus.setText(Integer.toString(config_data.accel_cal_plus));
             group_visible(binding.accelCalPlusGroup, config_data.accel_cal_plus);
 
+            /* accel cal - */
             binding.accelCalMinus.setText(Integer.toString(config_data.accel_cal_minus));
             group_visible(binding.accelCalMinusGroup, config_data.accel_cal_minus);
         }
@@ -287,7 +331,7 @@ public class ConfigureDeviceActivity extends AppCompatActivity
             msg.replyTo = messenger;
             msg.obj = new_data;
             service.send(msg);
-            query_data();
+            reset();
         } catch (RemoteException re) {
             AltosDebug.debug("save_data thread failed");
         }
@@ -348,12 +392,12 @@ public class ConfigureDeviceActivity extends AppCompatActivity
             return;
 
         if (imperial_units)
-            setMenu(binding.mainAlt, R.array.main_alt_values_ft);
+            setMenu(binding.mainDeploy, R.array.main_deploy_values_ft);
         else
-            setMenu(binding.mainAlt, R.array.main_alt_values_m);
+            setMenu(binding.mainDeploy, R.array.main_deploy_values_m);
 
-        binding.mainAltLabel.setText(String.format("%s(%s)",
-                                                   getResources().getString(R.string.main_alt),
+        binding.mainDeployLabel.setText(String.format("%s(%s)",
+                                                   getResources().getString(R.string.main_deploy),
                                                    AltosConvert.height.parse_units()));
     }
 
@@ -388,12 +432,30 @@ public class ConfigureDeviceActivity extends AppCompatActivity
         /* Fill in menu items from any connected device */
     }
 
+    TextView[] resetTextViews;
+    SwitchCompat[] resetSwitches;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ConfigureDeviceBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         ActivityLayouts.applyEdgeToEdge(this, R.id.configure_device);
+
+        TextView[] _resetTextViews = {
+            binding.mainDeploy, binding.apogeeDelay, binding.apogeeLockout,
+            binding.igniterMode, binding.padOrientation, binding.beeperFrequency,
+            binding.beeperUnits, binding.flightLogSize, binding.call,
+            binding.frequency, binding.telemetryRate, binding.aprsInterval,
+            binding.aprsOffset, binding.aprsSsid, binding.aprsFormat,
+            binding.accelCalPlus, binding.accelCalMinus,
+        };
+
+        resetTextViews = _resetTextViews;
+        SwitchCompat[] _resetSwitches = {
+            binding.radioEnable, binding.radio10mw
+        };
+        resetSwitches = _resetSwitches;
 
         // Set result CANCELED incase the user backs out
         setResult(Activity.RESULT_CANCELED);
@@ -407,6 +469,10 @@ public class ConfigureDeviceActivity extends AppCompatActivity
 //        setMenu(binding.flightLogSize, R.array.flight_log_size_values);
         setMenu(binding.frequency, frequencyValues());
         setMenu(binding.telemetryRate, R.array.telemetry_rate_values);
+        setMenu(binding.aprsInterval, R.array.aprs_interval_values);
+        setMenu(binding.aprsOffset, R.array.aprs_offset_values);
+        setMenu(binding.aprsSsid, R.array.aprs_ssid_values);
+        setMenu(binding.aprsFormat, R.array.aprs_format_values);
 
         set_units(AltosPreferences.imperial_units());
 
@@ -421,6 +487,10 @@ public class ConfigureDeviceActivity extends AppCompatActivity
     }
 
     void reset() {
+        for (TextView v : resetTextViews)
+            v.setText("");
+        for (SwitchCompat v : resetSwitches)
+            v.setChecked(false);
         query_data();
     }
 
@@ -455,9 +525,11 @@ public class ConfigureDeviceActivity extends AppCompatActivity
     }
 
     public int main_deploy() throws AltosConfigDataException {
+        if (config_data.main_deploy == AltosLib.MISSING)
+            return AltosLib.MISSING;
         String str = "<missing>";
         try {
-            str = binding.mainAlt.getEditableText().toString();
+            str = binding.mainDeploy.getEditableText().toString();
             return (int) AltosConvert.height.parse_locale(str);
         } catch (Exception e) {
             throw new AltosConfigDataException("Invalid height %s", str);
@@ -465,6 +537,8 @@ public class ConfigureDeviceActivity extends AppCompatActivity
     }
 
     public int apogee_delay() throws AltosConfigDataException{
+        if (config_data.apogee_delay == AltosLib.MISSING)
+            return AltosLib.MISSING;
         String str = "<missing>";
         try {
             str = binding.apogeeDelay.getEditableText().toString();
@@ -475,6 +549,8 @@ public class ConfigureDeviceActivity extends AppCompatActivity
     }
 
     public int apogee_lockout() throws AltosConfigDataException{
+        if (config_data.apogee_lockout == AltosLib.MISSING)
+            return AltosLib.MISSING;
         String str = "<missing>";
         try {
             str = binding.apogeeLockout.getEditableText().toString();
@@ -485,7 +561,7 @@ public class ConfigureDeviceActivity extends AppCompatActivity
     }
 
     public double radio_frequency() throws AltosConfigDataException {
-        if (binding.frequencyGroup.getVisibility() != View.VISIBLE)
+        if (config_data.radio_frequency == AltosLib.MISSING)
             return AltosLib.MISSING;
         return parse_double("Radio frequency",
                             binding.frequency.getEditableText().toString(),
@@ -493,25 +569,29 @@ public class ConfigureDeviceActivity extends AppCompatActivity
     }
 
     public int radio_enable(){
-        if (binding.radioEnableGroup.getVisibility() != View.VISIBLE)
+        if (config_data.radio_enable == AltosLib.MISSING)
             return AltosLib.MISSING;
         return binding.radioEnable.isChecked() ? 1 : 0;
     }
 
     public String callsign() {
+        if (config_data.callsign == null)
+            return null;
         if (binding.callGroup.getVisibility() == View.VISIBLE)
             return binding.call.getEditableText().toString();
         return null;
     }
 
     public int telemetry_rate() throws AltosConfigDataException{
+        if (config_data.telemetry_rate == AltosLib.MISSING)
+            return AltosLib.MISSING;
         if (binding.telemetryRateGroup.getVisibility() != View.VISIBLE)
             return AltosLib.MISSING;
         return getMenuItem(binding.telemetryRate, R.array.telemetry_rate_values);
     }
 
     public int flight_log_max() throws AltosConfigDataException{
-        if (binding.flightLogSizeGroup.getVisibility() != View.VISIBLE)
+        if (config_data.flight_log_max == AltosLib.MISSING)
             return AltosLib.MISSING;
         return parse_int("Flight log size",
                          binding.flightLogSize.getEditableText().toString(),
@@ -519,19 +599,19 @@ public class ConfigureDeviceActivity extends AppCompatActivity
     }
 
     public int ignite_mode(){
-        if (binding.igniterModeGroup.getVisibility() != View.VISIBLE)
+        if (config_data.ignite_mode == AltosLib.MISSING)
             return AltosLib.MISSING;
         return getMenuItem(binding.igniterMode, R.array.igniter_mode_values);
     }
 
     public int pad_orientation(){
-        if (binding.padOrientationGroup.getVisibility() != View.VISIBLE)
+        if (config_data.pad_orientation == AltosLib.MISSING)
             return AltosLib.MISSING;
         return getMenuItem(binding.padOrientation, R.array.pad_orientation_values);
     }
 
     public int accel_cal_plus(){
-        if (binding.accelCalPlusGroup.getVisibility() != View.VISIBLE)
+        if (config_data.accel_cal_plus == AltosLib.MISSING)
             return AltosLib.MISSING;
         try {
             return parse_int("Accel Cal +",
@@ -543,7 +623,7 @@ public class ConfigureDeviceActivity extends AppCompatActivity
     }
 
     public int accel_cal_minus(){
-        if (binding.accelCalMinusGroup.getVisibility() != View.VISIBLE)
+        if (config_data.accel_cal_minus == AltosLib.MISSING)
             return AltosLib.MISSING;
         try {
             return parse_int("Accel Cal -",
@@ -554,38 +634,48 @@ public class ConfigureDeviceActivity extends AppCompatActivity
         }
     }
 
-    public AltosPyro[] pyros() throws AltosConfigDataException{
-        return null;
-    }
-
-    public double pyro_firing_time() throws AltosConfigDataException{
-//        if (binding.pyroFiringTimeGroup.getVisibility() != View.VISIBLE)
-//            return AltosLib.MISSING;
-//        return parse_double("Pyro channel firing time",
-//                            binding.frequency.getEditableText().toString(),
-//                            true);
-        return AltosLib.MISSING;
-    }
-
     public int aprs_interval() throws AltosConfigDataException{
-//        if (binding.aprsIntervalGroup.getVisibility() != View.VISIBLE)
+        if (config_data.aprs_interval == AltosLib.MISSING)
             return AltosLib.MISSING;
-//        try {
-//            return parse_int("APRS Interval",
-//                             binding.aprsInterval
-//        return config_data.aprs_interval;
+        String str = "<missing>";
+        try {
+            str = binding.aprsInterval.getEditableText().toString();
+            if (str.toLowerCase().startsWith("disabled"))
+                return 0;
+            return parse_int("APRS Interval", str, false);
+        } catch (Exception e) {
+            return AltosLib.MISSING;
+        }
     }
 
     public int aprs_ssid() throws AltosConfigDataException{
-        return AltosLib.MISSING;
+        if (config_data.aprs_ssid == AltosLib.MISSING)
+            return AltosLib.MISSING;
+        String str = "<missing>";
+        try {
+            str = binding.aprsSsid.getEditableText().toString();
+            return parse_int("APRS SSID", str, false);
+        } catch (Exception e) {
+            return AltosLib.MISSING;
+        }
     }
 
     public int aprs_format() throws AltosConfigDataException{
-        return AltosLib.MISSING;
+        if (config_data.aprs_format == AltosLib.MISSING)
+            return AltosLib.MISSING;
+        return getMenuItem(binding.aprsFormat, R.array.aprs_format_values);
     }
 
     public int aprs_offset() throws AltosConfigDataException{
-        return AltosLib.MISSING;
+        if (config_data.aprs_offset == AltosLib.MISSING)
+            return AltosLib.MISSING;
+        String str = "<missing>";
+        try {
+            str = binding.aprsOffset.getEditableText().toString();
+            return parse_int("APRS Offset", str, false);
+        } catch (Exception e) {
+            return AltosLib.MISSING;
+        }
     }
 
     public int beep() throws AltosConfigDataException{
@@ -597,29 +687,50 @@ public class ConfigureDeviceActivity extends AppCompatActivity
                                                          false));
     }
 
+    public AltosPyro[] pyros() throws AltosConfigDataException{
+        return null;
+    }
+
+    public double pyro_firing_time() throws AltosConfigDataException{
+        if (config_data.pyro_firing_time == AltosLib.MISSING)
+            return AltosLib.MISSING;
+//        return parse_double("Pyro channel firing time",
+//                            binding.pyroFiringTime.getEditableText().toString(),
+//                            true);
+        return AltosLib.MISSING;
+    }
+
     public int tracker_motion() throws AltosConfigDataException{
+        if (config_data.tracker_motion == AltosLib.MISSING)
+            return AltosLib.MISSING;
         return AltosLib.MISSING;
     }
 
     public int tracker_interval() throws AltosConfigDataException{
-        return AltosLib.MISSING;
+        if (config_data.tracker_interval == AltosLib.MISSING)
+            return AltosLib.MISSING;
+        return binding.radio10mw.isChecked() ? 1 : 0;
     }
 
     public int radio_10mw() throws AltosConfigDataException{
+        if (config_data.radio_10mw == AltosLib.MISSING)
+            return AltosLib.MISSING;
         return AltosLib.MISSING;
     }
 
     public boolean has_radio(){
-        return true;
+        return config_data.has_radio();
     }
 
-    public int report_feet() throws AltosConfigDataException{
-        if (binding.beeperUnits.getVisibility() != View.VISIBLE)
+    public int report_feet() throws AltosConfigDataException {
+        if (config_data.report_feet == AltosLib.MISSING)
             return AltosLib.MISSING;
         return getMenuItem(binding.beeperUnits, R.array.beeper_units_values);
     }
 
-    public int gps_receiver() throws AltosConfigDataException{
+    public int gps_receiver() throws AltosConfigDataException {
+        if (config_data.gps_receiver == AltosLib.MISSING)
+            return AltosLib.MISSING;
         return AltosLib.MISSING;
     }
 

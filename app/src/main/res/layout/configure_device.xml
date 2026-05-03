@@ -38,15 +38,17 @@
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.40"/>
 
+<!-- main altitude -->
+
             <androidx.constraintlayout.widget.Group
-                android:id="@+id/main_alt_group"
+                android:id="@+id/main_deploy_group"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:constraint_referenced_ids="main_alt_label,main_alt_layout"/>
+                app:constraint_referenced_ids="main_deploy_label,main_deploy_layout"/>
 
             <TextView
-                android:id="@+id/main_alt_label"
-                android:text="@string/main_alt"
+                android:id="@+id/main_deploy_label"
+                android:text="@string/main_deploy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/LabelText"
@@ -54,23 +56,23 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/guideline"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/main_alt_barrier"/>
+                app:layout_constraintBottom_toTopOf="@id/main_deploy_barrier"/>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/main_alt_layout"
+                android:id="@+id/main_deploy_layout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:text="@string/main_alt"
-                app:layout_constraintBottom_toTopOf="@id/main_alt_barrier"
+                android:text="@string/main_deploy"
+                app:layout_constraintBottom_toTopOf="@id/main_deploy_barrier"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toEndOf="@id/guideline"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <AutoCompleteTextView
-                    android:id="@+id/main_alt"
+                    android:id="@+id/main_deploy"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:completionThreshold="100"
@@ -81,13 +83,15 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <androidx.constraintlayout.widget.Barrier
-                android:id="@+id/main_alt_barrier"
+                android:id="@+id/main_deploy_barrier"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:barrierDirection="bottom"
-                app:constraint_referenced_ids="main_alt_label,main_alt_layout"/>
+                app:constraint_referenced_ids="main_deploy_label,main_deploy_layout"/>
+
+<!-- apogee delay -->
 
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/apogee_delay_group"
@@ -104,7 +108,7 @@
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/guideline"
-                app:layout_constraintTop_toBottomOf="@id/main_alt_barrier"
+                app:layout_constraintTop_toBottomOf="@id/main_deploy_barrier"
                 app:layout_constraintBottom_toTopOf="@id/apogee_delay_barrier"/>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -118,7 +122,7 @@
                 app:layout_constraintBottom_toTopOf="@id/apogee_delay_barrier"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/guideline"
-                app:layout_constraintTop_toBottomOf="@id/main_alt_barrier">
+                app:layout_constraintTop_toBottomOf="@id/main_deploy_barrier">
 
                 <AutoCompleteTextView
                     android:id="@+id/apogee_delay"
@@ -139,6 +143,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="apogee_delay_label,apogee_delay_layout"/>
+
+<!-- apogee lockout -->
 
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/apogee_lockout_group"
@@ -192,6 +198,8 @@
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="apogee_lockout_label,apogee_lockout_layout"/>
 
+<!-- igniter mode -->
+
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/igniter_mode_group"
                 android:layout_width="0dp"
@@ -243,6 +251,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="igniter_mode_label,igniter_mode_layout"/>
+
+<!-- pad orientation -->
 
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/pad_orientation_group"
@@ -296,6 +306,8 @@
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="pad_orientation_label,pad_orientation_layout"/>
 
+<!-- beeper frequency -->
+
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/beeper_frequency_group"
                 android:layout_width="0dp"
@@ -347,6 +359,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="beeper_frequency_label,beeper_frequency_layout"/>
+
+<!-- beeper units -->
 
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/beeper_units_group"
@@ -400,6 +414,8 @@
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="beeper_units_label,beeper_units_layout"/>
 
+<!-- flight log size -->
+
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/flight_log_size_group"
                 android:layout_width="0dp"
@@ -452,6 +468,8 @@
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="flight_log_size_label,flight_log_size_layout"/>
 
+<!-- call sign -->
+
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/call_group"
                 android:layout_width="0dp"
@@ -491,6 +509,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="call_label,call"/>
+
+<!-- frequency -->
 
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/frequency_group"
@@ -544,6 +564,8 @@
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="frequency_label,frequency_layout"/>
 
+<!-- radio enable -->
+
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/radio_enable_group"
                 android:layout_width="0dp"
@@ -574,7 +596,6 @@
                 app:layout_constraintTop_toBottomOf="@id/frequency_barrier"
                 app:layout_constraintBottom_toBottomOf="@id/radio_enable_barrier"/>
 
-
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/radio_enable_barrier"
                 android:layout_width="wrap_content"
@@ -583,6 +604,49 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="radio_enable_label,radio_enable"/>
+
+<!-- radio 10mw -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/radio_10mw_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="radio_10mw_label,radio_10mw"/>
+
+            <TextView
+                android:id="@+id/radio_10mw_label"
+                android:text="@string/radio_10mw"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/radio_enable_barrier"
+                app:layout_constraintBottom_toBottomOf="@id/radio_10mw_barrier"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/radio_10mw"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/limited"
+                android:textAppearance="@style/ValueText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/radio_enable_barrier"
+                app:layout_constraintBottom_toBottomOf="@id/radio_10mw_barrier"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/radio_10mw_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="radio_10mw_label,radio_10mw"/>
+
+<!-- telemetry rate -->
 
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/telemetry_rate_group"
@@ -599,7 +663,7 @@
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/guideline"
-                app:layout_constraintTop_toBottomOf="@id/radio_enable_barrier"
+                app:layout_constraintTop_toBottomOf="@id/radio_10mw_barrier"
                 app:layout_constraintBottom_toBottomOf="@id/telemetry_rate_barrier"/>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -612,7 +676,7 @@
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toEndOf="@id/guideline"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/radio_enable_barrier"
+                app:layout_constraintTop_toBottomOf="@id/radio_10mw_barrier"
                 app:layout_constraintBottom_toBottomOf="@id/telemetry_rate_barrier">
 
                 <AutoCompleteTextView
@@ -636,6 +700,222 @@
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="telemetry_rate_label,telemetry_rate_layout"/>
 
+<!-- APRS interval -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/aprs_interval_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="aprs_interval_label,aprs_interval_layout"/>
+
+            <TextView
+                android:id="@+id/aprs_interval_label"
+                android:text="@string/aprs_interval"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/telemetry_rate_barrier"
+                app:layout_constraintBottom_toTopOf="@id/aprs_interval_barrier"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/aprs_interval_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:text="@string/aprs_interval"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toTopOf="@id/aprs_interval_barrier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/telemetry_rate_barrier">
+
+                <AutoCompleteTextView
+                    android:id="@+id/aprs_interval"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:completionThreshold="100"
+                    android:inputType="numberDecimal"
+                    android:textAppearance="@style/ValueText"
+                    android:minHeight="48dp"
+                    android:text="" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/aprs_interval_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="aprs_interval_label,aprs_interval_layout"/>
+
+<!-- APRS offset -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/aprs_offset_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="aprs_offset_label,aprs_offset_layout"/>
+
+            <TextView
+                android:id="@+id/aprs_offset_label"
+                android:text="@string/aprs_offset"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/aprs_interval_barrier"
+                app:layout_constraintBottom_toTopOf="@id/aprs_offset_barrier"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/aprs_offset_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:text="@string/aprs_offset"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toTopOf="@id/aprs_offset_barrier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/aprs_interval_barrier">
+
+                <AutoCompleteTextView
+                    android:id="@+id/aprs_offset"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:completionThreshold="100"
+                    android:inputType="numberDecimal"
+                    android:textAppearance="@style/ValueText"
+                    android:minHeight="48dp"
+                    android:text="" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/aprs_offset_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="aprs_offset_label,aprs_offset_layout"/>
+
+<!-- APRS SSID -->
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/aprs_ssid_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="aprs_ssid_label,aprs_ssid_layout"/>
+
+            <TextView
+                android:id="@+id/aprs_ssid_label"
+                android:text="@string/aprs_ssid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/aprs_offset_barrier"
+                app:layout_constraintBottom_toTopOf="@id/aprs_ssid_barrier"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/aprs_ssid_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:text="@string/aprs_ssid"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toTopOf="@id/aprs_ssid_barrier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/aprs_offset_barrier">
+
+                <AutoCompleteTextView
+                    android:id="@+id/aprs_ssid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:completionThreshold="100"
+                    android:inputType="none"
+                    android:textAppearance="@style/ValueText"
+                    android:minHeight="48dp"
+                    android:text="" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/aprs_ssid_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="aprs_ssid_label,aprs_ssid_layout"/>
+
+<!-- APRS format -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/aprs_format_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="aprs_format_label,aprs_format_layout"/>
+
+            <TextView
+                android:id="@+id/aprs_format_label"
+                android:text="@string/aprs_format"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/aprs_ssid_barrier"
+                app:layout_constraintBottom_toTopOf="@id/aprs_format_barrier"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/aprs_format_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:text="@string/aprs_format"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toTopOf="@id/aprs_format_barrier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/aprs_ssid_barrier">
+
+                <AutoCompleteTextView
+                    android:id="@+id/aprs_format"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:completionThreshold="100"
+                    android:inputType="none"
+                    android:textAppearance="@style/ValueText"
+                    android:minHeight="48dp"
+                    android:text="" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/aprs_format_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="aprs_format_label,aprs_format_layout"/>
+
+<!-- tracker motion -->
+<!-- tracker interval -->
+
+<!-- accel cal + -->
+
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/accel_cal_plus_group"
                 android:layout_width="0dp"
@@ -651,7 +931,7 @@
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/guideline"
-                app:layout_constraintTop_toBottomOf="@id/telemetry_rate_barrier"
+                app:layout_constraintTop_toBottomOf="@id/aprs_format_barrier"
                 app:layout_constraintBottom_toBottomOf="@id/accel_cal_plus_barrier"/>
 
             <EditText
@@ -665,7 +945,7 @@
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toEndOf="@id/guideline"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/telemetry_rate_barrier"
+                app:layout_constraintTop_toBottomOf="@id/aprs_format_barrier"
                 app:layout_constraintBottom_toBottomOf="@id/accel_cal_plus_barrier"/>
 
             <androidx.constraintlayout.widget.Barrier
@@ -676,6 +956,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="accel_cal_plus_label,accel_cal_plus"/>
+
+<!-- accel cal - -->
 
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/accel_cal_minus_group"

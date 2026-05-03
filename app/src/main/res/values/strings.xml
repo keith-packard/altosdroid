@@ -181,9 +181,9 @@
 
     <!-- Configure Device -->
     <string name="configure">Configure Device</string>
-    <string name="main_alt">Main Altitude</string>
+    <string name="main_deploy">Main Deploy</string>
 
-    <string-array name="main_alt_values_m">
+    <string-array name="main_deploy_values_m">
         <item>100</item>
         <item>150</item>
         <item>200</item>
@@ -192,7 +192,7 @@
         <item>350</item>
     </string-array>
 
-    <string-array name="main_alt_values_ft">
+    <string-array name="main_deploy_values_ft">
         <item>250</item>
         <item>500</item>
         <item>750</item>
@@ -261,6 +261,9 @@
         <item>15</item>
     </string-array>
 
+    <string name="radio_10mw">Limit transmit to 10mW</string>
+    <string name="limited">Limited</string>
+
     <string name="aprs_offset">APRS Offset</string>
 
     <string-array name="aprs_offset_values">
@@ -274,6 +277,13 @@
         <item>14</item>
         <item>16</item>
         <item>18</item>
+    </string-array>
+
+    <string name="aprs_format">APRS Format</string>
+
+    <string-array name="aprs_format_values">
+        <item>Compressed (Yaesu compatible)</item>
+        <item>Uncompressed (Kenwood compatible)</item>
     </string-array>
 
     <string name="pad_orientation">Pad Orientation</string>

@@ -145,21 +145,28 @@ ToDo list
 .	• Apogee lockout
 .	• Igniter firing mode
 .	• Pad orientation
-.	• Pyro configuration
 
 .	• Beeper Frequency
-.	• Maximum flight log size
-	• Accel calibration
 .	• Beep units
 
-	• Callsign
-	• Frequency
-	• Radio enable
-	• Telemetry baud rate
-	• APRS interval
-	• APRS SSID
-	• APRS format
-	• APRS offset
+.	• Maximum flight log size
+.	• Accel calibration
+
+.	• Callsign
+.	• Frequency
+.	• Radio enable
+.	• Telemetry baud rate
+.	• APRS interval
+.	• APRS SSID
+.	• APRS format
+.	• APRS offset
+
+	• Tracker motion
+	• Tracker interval
+	• radio 10mw
+	• GPS receiver
+
+	• Pyro configuration
 
  * Add auto callsign mode to wait for a tracker with the specified
    callsign
@@ -169,3 +176,5 @@ ToDo list
  * Improve tablet support somehow. Maybe by showing maps adjacent to
    data? Showing graphs of key values?
 
+ * Download data and view telem/eeprom data in graphs. Share data more
+   easily.
