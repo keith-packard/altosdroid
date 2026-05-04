@@ -392,7 +392,7 @@ public class ConfigureDeviceActivity extends AppCompatActivity
 
         if (binding != null && config_data != null) {
 
-            setTitle(String.format("Configure %s S/N %d Version %s",
+            setTitle(String.format("%s S/N %d Version %s",
                                    config_data.product, config_data.serial, config_data.version));
 
             /* main altitude */
