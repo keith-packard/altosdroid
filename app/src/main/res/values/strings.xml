@@ -262,7 +262,7 @@
     </string-array>
 
     <string name="radio_10mw">Max TX Power</string>
-    <string name="limited">Limited to 10mW</string>
+    <string name="limited">10mW Limit</string>
 
     <string name="aprs_offset">APRS Offset</string>
 
