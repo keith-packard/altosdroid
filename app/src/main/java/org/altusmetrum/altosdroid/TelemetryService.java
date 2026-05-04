@@ -1044,9 +1044,9 @@ public class TelemetryService extends Service
         notify_update_telem();
     }
 
-//    @Override
-//    public void onStatusChanged(String provider, int status, Bundle extras) {
-//    }
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+    }
 
     @Override
     public void error(String reason) {
