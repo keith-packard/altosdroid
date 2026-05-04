@@ -23,6 +23,7 @@ import android.os.Handler;
 import org.altusmetrum.altoslib_14.AltosLink;
 import org.altusmetrum.altoslib_14.AltosPreferences;
 
+import java.util.Arrays;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public abstract class AltosDroidLink extends AltosLink {
@@ -233,14 +234,14 @@ public abstract class AltosDroidLink extends AltosLink {
             return;
         }
 
-        byte[] copy = new byte[out_buffer_off];
-        for (int i = 0; i < out_buffer_off; i++)
-            copy[i] = out_buffer[i];
-        try {
-            write_queue.put(copy);
-        } catch (InterruptedException ie) {
+        if (out_buffer_off > 0) {
+            byte[] copy = Arrays.copyOf(out_buffer, out_buffer_off);
+            try {
+                write_queue.put(copy);
+            } catch (InterruptedException ie) {
+            }
+            out_buffer_off = 0;
         }
-        out_buffer_off = 0;
     }
 
     public void putchar(byte c) {

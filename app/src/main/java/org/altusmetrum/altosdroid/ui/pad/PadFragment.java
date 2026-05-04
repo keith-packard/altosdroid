@@ -153,9 +153,10 @@ public class PadFragment extends AltosFragment {
                     binding.gpsReadyValue.setText("Ready");
                 else
                     binding.gpsReadyValue.setText(AltosValue.integer("Waiting %d", state.gps_waiting));
-            } else
-                gps_locked_lights.set(false, true);
+            }
+            binding.gpsLockedView.setVisibility(state.gps != null ? View.VISIBLE : View.GONE);
             gps_ready_lights.set(state.gps_ready, state.gps == null);
+            binding.gpsReadyView.setVisibility(state.gps != null ? View.VISIBLE : View.GONE);
 
             double orient = state.orient();
 

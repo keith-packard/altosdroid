@@ -361,6 +361,26 @@
         <item>2.0</item>
     </string-array>
 
+    <string name="pyro_channel">Pyro Channel</string>
+
+    <string name="pyro_accel_less">Vertical accel &lt;</string>
+    <string name="pyro_accel_greater">Vertical accel &gt;</string>
+    <string name="pyro_speed_less">Ascent rate &lt;</string>
+    <string name="pyro_speed_greater">Ascent rate &gt;</string>
+    <string name="pyro_height_less">Height above pad &lt;</string>
+    <string name="pyro_height_greater">Height above pad &gt;</string>
+    <string name="pyro_orient_less">Angle from vertical &lt;</string>
+    <string name="pyro_orient_greater">Angle from vertical &gt;</string>
+    <string name="pyro_time_less">Time since launch &lt; (s)</string>
+    <string name="pyro_time_greater">Time since launch &gt; (s)</string>
+    <string name="pyro_ascending">Ascending</string>
+    <string name="pyro_descending">Descending</string>
+    <string name="pyro_after_motor">After motor number</string>
+    <string name="pyro_state_less">Flight state before</string>
+    <string name="pyro_state_greater_or_equal">Flight state after</string>
+    <string name="pyro_motor">After motor number</string>
+    <string name="pyro_delay">Delay after other conditions (s)</string>
+
     <string name="save">Save</string>
     <string name="reset">Reset</string>
     <string name="close">Close</string>

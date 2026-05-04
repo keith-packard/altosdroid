@@ -36,7 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.40"/>
+                app:layout_constraintGuide_percent="0.60"/>
 
 <!-- main altitude -->
 
@@ -1155,6 +1155,667 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="pyro_firing_time_label,pyro_firing_time_layout"/>
+
+<!-- pyro channel -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/pyro_channel_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="pyro_channel_label,pyro_channel_layout"/>
+
+            <TextView
+                android:id="@+id/pyro_channel_label"
+                android:text="@string/pyro_channel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_firing_time_barrier"
+                app:layout_constraintBottom_toTopOf="@id/pyro_channel_barrier"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/pyro_channel_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:text="@string/pyro_channel"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toTopOf="@id/pyro_channel_barrier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_firing_time_barrier">
+
+                <AutoCompleteTextView
+                    android:id="@+id/pyro_channel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:completionThreshold="100"
+                    android:inputType="none"
+                    android:textAppearance="@style/ValueText"
+                    android:minHeight="48dp"
+                    android:text="" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/pyro_channel_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="pyro_channel_label,pyro_channel_layout"/>
+
+<!-- pyro accel < -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/pyro_accel_less_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="pyro_accel_less_enable,pyro_accel_less"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/pyro_accel_less_enable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pyro_accel_less"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_channel_barrier"
+                app:layout_constraintBottom_toTopOf="@id/pyro_accel_less_barrier"/>
+
+            <EditText
+                android:id="@+id/pyro_accel_less"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:textAppearance="@style/ValueText"
+                android:minHeight="48dp"
+                android:text=""
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/pyro_channel_barrier"
+                app:layout_constraintBottom_toTopOf="@id/pyro_accel_less_barrier"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/pyro_accel_less_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="pyro_accel_less_enable,pyro_accel_less"/>
+
+<!-- pyro accel > -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/pyro_accel_greater_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="pyro_accel_greater_enable,pyro_accel_greater"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/pyro_accel_greater_enable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pyro_accel_greater"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_accel_less_barrier"
+                app:layout_constraintBottom_toTopOf="@id/pyro_accel_greater_barrier"/>
+
+            <EditText
+                android:id="@+id/pyro_accel_greater"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:textAppearance="@style/ValueText"
+                android:minHeight="48dp"
+                android:text=""
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toTopOf="@id/pyro_accel_greater_barrier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_accel_less_barrier"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/pyro_accel_greater_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="pyro_accel_greater_enable,pyro_accel_greater"/>
+
+<!-- pyro speed < -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/pyro_speed_less_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="pyro_speed_less_enable,pyro_speed_less"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/pyro_speed_less_enable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pyro_speed_less"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_accel_greater_barrier"
+                app:layout_constraintBottom_toTopOf="@id/pyro_speed_less_barrier"/>
+
+            <EditText
+                android:id="@+id/pyro_speed_less"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:textAppearance="@style/ValueText"
+                android:minHeight="48dp"
+                android:text=""
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toTopOf="@id/pyro_speed_less_barrier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_accel_greater_barrier"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/pyro_speed_less_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="pyro_speed_less_enable,pyro_speed_less_layout"/>
+
+<!-- pyro speed > -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/pyro_speed_greater_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="pyro_speed_greater_enable,pyro_speed_greater"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/pyro_speed_greater_enable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pyro_speed_greater"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_speed_less_barrier"
+                app:layout_constraintBottom_toTopOf="@id/pyro_speed_greater_barrier"/>
+
+            <EditText
+                android:id="@+id/pyro_speed_greater"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:textAppearance="@style/ValueText"
+                android:minHeight="48dp"
+                android:text=""
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toTopOf="@id/pyro_speed_greater_barrier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_speed_less_barrier"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/pyro_speed_greater_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="pyro_speed_greater_enable,pyro_speed_greater"/>
+
+<!-- pyro height < -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/pyro_height_less_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="pyro_height_less_enable,pyro_height_less"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/pyro_height_less_enable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pyro_height_less"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_speed_greater_barrier"
+                app:layout_constraintBottom_toTopOf="@id/pyro_height_less_barrier"/>
+
+            <EditText
+                android:id="@+id/pyro_height_less"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:textAppearance="@style/ValueText"
+                android:minHeight="48dp"
+                android:text=""
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toTopOf="@id/pyro_height_less_barrier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_speed_greater_barrier"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/pyro_height_less_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="pyro_height_less_enable,pyro_height_less"/>
+
+<!-- pyro height > -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/pyro_height_greater_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="pyro_height_greater_enable,pyro_height_greater"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/pyro_height_greater_enable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pyro_height_greater"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_height_less_barrier"
+                app:layout_constraintBottom_toTopOf="@id/pyro_height_greater_barrier"/>
+
+            <EditText
+                android:id="@+id/pyro_height_greater"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:textAppearance="@style/ValueText"
+                android:minHeight="48dp"
+                android:text=""
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toTopOf="@id/pyro_height_greater_barrier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_height_less_barrier"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/pyro_height_greater_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="pyro_height_greater_enable,pyro_height_greater"/>
+
+<!-- pyro orient < -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/pyro_orient_less_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="pyro_orient_less_enable,pyro_orient_less"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/pyro_orient_less_enable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pyro_orient_less"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_height_greater_barrier"
+                app:layout_constraintBottom_toTopOf="@id/pyro_orient_less_barrier"/>
+
+            <EditText
+                android:id="@+id/pyro_orient_less"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:textAppearance="@style/ValueText"
+                android:minHeight="48dp"
+                android:text=""
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toTopOf="@id/pyro_orient_less_barrier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_height_greater_barrier"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/pyro_orient_less_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="pyro_orient_less_enable,pyro_orient_less"/>
+
+<!-- pyro orient > -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/pyro_orient_greater_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="pyro_orient_greater_enable,pyro_orient_greater"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/pyro_orient_greater_enable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pyro_orient_greater"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_orient_less_barrier"
+                app:layout_constraintBottom_toTopOf="@id/pyro_orient_greater_barrier"/>
+
+            <EditText
+                android:id="@+id/pyro_orient_greater"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:textAppearance="@style/ValueText"
+                android:minHeight="48dp"
+                android:text=""
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toTopOf="@id/pyro_orient_greater_barrier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_orient_less_barrier"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/pyro_orient_greater_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="pyro_orient_greater_enable,pyro_orient_greater"/>
+
+<!-- pyro time < -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/pyro_time_less_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="pyro_time_less_enable,pyro_time_less"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/pyro_time_less_enable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pyro_time_less"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_orient_greater_barrier"
+                app:layout_constraintBottom_toTopOf="@id/pyro_time_less_barrier"/>
+
+            <EditText
+                android:id="@+id/pyro_time_less"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:textAppearance="@style/ValueText"
+                android:minHeight="48dp"
+                android:text=""
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toTopOf="@id/pyro_time_less_barrier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_orient_greater_barrier"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/pyro_time_less_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="pyro_time_less_enable,pyro_time_less"/>
+
+<!-- pyro time > -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/pyro_time_greater_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="pyro_time_greater_enable,pyro_time_greater"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/pyro_time_greater_enable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pyro_time_greater"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_time_less_barrier"
+                app:layout_constraintBottom_toTopOf="@id/pyro_time_greater_barrier"/>
+
+            <EditText
+                android:id="@+id/pyro_time_greater"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:textAppearance="@style/ValueText"
+                android:minHeight="48dp"
+                android:text=""
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toTopOf="@id/pyro_time_greater_barrier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_time_less_barrier"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/pyro_time_greater_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="pyro_time_greater_enable,pyro_time_greater"/>
+
+<!-- pyro state < -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/pyro_state_less_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="pyro_state_less_enable,pyro_state_less_layout"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/pyro_state_less_enable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pyro_state_less"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_time_greater_barrier"
+                app:layout_constraintBottom_toTopOf="@id/pyro_state_less_barrier"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/pyro_state_less_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:text="@string/pyro_state_less"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toTopOf="@id/pyro_state_less_barrier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_time_greater_barrier">
+
+                <AutoCompleteTextView
+                    android:id="@+id/pyro_state_less"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:completionThreshold="100"
+                    android:inputType="none"
+                    android:textAppearance="@style/ValueText"
+                    android:minHeight="48dp"
+                    android:text="" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/pyro_state_less_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="pyro_state_less_enable,pyro_state_less_layout"/>
+
+<!-- pyro state >= -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/pyro_state_greater_or_equal_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="pyro_state_greater_or_equal_enable,pyro_state_greater_or_equal_layout"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/pyro_state_greater_or_equal_enable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pyro_state_greater_or_equal"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_state_less_barrier"
+                app:layout_constraintBottom_toTopOf="@id/pyro_state_greater_or_equal_barrier"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/pyro_state_greater_or_equal_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:text="@string/pyro_state_greater_or_equal"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toTopOf="@id/pyro_state_greater_or_equal_barrier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_state_less_barrier">
+
+                <AutoCompleteTextView
+                    android:id="@+id/pyro_state_greater_or_equal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:completionThreshold="100"
+                    android:inputType="none"
+                    android:textAppearance="@style/ValueText"
+                    android:minHeight="48dp"
+                    android:text="" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/pyro_state_greater_or_equal_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="pyro_state_greater_or_equal_enable,pyro_state_greater_or_equal_layout"/>
+
+<!-- pyro motor -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/pyro_motor_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="pyro_motor_enable,pyro_motor"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/pyro_motor_enable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pyro_motor"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_state_greater_or_equal_barrier"
+                app:layout_constraintBottom_toTopOf="@id/pyro_motor_barrier"/>
+
+            <EditText
+                android:id="@+id/pyro_motor"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:textAppearance="@style/ValueText"
+                android:minHeight="48dp"
+                android:text=""
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toTopOf="@id/pyro_motor_barrier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_state_greater_or_equal_barrier"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/pyro_motor_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="pyro_motor_enable,pyro_motor"/>
+
+<!-- pyro delay -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/pyro_delay_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="pyro_delay_enable,pyro_delay"/>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/pyro_delay_enable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pyro_delay"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_motor_barrier"
+                app:layout_constraintBottom_toTopOf="@id/pyro_delay_barrier"/>
+
+            <EditText
+                android:id="@+id/pyro_delay"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:textAppearance="@style/ValueText"
+                android:minHeight="48dp"
+                android:text=""
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintBottom_toTopOf="@id/pyro_delay_barrier"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pyro_motor_barrier"/>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/pyro_delay_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="pyro_delay_enable,pyro_delay"/>
 
 <!-- end of configuration items -->
 

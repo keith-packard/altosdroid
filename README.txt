@@ -126,19 +126,7 @@ ToDo list
 
  ✓ Frequency selection menu should indicate the current frequency somehow
 
- * Elevation numbers seem weird.
-
- * On the iOS application -- 'My lat/my lon' never update, along with
-   related data. Restarting the app didn't fix this, but rebooting the
-   phone did.
-
----------------------------------
-
- * Prefer the 'Fused' location provider instead of GPS
-
- * Rotate online map to match track/compass
-
- * Add target configuration to Idle mode
+ ✓ Add target configuration to Idle mode
 
 .	• Main deploy altitude
 .	• Apogee delay
@@ -161,12 +149,37 @@ ToDo list
 .	• APRS format
 .	• APRS offset
 
-	• Tracker motion
-	• Tracker interval
-	• radio 10mw
+.	• Tracker motion
+.	• Tracker interval
+.	• radio 10mw
 	• GPS receiver
 
-	• Pyro configuration
+.	• Pyro configuration
+		accel <
+		accel >
+		speed <
+		speed >
+		height <
+		height >
+		orient <
+		orient >
+		time <
+		time >
+		after motor
+		delay
+		state <
+		state >=
+ * Elevation numbers seem weird.
+
+ * On the iOS application -- 'My lat/my lon' never update, along with
+   related data. Restarting the app didn't fix this, but rebooting the
+   phone did.
+
+---------------------------------
+
+ * Prefer the 'Fused' location provider instead of GPS
+
+ * Rotate online map to match track/compass
 
  * Add auto callsign mode to wait for a tracker with the specified
    callsign
@@ -178,3 +191,7 @@ ToDo list
 
  * Download data and view telem/eeprom data in graphs. Share data more
    easily.
+
+ * Calibrate accelerometer
+
+ * Update firmware.
