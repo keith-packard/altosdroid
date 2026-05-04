@@ -1333,7 +1333,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:barrierDirection="bottom"
-                app:constraint_referenced_ids="pyro_speed_less_enable,pyro_speed_less_layout"/>
+                app:constraint_referenced_ids="pyro_speed_less_enable,pyro_speed_less"/>
 
 <!-- pyro speed > -->
 
@@ -1873,106 +1873,3 @@
 	    />
     
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-<!--
-
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/THIS_group"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:constraint_referenced_ids="THIS_label,THIS_layout"/>
-
-    <TextView
-        android:id="@+id/THIS_label"
-        android:text="@string/THIS"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/LabelText"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/guideline"
-        app:layout_constraintTop_toBottomOf="@id/PREV_barrier"
-        app:layout_constraintBottom_toBottomOf="@id/THIS_barrier"/>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/THIS_layout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:text="@string/THIS"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toEndOf="@id/guideline"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/PREV_barrier"
-        app:layout_constraintBottom_toBottomOf="@id/THIS_barrier">
-
-        <AutoCompleteTextView
-            android:id="@+id/THIS"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:completionThreshold="100"
-            android:inputType="numberDecimal"
-            android:textAppearance="@style/ValueText"
-            android:minHeight="48dp"
-            android:text="1.0" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/THIS_barrier"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="THIS_label,THIS_layout"/>
-
--->
-
-<!--
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/THIS_group"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:constraint_referenced_ids="THIS_label,THIS_layout"/>
-
-    <TextView
-        android:id="@+id/THIS_label"
-        android:text="@string/THIS"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/LabelText"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/guideline"
-        app:layout_constraintTop_toBottomOf="@id/PREV_barrier"
-        app:layout_constraintBottom_toBottomOf="@id/THIS_barrier"/>
-
-        <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/THIS"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/map_online"
-        android:textAppearance="@style/ValueText"
-        android:paddingHorizontal="@dimen/table_padding_start"
-        android:paddingVertical="@dimen/menu_padding_vertical"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constrainedWidth="false"
-        app:layout_constrainedHeight="false"
-        app:layout_constraintStart_toEndOf="@id/guideline"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/PREV_barrier"
-        app:layout_constraintBottom_toBottomOf="@id/THIS_barrier"/>
-
-
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/THIS_barrier"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="THIS_label,THIS_layout"/>
-
--->
