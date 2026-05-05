@@ -23,391 +23,362 @@ import java.util.*;
 
 import android.app.Activity;
 import android.content.*;
-import android.graphics.*;
 import android.os.*;
 import android.view.*;
-import android.view.View.*;
 import android.widget.*;
 
+import org.altusmetrum.altosdroid.databinding.IgnitersBinding;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.altusmetrum.altoslib_14.*;
 
 class IgniterItem {
-	public String name;
-	public String pretty;
-	public String status;
-	public LinearLayout igniter_view = null;
-	public TextView	pretty_view = null;
-	public TextView	status_view = null;
+    public String name;
+    public String pretty;
+    public String status;
+    public LinearLayout igniter_view = null;
+    public TextView	pretty_view = null;
+    public TextView	status_view = null;
 
-	private void update() {
-		if (pretty_view != null)
-			pretty_view.setText(pretty);
-		if (status_view != null)
-			status_view.setText(status);
-	}
+    private void update() {
+        if (pretty_view != null)
+            pretty_view.setText(pretty);
+        if (status_view != null)
+            status_view.setText(status);
+    }
 
-	public void set(String name, String pretty, String status) {
-		if (!name.equals(this.name) ||
-		    !pretty.equals(this.pretty) ||
-		    !status.equals(this.status))
-		{
-			this.name = name;
-			this.pretty = pretty;
-			this.status = status;
-			update();
-		}
-	}
+    public void set(String name, String pretty, String status) {
+        if (!name.equals(this.name) ||
+            !pretty.equals(this.pretty) ||
+            !status.equals(this.status))
+        {
+            this.name = name;
+            this.pretty = pretty;
+            this.status = status;
+            update();
+        }
+    }
 
-	public void realize(LinearLayout igniter_view,
-			    TextView pretty_view,
-			    TextView status_view) {
-		if (igniter_view != this.igniter_view ||
-		    pretty_view != this.pretty_view ||
-		    status_view != this.status_view)
-		{
-			this.igniter_view = igniter_view;
-			this.pretty_view = pretty_view;
-			this.status_view = status_view;
-			update();
-		}
-	}
+    public void realize(LinearLayout igniter_view,
+                        TextView pretty_view,
+                        TextView status_view) {
+        if (igniter_view != this.igniter_view ||
+            pretty_view != this.pretty_view ||
+            status_view != this.status_view)
+        {
+            this.igniter_view = igniter_view;
+            this.pretty_view = pretty_view;
+            this.status_view = status_view;
+            update();
+        }
+    }
 
-	public IgniterItem() {
-	}
+    public IgniterItem() {
+    }
 }
 
 class IgniterAdapter extends ArrayAdapter<IgniterItem> {
-	int resource;
-	int selected_item = -1;
+    int resource;
+    int selected_item = -1;
 
-	public IgniterAdapter(Context context, int in_resource) {
-		super(context, in_resource);
-		resource = in_resource;
-	}
+    public IgniterAdapter(Context context, int in_resource) {
+        super(context, in_resource);
+        resource = in_resource;
+    }
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		IgniterItem item = getItem(position);
-		if (item.igniter_view == null) {
-			LinearLayout igniter_view = new LinearLayout(getContext());
-			String inflater = Context.LAYOUT_INFLATER_SERVICE;
-			LayoutInflater li = (LayoutInflater) getContext().getSystemService(inflater);
-			li.inflate(resource, igniter_view, true);
+    @NonNull
+    @Override
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+        IgniterItem item = getItem(position);
+        assert item != null;
+        if (item.igniter_view == null) {
+            LinearLayout igniter_view = new LinearLayout(getContext());
+            String inflater = Context.LAYOUT_INFLATER_SERVICE;
+            LayoutInflater li = (LayoutInflater) getContext().getSystemService(inflater);
+            li.inflate(resource, igniter_view, true);
 
-			item.realize(igniter_view,
-				     (TextView) igniter_view.findViewById(R.id.igniter_name),
-				     (TextView) igniter_view.findViewById(R.id.igniter_status));
-		}
-		if (position == selected_item)
-			item.igniter_view.setBackgroundColor(Color.RED);
-		else
-			item.igniter_view.setBackgroundColor(0);
-		return item.igniter_view;
-	}
+            item.realize(igniter_view,
+                igniter_view.findViewById(R.id.igniter_name),
+                igniter_view.findViewById(R.id.igniter_status));
+        }
+        return item.igniter_view;
+    }
 }
 
 public class IgniterActivity extends AppCompatActivity {
-	private ListView igniters_view;
-	private ToggleButton arm;
-	private Button fire;
+    private final HashMap<String,IgniterItem> igniters = new HashMap<>();
 
-	private HashMap<String,IgniterItem> igniters = new HashMap<String,IgniterItem>();
+    private IgniterAdapter igniters_adapter;
 
-	private IgniterAdapter igniters_adapter;
+    private boolean is_bound;
+    private Messenger service = null;
+    private final Messenger messenger = new Messenger(new IncomingHandler(this));
 
-	private boolean is_bound;
-	private Messenger service = null;
-	private final Messenger messenger = new Messenger(new IncomingHandler(this));
+    IgnitersBinding binding;
 
-	private Timer query_timer;
-	private boolean query_timer_running;
+    private Timer query_timer;
+    private boolean query_timer_running;
 
-	private Timer arm_timer;
-	private int arm_remaining;
+    private Timer arm_timer;
+    private int arm_remaining;
 
-	public static final int IGNITER_QUERY = 1;
-	public static final int IGNITER_FIRE = 2;
+    // The Handler that gets information back from the Telemetry Service
+    static class IncomingHandler extends Handler {
+        private final WeakReference<IgniterActivity> igniter_activity;
+        IncomingHandler(IgniterActivity ia) { igniter_activity = new WeakReference<>(ia); }
 
-	// The Handler that gets information back from the Telemetry Service
-	static class IncomingHandler extends Handler {
-		private final WeakReference<IgniterActivity> igniter_activity;
-		IncomingHandler(IgniterActivity ia) { igniter_activity = new WeakReference<IgniterActivity>(ia); }
+        @Override
+        public void handleMessage(Message msg) {
+            IgniterActivity ia = igniter_activity.get();
 
-		@Override
-		public void handleMessage(Message msg) {
-			IgniterActivity ia = igniter_activity.get();
+            if (msg.what == MainActivity.MSG_IGNITER_STATUS) {
+                @SuppressWarnings("unchecked") HashMap<String, Integer> map = (HashMap<String, Integer>) msg.obj;
+                ia.igniter_status(map);
+            }
+        }
+    }
 
-			switch (msg.what) {
-			case MainActivity.MSG_IGNITER_STATUS:
-				@SuppressWarnings("unchecked") HashMap<String,Integer> map = (HashMap <String,Integer>) msg.obj;
-				ia.igniter_status(map);
-				break;
-			}
-		}
+
+    private final ServiceConnection connection = new ServiceConnection() {
+            public void onServiceConnected(ComponentName className, IBinder binder) {
+                service = new Messenger(binder);
+                query_timer_tick();
+            }
+
+            public void onServiceDisconnected(ComponentName className) {
+                // This is called when the connection with the service has been unexpectedly disconnected - process crashed.
+                service = null;
+            }
 	};
 
+    void doBindService() {
+        bindService(new Intent(this, TelemetryService.class), connection, Context.BIND_AUTO_CREATE);
+        is_bound = true;
+    }
 
-	private ServiceConnection connection = new ServiceConnection() {
-		public void onServiceConnected(ComponentName className, IBinder binder) {
-			service = new Messenger(binder);
-			query_timer_tick();
-		}
+    void doUnbindService() {
+        if (is_bound) {
+            // If we have received the service, and hence registered with it, then now is the time to unregister.
+            unbindService(connection);
+            is_bound = false;
+        }
+    }
 
-		public void onServiceDisconnected(ComponentName className) {
-			// This is called when the connection with the service has been unexpectedly disconnected - process crashed.
-			service = null;
-		}
-	};
+    class FireThread extends Thread {
+        private final String igniter;
 
-	void doBindService() {
-		bindService(new Intent(this, TelemetryService.class), connection, Context.BIND_AUTO_CREATE);
-		is_bound = true;
-	}
+        @Override
+        public void run() {
+            Message msg = Message.obtain(null, TelemetryService.MSG_IGNITER_FIRE, igniter);
+            try {
+                service.send(msg);
+            } catch (RemoteException ignored) {
+            }
+        }
 
-	void doUnbindService() {
-		if (is_bound) {
-			// If we have received the service, and hence registered with it, then now is the time to unregister.
-			unbindService(connection);
-			is_bound = false;
-		}
-	}
+        public FireThread(String igniter) {
+            this.igniter = igniter;
+        }
+    }
 
-	private void done() {
-		Intent intent = new Intent();
-		setResult(Activity.RESULT_OK, intent);
-		finish();
-	}
+    private void fire_igniter() {
+        if (igniters_adapter.selected_item >= 0) {
+            IgniterItem	item = igniters_adapter.getItem(igniters_adapter.selected_item);
+            assert item != null;
+            FireThread	ft = new FireThread(item.name);
+            ft.start();
+            binding.igniterArm.setChecked(false);
+        }
+    }
 
-	class FireThread extends Thread {
-		private final String igniter;
+    private void arm_igniter(boolean is_checked) {
+        if (is_checked) {
+            arm_timer_stop();
+            arm_timer = new Timer();
+            arm_remaining = 10;
+            binding.igniterFire.setEnabled(true);
+            arm_timer.scheduleAtFixedRate(new TimerTask() {
+                    public void run() {
+                        arm_timer_tick();
+                    }},
+                1000L, 1000L);
+        } else {
+            arm_timer_stop();
+            binding.igniterFire.setEnabled(false);
+        }
+        arm_set_text();
+    }
 
-		@Override
-		public void run() {
-			Message msg = Message.obtain(null, TelemetryService.MSG_IGNITER_FIRE, igniter);
-			try {
-				service.send(msg);
-			} catch (RemoteException re) {
-			}
-		}
+    private synchronized void query_timer_tick() {
+        if (query_timer_running)
+            return;
+        if (service == null)
+            return;
+        query_timer_running = true;
+        Thread thread = new Thread(() -> {
+            try {
+                Message msg = Message.obtain(null, TelemetryService.MSG_IGNITER_QUERY);
+                msg.replyTo = messenger;
+                if (service == null) {
+                    synchronized(IgniterActivity.this) {
+                        query_timer_running = false;
+                    }
+                } else
+                    service.send(msg);
+            } catch (RemoteException re) {
+                AltosDebug.debug("igniter query thread failed");
+                synchronized(IgniterActivity.this) {
+                    query_timer_running = false;
+                }
+            }
+        });
+        thread.start();
+    }
 
-		public FireThread(String igniter) {
-			this.igniter = igniter;
-		}
-	}
+    private boolean set_igniter(HashMap <String,Integer> status, String name, String pretty) {
+        if (!status.containsKey(name))
+            return false;
 
-	private void fire_igniter() {
-		if (igniters_adapter.selected_item >= 0) {
-			IgniterItem	item = igniters_adapter.getItem(igniters_adapter.selected_item);
-			FireThread	ft = new FireThread(item.name);
-			ft.run();
-			arm.setChecked(false);
-		}
-	}
+        IgniterItem item;
+        if (!igniters.containsKey(name)) {
+            item = new IgniterItem();
+            igniters.put(name, item);
+            igniters_adapter.add(item);
+        } else
+            item = igniters.get(name);
 
-	private void arm_igniter(boolean is_checked) {
-		if (is_checked) {
-			arm_timer_stop();
-			arm_timer = new Timer();
-			arm_remaining = 10;
-			arm_set_text();
-			fire.setEnabled(true);
-			arm_timer.scheduleAtFixedRate(new TimerTask() {
-					public void run() {
-						arm_timer_tick();
-					}},
-				1000L, 1000L);
-		} else {
-			arm_timer_stop();
-			fire.setEnabled(false);
-		}
-	}
+        assert item != null;
+        item.set(name, pretty, AltosIgnite.status_string(status.get(name)));
+        return true;
+    }
 
-	private synchronized void query_timer_tick() {
-		if (query_timer_running)
-			return;
-		if (service == null)
-			return;
-		query_timer_running = true;
-		Thread thread = new Thread(new Runnable() {
-				public void run() {
-					try {
-						Message msg = Message.obtain(null, TelemetryService.MSG_IGNITER_QUERY);
-						msg.replyTo = messenger;
-						if (service == null) {
-							synchronized(IgniterActivity.this) {
-								query_timer_running = false;
-							}
-						} else
-							service.send(msg);
-					} catch (RemoteException re) {
-						AltosDebug.debug("igniter query thread failed");
-						synchronized(IgniterActivity.this) {
-							query_timer_running = false;
-						}
-					}
-				}
-			});
-		thread.start();
-	}
+    private synchronized void igniter_status(HashMap <String,Integer> status) {
+        query_timer_running = false;
+        if (status == null) {
+            AltosDebug.debug("no igniter status");
+            return;
+        }
+        set_igniter(status, "drogue", "Apogee");
+        set_igniter(status, "main", "Main");
+        for (int extra = 0;; extra++) {
+            String	name = String.format(Locale.getDefault(), "%d", extra);
+            String	pretty = String.format(Locale.getDefault(), "%c", 'A' + extra);
+            if (!set_igniter(status, name, pretty))
+                break;
+        }
+    }
 
-	private boolean set_igniter(HashMap <String,Integer> status, String name, String pretty) {
-		if (!status.containsKey(name))
-			return false;
+    private synchronized void arm_timer_stop() {
+        if (arm_timer != null) {
+            arm_timer.cancel();
+            arm_timer = null;
+        }
+        arm_remaining = 0;
+    }
 
-		IgniterItem item;
-		if (!igniters.containsKey(name)) {
-			item = new IgniterItem();
-			igniters.put(name, item);
-			igniters_adapter.add(item);
-		} else
-			item = igniters.get(name);
+    private void arm_set_text() {
+        String	text;
 
-		item.set(name, pretty, AltosIgnite.status_string(status.get(name)));
-		return true;
-	}
+        if (binding.igniterArm.isChecked())
+            text = String.format(Locale.getDefault(), "Armed %d", arm_remaining);
+        else
+            text = "Arm";
 
-	private synchronized void igniter_status(HashMap <String,Integer> status) {
-		query_timer_running = false;
-		if (status == null) {
-			AltosDebug.debug("no igniter status");
-			return;
-		}
-		set_igniter(status, "drogue", "Apogee");
-		set_igniter(status, "main", "Main");
-		for (int extra = 0;; extra++) {
-			String	name = String.format(Locale.getDefault(), "%d", extra);
-			String	pretty = String.format(Locale.getDefault(), "%c", 'A' + extra);
-			if (!set_igniter(status, name, pretty))
-				break;
-		}
-	}
+        binding.igniterArm.setText(text);
+    }
 
-	private synchronized void arm_timer_stop() {
-		if (arm_timer != null) {
-			arm_timer.cancel();
-			arm_timer = null;
-		}
-		arm_remaining = 0;
-	}
+    private void arm_timer_tick() {
+        --arm_remaining;
+        if (arm_remaining <= 0) {
+            arm_timer_stop();
+            runOnUiThread(() -> {
+                binding.igniterArm.setChecked(false);
+                binding.igniterFire.setEnabled(false);
+            });
+        } else {
+            runOnUiThread(this::arm_set_text);
+        }
+    }
 
-	private void arm_set_text() {
-		String	text = String.format(Locale.getDefault(), "Armed %d", arm_remaining);
+    private void select_item(int position) {
+        if (position != igniters_adapter.selected_item) {
+            if (igniters_adapter.selected_item >= 0)
+                binding.igniters.setItemChecked(igniters_adapter.selected_item, false);
+            if (position >= 0) {
+                binding.igniters.setItemChecked(position, true);
+                binding.igniterArm.setEnabled(true);
+            } else
+                binding.igniterArm.setEnabled(false);
+            igniters_adapter.selected_item = position;
+        }
+    }
 
-		if (arm.isChecked())
-			arm.setText(text);
-		arm.setTextOn(text);
-	}
+    private class IgniterItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> av, View v, int position, long id) {
+            AltosDebug.debug("select %d\n", position);
+            select_item(position);
+        }
+    }
 
-	private void arm_timer_tick() {
-		--arm_remaining;
-		if (arm_remaining <= 0) {
-			arm_timer_stop();
-			runOnUiThread(new Runnable() {
-					public void run() {
-						arm.setChecked(false);
-						fire.setEnabled(false);
-					}
-				});
-		} else {
-			runOnUiThread(new Runnable() {
-					public void run() {
-						arm_set_text();
-					}
-				});
-		}
-	}
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        // setTheme(MainActivity.dialog_themes[AltosDroidPreferences.font_size()]);
+        super.onCreate(savedInstanceState);
 
-	private void select_item(int position) {
-		if (position != igniters_adapter.selected_item) {
-			if (igniters_adapter.selected_item >= 0)
-				igniters_view.setItemChecked(igniters_adapter.selected_item, false);
-			if (position >= 0) {
-				igniters_view.setItemChecked(position, true);
-				arm.setEnabled(true);
-			} else
-				arm.setEnabled(false);
-			igniters_adapter.selected_item = position;
-		}
-	}
+        // Setup the window
+        binding = IgnitersBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-	private class IgniterItemClickListener implements ListView.OnItemClickListener {
-		@Override
-		public void onItemClick(AdapterView<?> av, View v, int position, long id) {
-			AltosDebug.debug("select %d\n", position);
-			select_item(position);
-		}
-	}
+        igniters_adapter = new IgniterAdapter(this, R.layout.igniter_status);
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		// setTheme(MainActivity.dialog_themes[AltosDroidPreferences.font_size()]);
-		super.onCreate(savedInstanceState);
+        binding.igniters.setAdapter(igniters_adapter);
+        binding.igniters.setOnItemClickListener(new IgniterItemClickListener());
 
-		// Setup the window
-		setContentView(R.layout.igniters);
+        binding.igniterFire.setEnabled(false);
+        binding.igniterFire.setOnClickListener(v -> fire_igniter());
 
-		igniters_view = (ListView) findViewById(R.id.igniters);
-		igniters_view.setClickable(true);
+        binding.igniterArm.setEnabled(false);
+        binding.igniterArm.addOnCheckedChangeListener((v, is_checked) -> arm_igniter(is_checked));
 
-		igniters_adapter = new IgniterAdapter(this, R.layout.igniter_status);
+        // Set result CANCELED in case the user backs out
+        setResult(Activity.RESULT_CANCELED);
+    }
 
-		igniters_view.setAdapter(igniters_adapter);
-		igniters_view.setOnItemClickListener(new IgniterItemClickListener());
+    @Override
+    protected void onStart() {
+        super.onStart();
+        doBindService();
+    }
 
-		fire = (Button) findViewById(R.id.igniter_fire);
-		fire.setEnabled(false);
-		fire.setOnClickListener(new OnClickListener() {
-				public void onClick(View v) {
-					fire_igniter();
-				}
-			});
+    @Override
+    protected void onResume() {
+        super.onResume();
+        query_timer = new Timer(true);
+        query_timer.scheduleAtFixedRate(new TimerTask() {
+                public void run() {
+                    query_timer_tick();
+                }},
+            0L, 5000L);
+    }
 
-		arm = (ToggleButton) findViewById(R.id.igniter_arm);
-		arm.setEnabled(false);
-		arm.setOnCheckedChangeListener(new ToggleButton.OnCheckedChangeListener() {
-				public void onCheckedChanged(CompoundButton v, boolean is_checked) {
-					arm_igniter(is_checked);
-				}
-			});
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (query_timer != null) {
+            query_timer.cancel();
+            query_timer = null;
+        }
+        arm_timer_stop();
+        binding.igniterArm.setChecked(false);
+        binding.igniterFire.setEnabled(false);
+    }
 
-		// Set result CANCELED incase the user backs out
-		setResult(Activity.RESULT_CANCELED);
-	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-		doBindService();
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		query_timer = new Timer(true);
-		query_timer.scheduleAtFixedRate(new TimerTask() {
-				public void run() {
-					query_timer_tick();
-				}},
-			0L, 5000L);
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		if (query_timer != null) {
-			query_timer.cancel();
-			query_timer = null;
-		}
-		arm_timer_stop();
-		arm.setChecked(false);
-		fire.setEnabled(false);
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-		doUnbindService();
-	}
+    @Override
+    protected void onStop() {
+        super.onStop();
+        doUnbindService();
+    }
 }

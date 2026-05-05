@@ -18,8 +18,7 @@
  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
 
 -->
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/manage_frequencies"
@@ -51,7 +50,8 @@
 	android:id="@+id/set_frequency"
 	android:layout_width="0dp"
 	android:layout_height="wrap_content"
-	android:padding="@dimen/dialog_padding"
+        android:autofillHints=""
+        android:padding="@dimen/dialog_padding"
 	android:hint="@string/frequency"
 	android:inputType="number|numberDecimal"
         android:textAppearance="@style/ValueText"
@@ -78,7 +78,9 @@
 	android:id="@+id/set_description"
 	android:layout_width="0dp"
 	android:layout_height="wrap_content"
-	android:padding="@dimen/dialog_padding"
+        android:autofillHints=""
+        android:inputType="text"
+        android:padding="@dimen/dialog_padding"
 	android:hint="@string/description"
         android:textAppearance="@style/ValueText"
         app:layout_constraintStart_toEndOf="@id/mhz"
@@ -147,15 +149,21 @@
         android:background="?android:attr/listDivider"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/button_barrier"/>
+        app:layout_constraintTop_toBottomOf="@id/button_barrier"
+        tools:ignore="SmallSp" />
 
     <ListView
         android:id="@+id/frequencies"
         android:layout_width="match_parent"
         android:layout_height="0dp"
 	android:fadeScrollbars="false"
-	android:scrollbars="vertical"
+        android:focusable="true"
+        android:scrollbars="vertical"
 	android:choiceMode="singleChoice"
+        android:clickable="true"
+        android:listSelector="?attr/colorPrimary"
+        android:paddingHorizontal="@dimen/table_padding_start"
+        android:paddingVertical="@dimen/table_padding_vertical"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/button_line"

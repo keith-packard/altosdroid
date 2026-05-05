@@ -18,290 +18,260 @@
 
 package org.altusmetrum.altosdroid;
 
-import java.util.*;
 import java.text.*;
 
 import android.app.Activity;
 import android.content.*;
-import android.graphics.*;
 import android.os.*;
 import android.view.*;
-import android.view.View.*;
 import android.view.inputmethod.*;
 import android.widget.*;
 
+import org.altusmetrum.altosdroid.databinding.ManageFrequenciesBinding;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.altusmetrum.altoslib_14.*;
 
 class FrequencyItem {
-	public AltosFrequency frequency;
-	public LinearLayout frequency_view = null;
-	public TextView	pretty_view = null;
+    public AltosFrequency frequency;
+    public LinearLayout frequency_view = null;
+    public TextView	pretty_view = null;
 
-	private void update() {
-		if (pretty_view != null && frequency != null)
-			pretty_view.setText(frequency.toString());
-	}
+    private void update() {
+        if (pretty_view != null && frequency != null)
+            pretty_view.setText(frequency.toString());
+    }
 
-	public void realize(LinearLayout frequency_view,
-			    TextView pretty_view) {
-		if (frequency_view != this.frequency_view ||
-		    pretty_view != this.pretty_view)
-		{
-			this.frequency_view = frequency_view;
-			this.pretty_view = pretty_view;
-			update();
-		}
-	}
+    public void realize(LinearLayout frequency_view,
+                        TextView pretty_view) {
+        if (frequency_view != this.frequency_view ||
+            pretty_view != this.pretty_view)
+        {
+            this.frequency_view = frequency_view;
+            this.pretty_view = pretty_view;
+            update();
+        }
+    }
 
-	public void set_frequency(AltosFrequency frequency) {
-		this.frequency = frequency;
-		update();
-	}
+    public void set_frequency(AltosFrequency frequency) {
+        this.frequency = frequency;
+        update();
+    }
 
-	public FrequencyItem(AltosFrequency frequency) {
-		this.frequency = frequency;
-	}
+    public FrequencyItem(AltosFrequency frequency) {
+        this.frequency = frequency;
+    }
 }
 
 class FrequencyAdapter extends ArrayAdapter<FrequencyItem> {
-	int resource;
-	int selected_item = -1;
+    int resource;
+    int selected_item = -1;
 
-	public FrequencyAdapter(Context context, int in_resource) {
-		super(context, in_resource);
-		resource = in_resource;
-	}
+    public FrequencyAdapter(Context context, int in_resource) {
+        super(context, in_resource);
+        resource = in_resource;
+    }
 
-	public int count() {
-		int	count;
+    public int count() {
+        int	count;
 
-		for (count = 0;; count++) {
-			try {
-				getItem(count);
-			} catch (IndexOutOfBoundsException ie) {
-				return count;
-			}
-		}
-	}
+        for (count = 0;; count++) {
+            try {
+                getItem(count);
+            } catch (IndexOutOfBoundsException ie) {
+                return count;
+            }
+        }
+    }
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		FrequencyItem item = getItem(position);
-		if (item.frequency_view == null) {
-			LinearLayout frequency_view = new LinearLayout(getContext());
-			String inflater = Context.LAYOUT_INFLATER_SERVICE;
-			LayoutInflater li = (LayoutInflater) getContext().getSystemService(inflater);
-			li.inflate(resource, frequency_view, true);
+    @NonNull
+    @Override
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+        FrequencyItem item = getItem(position);
+        assert item != null;
+        if (item.frequency_view == null) {
+            LinearLayout frequency_view = new LinearLayout(getContext());
+            String inflater = Context.LAYOUT_INFLATER_SERVICE;
+            LayoutInflater li = (LayoutInflater) getContext().getSystemService(inflater);
+            li.inflate(resource, frequency_view, true);
 
-			item.realize(frequency_view,
-				     (TextView) frequency_view.findViewById(R.id.frequency));
-		}
-		if (position == selected_item)
-			item.frequency_view.setBackgroundColor(Color.RED);
-		else
-			item.frequency_view.setBackgroundColor(0);
-		return item.frequency_view;
-	}
+            item.realize(frequency_view,
+                frequency_view.findViewById(R.id.frequency));
+        }
+        return item.frequency_view;
+    }
 }
 
 public class ManageFrequenciesActivity extends AppCompatActivity {
-	private ListView frequencies_view;
+    ManageFrequenciesBinding binding;
 
-	private Button set;
-	private Button remove;
-	private Button done;
+    private FrequencyAdapter frequencies_adapter;
 
-	private EditText set_frequency;
-	private EditText set_description;
+    private boolean changed = false;
 
-	private HashMap<String,FrequencyItem> frequencies = new HashMap<String,FrequencyItem>();;
+    private void done() {
 
-	private FrequencyAdapter frequencies_adapter;
+        set();
 
-	private boolean is_bound;
-	private boolean changed = false;
+        if (changed) {
+            AltosFrequency[] frequencies = new AltosFrequency[frequencies_adapter.count()];
+            for (int i = 0; i < frequencies.length; i++)
+                frequencies[i] = frequencies_adapter.getItem(i).frequency;
+            AltosPreferences.set_common_frequencies(frequencies);
+        }
 
-	private void done() {
+        Intent intent = new Intent();
+        setResult(Activity.RESULT_OK, intent);
+        finish();
+    }
 
-		set();
+    private void load_item() {
+        if (frequencies_adapter.selected_item >= 0) {
+            FrequencyItem item = frequencies_adapter.getItem(frequencies_adapter.selected_item);
 
-		if (changed) {
-			AltosFrequency[] frequencies = new AltosFrequency[frequencies_adapter.count()];
-			for (int i = 0; i < frequencies.length; i++)
-				frequencies[i] = frequencies_adapter.getItem(i).frequency;
-			AltosPreferences.set_common_frequencies(frequencies);
-		}
+            assert item != null;
+            binding.setFrequency.setText(item.frequency.frequency_string());
+            binding.setDescription.setText(item.frequency.description);
+        } else {
+            binding.setFrequency.setText("");
+            binding.setDescription.setText("");
+        }
+    }
 
-		Intent intent = new Intent();
-		setResult(Activity.RESULT_OK, intent);
-		finish();
-	}
+    private void select_item(int position) {
+        if (position != frequencies_adapter.selected_item) {
+            if (frequencies_adapter.selected_item >= 0)
+                binding.frequencies.setItemChecked(frequencies_adapter.selected_item, false);
+            if (position >= 0)
+                binding.frequencies.setItemChecked(position, true);
+            frequencies_adapter.selected_item = position;
+        } else {
+            if (frequencies_adapter.selected_item >= 0)
+                binding.frequencies.setItemChecked(frequencies_adapter.selected_item, false);
+            frequencies_adapter.selected_item = -1;
+        }
+        load_item();
+    }
 
-	private void load_item() {
-		if (frequencies_adapter.selected_item >= 0) {
-			FrequencyItem item = frequencies_adapter.getItem(frequencies_adapter.selected_item);
+    private int find(AltosFrequency frequency) {
+        for (int pos = 0; pos < frequencies_adapter.getCount(); pos++) {
+            FrequencyItem	item = frequencies_adapter.getItem(pos);
+            assert item != null;
+            if (item.frequency.frequency == frequency.frequency &&
+                item.frequency.description.equals(frequency.description))
+                return pos;
+        }
+        return -1;
+    }
 
-			set_frequency.setText(item.frequency.frequency_string());
-			set_description.setText(item.frequency.description);
-		} else {
-			set_frequency.setText("");
-			set_description.setText("");
-		}
-	}
+    private int insert_item(AltosFrequency frequency) {
+        FrequencyItem new_item = new FrequencyItem(frequency);
+        int	pos;
+        for (pos = 0; pos < frequencies_adapter.getCount(); pos++) {
+            FrequencyItem	item = frequencies_adapter.getItem(pos);
+            assert item != null;
+            if (item.frequency.frequency == new_item.frequency.frequency) {
+                item.set_frequency(frequency);
+                return pos;
+            }
+            if (item.frequency.frequency > new_item.frequency.frequency)
+                break;
+        }
+        frequencies_adapter.insert(new_item, pos);
+        return pos;
+    }
 
-	private void select_item(int position) {
-		if (position != frequencies_adapter.selected_item) {
-			if (frequencies_adapter.selected_item >= 0)
-				frequencies_view.setItemChecked(frequencies_adapter.selected_item, false);
-			if (position >= 0)
-				frequencies_view.setItemChecked(position, true);
-			frequencies_adapter.selected_item = position;
-		} else {
-			if (frequencies_adapter.selected_item >= 0)
-				frequencies_view.setItemChecked(frequencies_adapter.selected_item, false);
-			frequencies_adapter.selected_item = -1;
-		}
-		load_item();
-	}
+    private class FrequencyItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> av, View v, int position, long id) {
+            select_item(position);
+        }
+    }
 
-	private int find(AltosFrequency frequency) {
-		for (int pos = 0; pos < frequencies_adapter.getCount(); pos++) {
-			FrequencyItem	item = frequencies_adapter.getItem(pos);
-			if (item.frequency.frequency == frequency.frequency &&
-			    item.frequency.description.equals(frequency.description))
-				return pos;
-		}
-		return -1;
-	}
+    private void hide_keyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+        View view = getCurrentFocus();
+        if (view != null)
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
 
-	private int insert_item(AltosFrequency frequency) {
-		FrequencyItem new_item = new FrequencyItem(frequency);
-		int	pos;
-		for (pos = 0; pos < frequencies_adapter.getCount(); pos++) {
-			FrequencyItem	item = frequencies_adapter.getItem(pos);
-			if (item.frequency.frequency == new_item.frequency.frequency) {
-				item.set_frequency(frequency);
-				return pos;
-			}
-			if (item.frequency.frequency > new_item.frequency.frequency)
-				break;
-		}
-		frequencies_adapter.insert(new_item, pos);
-		return pos;
-	}
+    private void set() {
+        String	frequency_text = binding.setFrequency.getEditableText().toString();
+        String	description_text = binding.setDescription.getEditableText().toString();
 
-	private class FrequencyItemClickListener implements ListView.OnItemClickListener {
-		@Override
-		public void onItemClick(AdapterView<?> av, View v, int position, long id) {
-			select_item(position);
-		}
-	}
+        try {
+            double	f = AltosParse.parse_double_locale(frequency_text);
+            AltosFrequency frequency = new AltosFrequency(f, description_text);
+            int pos;
 
-	private void hide_keyboard() {
-		InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-		View view = getCurrentFocus();
-		if (view != null)
-			imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-	}
+            pos = find(frequency);
+            if (pos < 0) {
+                pos = insert_item(frequency);
+                changed = true;
+            }
+            frequencies_adapter.selected_item = -1;
+            select_item(pos);
+        } catch (ParseException ignored) {
+        }
+        hide_keyboard();
+    }
 
-	private void set() {
-		String	frequency_text = set_frequency.getEditableText().toString();
-		String	description_text = set_description.getEditableText().toString();
+    private void remove() {
+        if (frequencies_adapter.selected_item >= 0) {
+            frequencies_adapter.remove(frequencies_adapter.getItem(frequencies_adapter.selected_item));
+            select_item(-1);
+            binding.frequencies.setAdapter(frequencies_adapter);
+            changed = true;
+        }
+    }
 
-		try {
-			double	f = AltosParse.parse_double_locale(frequency_text);
-			AltosFrequency frequency = new AltosFrequency(f, description_text);
-			int pos;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        //setTheme(AltosDroid.dialog_themes[AltosDroidPreferences.font_size()]);
+        super.onCreate(savedInstanceState);
 
-			pos = find(frequency);
-			if (pos < 0) {
-				pos = insert_item(frequency);
-				changed = true;
-			}
-			frequencies_adapter.selected_item = -1;
-			select_item(pos);
-		} catch (ParseException pe) {
-		}
-		hide_keyboard();
-	}
+        // Setup the window
+        binding = ManageFrequenciesBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-	private void remove() {
-		if (frequencies_adapter.selected_item >= 0) {
-			frequencies_adapter.remove(frequencies_adapter.getItem(frequencies_adapter.selected_item));
-			select_item(-1);
-			frequencies_view.setAdapter(frequencies_adapter);
-			changed = true;
-		}
-	}
+        ActivityLayouts.applyEdgeToEdge(this, R.id.manage_frequencies);
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		//setTheme(AltosDroid.dialog_themes[AltosDroidPreferences.font_size()]);
-		super.onCreate(savedInstanceState);
+        frequencies_adapter = new FrequencyAdapter(this, R.layout.frequency);
 
-		// Setup the window
-		setContentView(R.layout.manage_frequencies);
-                ActivityLayouts.applyEdgeToEdge(this, R.id.manage_frequencies);
+        binding.frequencies.setAdapter(frequencies_adapter);
+        binding.frequencies.setOnItemClickListener(new FrequencyItemClickListener());
 
-		frequencies_view = (ListView) findViewById(R.id.frequencies);
-		frequencies_view.setClickable(true);
+        AltosFrequency[] frequencies = AltosPreferences.common_frequencies();
+        for (AltosFrequency frequency : frequencies)
+            insert_item(frequency);
 
-		frequencies_adapter = new FrequencyAdapter(this, R.layout.frequency);
+        binding.set.setOnClickListener(v -> set());
+        binding.remove.setOnClickListener(v -> remove());
+        binding.done.setOnClickListener(v -> done());
 
-		frequencies_view.setAdapter(frequencies_adapter);
-		frequencies_view.setOnItemClickListener(new FrequencyItemClickListener());
+        // Set result CANCELED in case the user backs out
+        setResult(Activity.RESULT_CANCELED);
+    }
 
-		AltosFrequency[] frequencies = AltosPreferences.common_frequencies();
-		for (AltosFrequency frequency : frequencies)
-			insert_item(frequency);
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
 
-		set_frequency = (EditText) findViewById(R.id.set_frequency);
-		set_description = (EditText) findViewById(R.id.set_description);
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 
-		set = (Button) findViewById(R.id.set);
-		set.setOnClickListener(new OnClickListener() {
-				public void onClick(View v) {
-					set();
-				}
-			});
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
 
-		remove = (Button) findViewById(R.id.remove);
-		remove.setOnClickListener(new OnClickListener() {
-				public void onClick(View v) {
-					remove();
-				}
-			});
-
-		done = (Button) findViewById(R.id.done);
-		done.setOnClickListener(new OnClickListener() {
-				public void onClick(View v) {
-					done();
-				}
-			});
-
-		// Set result CANCELED incase the user backs out
-		setResult(Activity.RESULT_CANCELED);
-	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-	}
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
 }

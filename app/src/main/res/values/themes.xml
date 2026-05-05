@@ -35,8 +35,11 @@
         <item name="android:navigationBarDividerColor">@color/foreground</item>
 
         <!-- widget themes -->
+        <item name="buttonStyle">@style/Widget.App.Button</item>
+        <item name="android:buttonStyle">@style/Widget.App.Button</item>
         <item name="radioButtonStyle">@style/Widget.App.RadioButton</item>
         <item name="android:radioButtonStyle">@style/Widget.App.RadioButton</item>
+        <item name="android:buttonStyleToggle">@style/Widget.App.ToggleButton</item>
         <item name="switchStyle">@style/Widget.App.Switch</item>
         <item name="android:switchStyle">@style/Widget.App.Switch</item>
         <item name="android:textViewStyle">@style/Widget.App.TextView</item>
@@ -86,8 +89,11 @@
         <item name="android:navigationBarDividerColor">@color/foreground</item>
 
         <!-- widget themes -->
+        <item name="buttonStyle">@style/Widget.App.Button</item>
+        <item name="android:buttonStyle">@style/Widget.App.Button</item>
         <item name="radioButtonStyle">@style/Widget.App.RadioButton</item>
         <item name="android:radioButtonStyle">@style/Widget.App.RadioButton</item>
+        <item name="android:buttonStyleToggle">@style/Widget.App.ToggleButton</item>
         <item name="switchStyle">@style/Widget.App.Switch</item>
         <item name="android:switchStyle">@style/Widget.App.Switch</item>
         <item name="android:textViewStyle">@style/Widget.App.TextView</item>
@@ -104,8 +110,20 @@
     </style>
 
     <!-- widget themes -->
+    <style name="Widget.App.Button" parent="android:Widget.DeviceDefault.Button">
+        <item name="android:backgroundTint">@color/altus_orange_switch</item>
+        <item name="backgroundColor">#00ff00</item>
+        <item name="android:textAppearance">@style/ButtonText</item>
+        <item name="textAppearanceBodyMedium">@style/ButtonText</item>
+    </style>
     <style name="Widget.App.RadioButton" parent="Widget.MaterialComponents.CompoundButton.RadioButton">
-        <item name="android:textAppearance">@style/ButtonText</item>"
+        <item name="android:textAppearance">@style/ButtonText</item>
+        <item name="textAppearanceBodyMedium">@style/ButtonText</item>
+    </style>
+    <style name="Widget.App.ToggleButton" parent="android:Widget.DeviceDefault.Button.Toggle">
+        <item name="backgroundColor">#ff0000</item>
+        <item name="android:backgroundTint">@color/altus_orange_switch</item>
+        <item name="android:textAppearance">@style/ButtonText</item>
         <item name="textAppearanceBodyMedium">@style/ButtonText</item>
     </style>
     <style name="Widget.App.TextView" parent="Widget.MaterialComponents.TextView">

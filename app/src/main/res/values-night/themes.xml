@@ -37,6 +37,7 @@
         <!-- widget themes -->
         <item name="radioButtonStyle">@style/Widget.App.RadioButton</item>
         <item name="android:radioButtonStyle">@style/Widget.App.RadioButton</item>
+        <item name="android:buttonStyleToggle">@style/Widget.App.ToggleButton</item>
         <item name="switchStyle">@style/Widget.App.Switch</item>
         <item name="android:switchStyle">@style/Widget.App.Switch</item>
         <item name="android:textViewStyle">@style/Widget.App.TextView</item>
@@ -89,6 +90,7 @@
         <!-- widget themes -->
         <item name="radioButtonStyle">@style/Widget.App.RadioButton</item>
         <item name="android:radioButtonStyle">@style/Widget.App.RadioButton</item>
+        <item name="android:buttonStyleToggle">@style/Widget.App.ToggleButton</item>
         <item name="switchStyle">@style/Widget.App.Switch</item>
         <item name="android:switchStyle">@style/Widget.App.Switch</item>
         <item name="android:textViewStyle">@style/Widget.App.TextView</item>
@@ -106,11 +108,16 @@
 
     <!-- widget themes -->
     <style name="Widget.App.RadioButton" parent="Widget.MaterialComponents.CompoundButton.RadioButton">
-        <item name="android:textAppearance">@style/ButtonText</item>"
+        <item name="android:textAppearance">@style/ButtonText</item>
+        <item name="textAppearanceBodyMedium">@style/ButtonText</item>
+    </style>
+    <style name="Widget.App.ToggleButton" parent="android:Widget.DeviceDefault.Button.Toggle">
+        <item name="android:backgroundTint">@color/altus_orange_switch</item>
+        <item name="android:textAppearance">@style/ButtonText</item>
         <item name="textAppearanceBodyMedium">@style/ButtonText</item>
     </style>
     <style name="Widget.App.TextView" parent="Widget.MaterialComponents.TextView">
-        <item name="android:textAppearance">@style/ValueText</item>"
+        <item name="android:textAppearance">@style/ValueText</item>
         <item name="android:textColor">@color/button_switch</item>
     </style>
     <style name="Widget.App.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
