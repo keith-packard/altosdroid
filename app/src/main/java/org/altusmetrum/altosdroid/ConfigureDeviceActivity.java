@@ -436,19 +436,21 @@ public class ConfigureDeviceActivity extends AppCompatActivity
             group_visible(binding.beeperUnitsGroup, config_data.report_feet);
 
             /* flight log size */
-            FlightLogSize[] max_values = flightLogMaxValues(config_data);
-            String[] max_strings = new String[max_values.length];
-            String log_size = null;
-            int log_kb = config_data.flight_log_max;
-            for (int i = 0; i < max_values.length; i++) {
-                max_strings[i] = max_values[i].toString();
-                if (max_values[i].size_kb == log_kb)
-                    log_size = max_strings[i];
+            if (config_data.flight_log_max != AltosLib.MISSING) {
+                FlightLogSize[] max_values = flightLogMaxValues(config_data);
+                String[] max_strings = new String[max_values.length];
+                String log_size = null;
+                int log_kb = config_data.flight_log_max;
+                for (int i = 0; i < max_values.length; i++) {
+                    max_strings[i] = max_values[i].toString();
+                    if (max_values[i].size_kb == log_kb)
+                        log_size = max_strings[i];
+                }
+                if (log_size == null)
+                    log_size = Integer.toString(log_kb);
+                setMenu(binding.flightLogSize, max_strings);
+                binding.flightLogSize.setText(log_size, false);
             }
-            if (log_size == null)
-                log_size = Integer.toString(log_kb);
-            setMenu(binding.flightLogSize, max_strings);
-            binding.flightLogSize.setText(log_size, false);
             group_visible(binding.flightLogSizeGroup,
                           config_data.flight_log_max != AltosLib.MISSING &&
                           config_data.flight_log_max_enabled());
@@ -465,6 +467,8 @@ public class ConfigureDeviceActivity extends AppCompatActivity
                                                                                 config_data.serial));
                 AltosFrequency af = AltosPreferences.add_common_frequency(naf);
                 binding.frequency.setText(af.toShortString(), false);
+                if (af == naf)
+                    setMenu(binding.frequency, frequencyValues());
             }
             group_visible(binding.frequencyGroup, frequency);
 
@@ -482,6 +486,29 @@ public class ConfigureDeviceActivity extends AppCompatActivity
             if (config_data.telemetry_rate != AltosLib.MISSING)
                 setMenuItem(binding.telemetryRate, R.array.telemetry_rate_values, config_data.telemetry_rate);
             group_visible(binding.telemetryRateGroup, config_data.telemetry_rate);
+
+            /* AES key */
+            if (config_data.aes_key != null) {
+                AltosAesKey nak = new AltosAesKey(config_data.aes_key,
+                                                  String.format("%s serial %d",
+                                                                config_data.product,
+                                                                config_data.serial));
+                AltosAesKey ak = AltosPreferences.add_common_aes_key(nak);
+                binding.aes.setText(ak.toShortString(), false);
+                if (ak == nak)
+                    setMenu(binding.aes, aesKeyValues());
+            }
+            group_visible(binding.aesGroup, config_data.aes_key != null);
+
+            /* Pad box */
+            if (config_data.pad_box != AltosLib.MISSING)
+                binding.padBox.setText(Integer.toString(config_data.pad_box), false);
+            group_visible(binding.padBoxGroup, config_data.pad_box);
+
+            /* Pad idle */
+            if (config_data.pad_idle != AltosLib.MISSING)
+                binding.padIdle.setText(Integer.toString(config_data.pad_idle), false);
+            group_visible(binding.padIdleGroup, config_data.pad_idle);
 
             /* APRS interval */
             if (config_data.aprs_interval != AltosLib.MISSING) {
@@ -629,6 +656,14 @@ public class ConfigureDeviceActivity extends AppCompatActivity
         return frequencyValues;
     }
 
+    public String[] aesKeyValues() {
+        AltosAesKey[] aes_keys = AltosPreferences.common_aes_keys();
+        String[] aesKeyValues = new String[aes_keys.length];
+        for (int i = 0; i < aes_keys.length; i++)
+            aesKeyValues[i] = aes_keys[i].toShortString();
+        return aesKeyValues;
+    }
+
     private void
     set_units(boolean imperial_units) {
 
@@ -699,7 +734,8 @@ public class ConfigureDeviceActivity extends AppCompatActivity
             binding.mainDeploy, binding.apogeeDelay, binding.apogeeLockout,
             binding.igniterMode, binding.padOrientation, binding.beeperFrequency,
             binding.beeperUnits, binding.flightLogSize, binding.call,
-            binding.frequency, binding.telemetryRate, binding.aprsInterval,
+            binding.frequency, binding.telemetryRate, binding.aes,
+            binding.padBox, binding.padIdle, binding.aprsInterval,
             binding.aprsOffset, binding.aprsSsid, binding.aprsFormat,
             binding.trackerMotion, binding.trackerInterval, binding.accelCalPlus,
             binding.accelCalMinus,
@@ -728,6 +764,7 @@ public class ConfigureDeviceActivity extends AppCompatActivity
             binding.pyroStateLessGroup,
             binding.pyroTimeGreaterGroup,
             binding.pyroTimeLessGroup,
+            binding.pyroMotorGroup,
         };
         pyroGroups = _pyroGroups;
 
@@ -742,6 +779,9 @@ public class ConfigureDeviceActivity extends AppCompatActivity
         setMenu(binding.beeperUnits, R.array.beeper_units_values);
         setMenu(binding.frequency, frequencyValues());
         setMenu(binding.telemetryRate, R.array.telemetry_rate_values);
+        setMenu(binding.aes, aesKeyValues());
+        setMenu(binding.padBox, R.array.pad_box_values);
+        setMenu(binding.padIdle, R.array.pad_idle_values);
         setMenu(binding.aprsInterval, R.array.aprs_interval_values);
         setMenu(binding.aprsOffset, R.array.aprs_offset_values);
         setMenu(binding.aprsSsid, R.array.aprs_ssid_values);
@@ -851,17 +891,40 @@ public class ConfigureDeviceActivity extends AppCompatActivity
     public String callsign() {
         if (config_data.callsign == null)
             return null;
-        if (binding.callGroup.getVisibility() == View.VISIBLE)
-            return binding.call.getEditableText().toString();
-        return null;
+        return binding.call.getEditableText().toString();
     }
 
     public int telemetry_rate() throws AltosConfigDataException{
         if (config_data.telemetry_rate == AltosLib.MISSING)
             return AltosLib.MISSING;
-        if (binding.telemetryRateGroup.getVisibility() != View.VISIBLE)
-            return AltosLib.MISSING;
         return getMenuItem(binding.telemetryRate, R.array.telemetry_rate_values);
+    }
+
+    public String aes_key() {
+        if (config_data.aes_key == null)
+            return null;
+        String[] strs = binding.aes.getEditableText().toString().split("\\s+");
+        AltosAesKey aes_key = new AltosAesKey(strs[0], strs[1]);
+        if (AltosPreferences.add_common_aes_key(aes_key, true) == aes_key) {
+            setMenu(binding.aes, aesKeyValues());
+        }
+        return strs[0];
+    }
+
+    public int pad_box() throws AltosConfigDataException {
+        if (config_data.pad_box == AltosLib.MISSING)
+            return AltosLib.MISSING;
+        return parse_int("Pad box",
+                         binding.padBox.getEditableText().toString(),
+                         false);
+    }
+
+    public int pad_idle() throws AltosConfigDataException {
+        if (config_data.pad_idle == AltosLib.MISSING)
+            return AltosLib.MISSING;
+        return parse_int("Pad idle timeout",
+                         binding.padIdle.getEditableText().toString(),
+                         false);
     }
 
     public int flight_log_max() throws AltosConfigDataException {
@@ -933,7 +996,7 @@ public class ConfigureDeviceActivity extends AppCompatActivity
     }
 
     public int beep() throws AltosConfigDataException {
-        if (binding.beeperFrequencyGroup.getVisibility() != View.VISIBLE)
+        if (config_data.beep == AltosLib.MISSING)
             return AltosLib.MISSING;
         String value = binding.beeperFrequency.getEditableText().toString();
         return AltosConvert.beep_freq_to_value(parse_int("Beeper Frequency",
@@ -1029,6 +1092,15 @@ public class ConfigureDeviceActivity extends AppCompatActivity
     }
 
     public void set_telemetry_rate(int new_telemetry_rate) {
+    }
+
+    public void set_aes_key(String new_aes_key) {
+    }
+
+    public void set_pad_box(int new_pad_box) {
+    }
+
+    public void set_pad_idle(int new_pad_idle) {
     }
 
     public void set_flight_log_max(int new_flight_log_max) {

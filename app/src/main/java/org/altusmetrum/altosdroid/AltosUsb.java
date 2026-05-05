@@ -136,7 +136,12 @@ public class AltosUsb extends AltosDroidLink {
                 return;
             }
 
-            connection = manager.openDevice(device);
+            connection = null;
+
+            try {
+                connection = manager.openDevice(device);
+            } catch (Exception e) {
+            }
 
             if (connection == null) {
                 AltosDebug.debug("openDevice failed");

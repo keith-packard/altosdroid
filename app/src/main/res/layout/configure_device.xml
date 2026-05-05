@@ -700,6 +700,169 @@
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="telemetry_rate_label,telemetry_rate_layout"/>
 
+<!-- AES key -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/aes_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="aes_label,aes_layout"/>
+
+            <TextView
+                android:id="@+id/aes_label"
+                android:text="@string/aes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/telemetry_rate_barrier"
+                app:layout_constraintBottom_toBottomOf="@id/aes_barrier"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/aes_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:text="@string/aes"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/telemetry_rate_barrier"
+                app:layout_constraintBottom_toBottomOf="@id/aes_barrier">
+
+                <AutoCompleteTextView
+                    android:id="@+id/aes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:completionThreshold="10000"
+                    android:inputType="textMultiLine"
+                    android:lines="2"
+                    android:textAppearance="@style/ValueText"
+                    android:minHeight="48dp"
+                    android:text="" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/aes_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="aes_label,aes_layout"/>
+
+<!-- pad box -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/pad_box_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="pad_box_label,pad_box_layout"/>
+
+            <TextView
+                android:id="@+id/pad_box_label"
+                android:text="@string/pad_box"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/aes_barrier"
+                app:layout_constraintBottom_toBottomOf="@id/pad_box_barrier"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/pad_box_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:text="@string/pad_box"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/aes_barrier"
+                app:layout_constraintBottom_toBottomOf="@id/pad_box_barrier">
+
+                <AutoCompleteTextView
+                    android:id="@+id/pad_box"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:completionThreshold="100"
+                    android:inputType="none"
+                    android:textAppearance="@style/ValueText"
+                    android:minHeight="48dp"
+                    android:text="" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/pad_box_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="pad_box_label,pad_box_layout"/>
+
+<!-- pad idle -->
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/pad_idle_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="pad_idle_label,pad_idle_layout"/>
+
+            <TextView
+                android:id="@+id/pad_idle_label"
+                android:text="@string/pad_idle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/LabelText"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/pad_box_barrier"
+                app:layout_constraintBottom_toBottomOf="@id/pad_idle_barrier"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/pad_idle_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:text="@string/pad_idle"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/guideline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/pad_box_barrier"
+                app:layout_constraintBottom_toBottomOf="@id/pad_idle_barrier">
+
+                <AutoCompleteTextView
+                    android:id="@+id/pad_idle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:completionThreshold="100"
+                    android:inputType="none"
+                    android:textAppearance="@style/ValueText"
+                    android:minHeight="48dp"
+                    android:text="" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/pad_idle_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="pad_idle_label,pad_idle_layout"/>
+
 <!-- APRS interval -->
 
             <androidx.constraintlayout.widget.Group
@@ -717,7 +880,7 @@
                 app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/guideline"
-                app:layout_constraintTop_toBottomOf="@id/telemetry_rate_barrier"
+                app:layout_constraintTop_toBottomOf="@id/pad_idle_barrier"
                 app:layout_constraintBottom_toTopOf="@id/aprs_interval_barrier"/>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -731,7 +894,7 @@
                 app:layout_constraintBottom_toTopOf="@id/aprs_interval_barrier"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/guideline"
-                app:layout_constraintTop_toBottomOf="@id/telemetry_rate_barrier">
+                app:layout_constraintTop_toBottomOf="@id/pad_idle_barrier">
 
                 <AutoCompleteTextView
                     android:id="@+id/aprs_interval"

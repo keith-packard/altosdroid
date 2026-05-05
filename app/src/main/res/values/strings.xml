@@ -264,6 +264,34 @@
     <string name="radio_10mw">Max TX Power</string>
     <string name="limited">10mW Limit</string>
 
+    <string name="aes">AES Key</string>
+
+    <string name="pad_box">Pad Box</string>
+
+    <string-array name="pad_box_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+    </string-array>
+
+    <string name="pad_idle">Pad Box Timeout</string>
+
+    <string-array name="pad_idle_values">
+        <item>10</item>
+        <item>30</item>
+        <item>120</item>
+        <item>600</item>
+        <item>3600</item>
+    </string-array>
+
+    <string name="pad_timeout">LCO Idle Timeout (s)</string>
+
     <string name="aprs_offset">APRS Offset</string>
 
     <string-array name="aprs_offset_values">
