@@ -243,6 +243,7 @@ public class ManageFrequenciesActivity extends AppCompatActivity {
 
 		// Setup the window
 		setContentView(R.layout.manage_frequencies);
+                ActivityLayouts.applyEdgeToEdge(this, R.id.manage_frequencies);
 
 		frequencies_view = (ListView) findViewById(R.id.frequencies);
 		frequencies_view.setClickable(true);
