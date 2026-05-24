@@ -18,9 +18,9 @@
 package org.altusmetrum.altosdroid;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Point;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -28,8 +28,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnCameraIdleListener;
-import com.google.android.gms.maps.GoogleMap.OnCameraMoveCanceledListener;
-import com.google.android.gms.maps.GoogleMap.OnCameraMoveListener;
 import com.google.android.gms.maps.GoogleMap.OnCameraMoveStartedListener;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.Projection;
@@ -44,7 +42,6 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.RoundCap;
 
 import org.altusmetrum.altosdroid.ui.map.MapFragment;
-import org.altusmetrum.altoslib_14.AltosLatLon;
 import org.altusmetrum.altoslib_14.AltosLaunchSite;
 import org.altusmetrum.altoslib_14.AltosLib;
 import org.altusmetrum.altoslib_14.AltosMap;
@@ -54,15 +51,15 @@ import org.altusmetrum.altoslib_14.AltosState;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
-class RocketOnline implements Comparable {
+class RocketOnline implements Comparable<RocketOnline> {
     private Marker      marker;
-    private AltosMarker altos_marker;
-    private int		serial;
+    private final AltosMarker altos_marker;
+    private final int		serial;
     private long	last_packet;
-    private int		width, height;
+    private final int		width;
     private double      lat, lon;
     private boolean     is_target;
 
@@ -98,7 +95,7 @@ class RocketOnline implements Comparable {
         return serial;
     }
 
-    synchronized void set_map(Context context, GoogleMap map) {
+    synchronized void set_map(Context ignoredContext, GoogleMap map) {
         if (marker == null && map != null) {
             this.marker = map.addMarker(new MarkerOptions()
                                         .icon(BitmapDescriptorFactory.fromBitmap(altos_marker.bitmap))
@@ -113,9 +110,7 @@ class RocketOnline implements Comparable {
         return last_packet;
     }
 
-    public int compareTo(Object o) {
-        RocketOnline other = (RocketOnline) o;
-
+    public int compareTo(RocketOnline other) {
         long	diff = last_packet() - other.last_packet();
 
         if (diff > 0)
@@ -129,7 +124,6 @@ class RocketOnline implements Comparable {
         this.serial = serial;
         this.altos_marker = new RocketMarker(context, serial);
         this.width = altos_marker.width;
-        this.height = altos_marker.height;
         set_position(lat, lon, last_packet, is_target);
         set_map(context, map);
     }
@@ -143,7 +137,7 @@ public class AltosDroidMapOnline implements
                                  AltosDroidMapInterface,
                                  AltosMapTypeListener {
 
-    private final HashMap<Integer,RocketOnline> rockets = new HashMap<Integer,RocketOnline>();
+    private final ConcurrentHashMap<Integer,RocketOnline> rockets = new ConcurrentHashMap<>();
 
     private GoogleMap mMap;
     private final MapFragment map_fragment;
@@ -193,7 +187,7 @@ public class AltosDroidMapOnline implements
          * user has installed Google Play services and returned to the app.
          */
         @Override
-        public void onMapReady(GoogleMap googleMap) {
+        public void onMapReady(@NonNull GoogleMap googleMap) {
             mMap = googleMap;
             mMap.getUiSettings().setTiltGesturesEnabled(false);
             mMap.getUiSettings().setZoomControlsEnabled(false);
@@ -264,8 +258,8 @@ public class AltosDroidMapOnline implements
         }
     }
 
-    public void onMapClick(LatLng lat_lng) {
-        ArrayList<Integer> near = new ArrayList<Integer>();
+    public void onMapClick(@NonNull LatLng lat_lng) {
+        ArrayList<Integer> near = new ArrayList<>();
 
         for (RocketOnline rocket : sorted_rockets()) {
             LatLng	pos = rocket.get_position();
@@ -278,7 +272,7 @@ public class AltosDroidMapOnline implements
                 near.add(rocket.serial());
         }
 
-        if (near.size() != 0)
+        if (!near.isEmpty())
             altos_droid.touch_trackers(near.toArray(new Integer[0]));
     }
 
@@ -313,6 +307,7 @@ public class AltosDroidMapOnline implements
 
         if (rockets.containsKey(serial)) {
             rocket = rockets.get(serial);
+            assert rocket != null;
             rocket.set_position(state.gps.lat, state.gps.lon, state.received_time, is_target);
         } else {
             rocket = new RocketOnline(altos_droid,
@@ -326,6 +321,7 @@ public class AltosDroidMapOnline implements
     /* Only called from set_telem_state, must hold rockets locked */
     private void remove_rocket(int serial) {
         RocketOnline rocket = rockets.get(serial);
+        assert rocket != null;
         rocket.remove();
         rockets.remove(serial);
     }
@@ -368,7 +364,7 @@ public class AltosDroidMapOnline implements
         if (launch_sites != null && mMap != null) {
             for (AltosLaunchSite site : launch_sites) {
                 AltosMarker launch_site_marker = new LaunchSiteMarker(context, site.name);
-                Marker marker = mMap.addMarker(
+                mMap.addMarker(
                     new MarkerOptions().icon(BitmapDescriptorFactory.fromBitmap(launch_site_marker.bitmap))
                         .position(new LatLng(site.latitude, site.longitude))
                         .anchor(launch_site_marker.off_x, launch_site_marker.off_y)
@@ -413,7 +409,7 @@ public class AltosDroidMapOnline implements
             try {
                 mMap.setMyLocationEnabled(true);
                 mMap.getUiSettings().setMyLocationButtonEnabled(true);
-            } catch (SecurityException e) {
+            } catch (SecurityException ignored) {
             }
         }
     }
@@ -430,6 +426,7 @@ public class AltosDroidMapOnline implements
         this.map_fragment = map_fragment;
         this.context = context;
         SupportMapFragment mapFragment = (SupportMapFragment) map_fragment.getChildFragmentManager().findFragmentById(R.id.map_online);
+        assert mapFragment != null;
         mapFragment.getMapAsync(callback);
     }
 }
