@@ -96,7 +96,7 @@ public class AltosBluetooth extends AltosDroidLink {
 		if (tmp_socket != null) {
 			try {
 				tmp_socket.close();
-			} catch (IOException e) {
+			} catch (Exception e) {
 				AltosDebug.error("close_socket failed");
 			}
 		}
