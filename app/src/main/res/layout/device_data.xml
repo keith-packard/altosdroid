@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+
+ Copyright © 2026 Keith Packard <keithp@keithp.com>
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along
+ with this program; if not, write to the Free Software Foundation, Inc.,
+ 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
+
+-->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/altos_list_background"
+    >
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/device_midline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".50" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/device_one_third"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".33" />
+
+    <RadioButton
+        android:id="@+id/device_save_data_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/save"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/device_one_third"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/device_midline"
+        />
+        
+    <RadioButton
+        android:id="@+id/device_delete_data_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/delete"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/device_one_third"
+        app:layout_constraintTop_toBottomOf="@id/device_midline"
+        app:layout_constraintBottom_toTopOf="@id/device_separator"/>
+        
+    <TextView
+        android:id="@+id/device_flight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/menu_padding_vertical"
+        android:text="Flight"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toEndOf="@id/device_one_third"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/device_midline"/>
+
+    <TextView
+        android:id="@+id/device_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/menu_padding_vertical"
+        android:text="Status"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toEndOf="@id/device_one_third"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/device_midline"
+        app:layout_constraintBottom_toTopOf="@id/device_separator"/>
+
+    <View
+        android:id="@+id/device_separator"
+        android:layout_width="match_parent"
+        android:layout_height="1sp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+        
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -109,6 +109,11 @@
             android:theme="@style/Theme.App"
             android:configChanges="keyboardHidden"/>
 
+        <activity android:name=".SaveDataActivity"
+            android:label="@string/save"
+            android:theme="@style/Theme.App"
+            android:configChanges="keyboardHidden"/>
+
         <service
             android:name=".TelemetryService"
             android:foregroundServiceType="connectedDevice" />

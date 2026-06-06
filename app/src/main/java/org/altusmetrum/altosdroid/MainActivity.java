@@ -147,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements
     public static final int REQUEST_DELETE_TRACKER = 9;
     public static final int REQUEST_MANAGE_FREQ    = 10;
     public static final int REQUEST_CONFIGURE_DEVICE = 11;
+    public static final int REQUEST_SAVE_DATA      = 12;
 
     static final int MY_PERMISSION_REQUEST = 1001;
 
@@ -685,6 +686,9 @@ public class MainActivity extends AppCompatActivity implements
             startActivityForResult(serverIntent, REQUEST_IDLE_MODE);
             return true;
         }
+        if (itemId == R.id.view_data) {
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -956,6 +960,11 @@ public class MainActivity extends AppCompatActivity implements
             idle_frequency(frequency);
             serverIntent = new Intent(this, ConfigureDeviceActivity.class);
             startActivityForResult(serverIntent, REQUEST_CONFIGURE_DEVICE);
+            break;
+        case IdleModeActivity.IDLE_MODE_SAVE_DATA:
+            idle_frequency(frequency);
+            serverIntent = new Intent(this, SaveDataActivity.class);
+            startActivityForResult(serverIntent, REQUEST_SAVE_DATA);
             break;
         }
     }

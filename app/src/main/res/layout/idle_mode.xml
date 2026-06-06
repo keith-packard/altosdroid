@@ -164,6 +164,16 @@
           app:layout_constraintStart_toEndOf="@id/left"
           app:layout_constraintEnd_toStartOf="@id/right"
           app:layout_constraintTop_toBottomOf="@id/igniters_idle"
-          app:layout_constraintBottom_toBottomOf="parent"/>
+          app:layout_constraintBottom_toTopOf="@id/save_data"/>
+
+        <Button android:id="@+id/save_data"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/save_data"
+            app:layout_constraintStart_toEndOf="@id/left"
+            app:layout_constraintEnd_toStartOf="@id/right"
+            app:layout_constraintTop_toBottomOf="@id/configure_idle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

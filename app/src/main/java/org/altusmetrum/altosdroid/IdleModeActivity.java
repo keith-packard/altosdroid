@@ -49,6 +49,7 @@ public class IdleModeActivity extends AppCompatActivity {
     public static final int IDLE_MODE_IGNITERS = 3;
     public static final int IDLE_MODE_DISCONNECT = 4;
     public static final int IDLE_MODE_CONFIGURE = 5;
+    public static final int IDLE_MODE_SAVE_DATA = 6;
 
     private void done(int type) {
         AltosPreferences.set_callsign(callsign());
@@ -83,6 +84,8 @@ public class IdleModeActivity extends AppCompatActivity {
     public void configure_idle() {
         done(IDLE_MODE_CONFIGURE);
     }
+
+    public void save_data_idle() { done(IDLE_MODE_SAVE_DATA); }
 
     @Override
     protected void onResume() {
@@ -195,6 +198,10 @@ public class IdleModeActivity extends AppCompatActivity {
                     configure_idle();
                 }
             });
+
+        binding.saveData.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) { save_data_idle(); }
+        });
 
         // Set result CANCELED incase the user backs out
         setResult(Activity.RESULT_CANCELED);

@@ -23,9 +23,12 @@
     <item android:id="@+id/idle_mode"
           android:icon="@android:drawable/ic_menu_preferences"
           android:title="@string/idle_mode" />
+    <item android:id="@+id/view_data"
+          android:icon="@android:drawable/ic_menu_view"
+          android:title="@string/view_data"/>
     <item android:id="@+id/load_maps"
         android:icon="@android:drawable/ic_menu_mapmode"
-        android:title="Download Maps"/>
+        android:title="@string/preload_maps"/>
     <item android:id="@+id/quit"
           android:icon="@android:drawable/ic_menu_close_clear_cancel"
           android:title="@string/quit" />
