@@ -19,6 +19,7 @@
 package org.altusmetrum.altosdroid;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
@@ -35,7 +36,6 @@ import android.graphics.Typeface;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -61,7 +61,6 @@ import android.os.RemoteException;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.WindowManager;
 
 import org.altusmetrum.altosdroid.databinding.ActivityMainBinding;
 import org.altusmetrum.altosdroid.ui.map.MapFragment;
@@ -69,10 +68,8 @@ import org.altusmetrum.altosdroid.ui.map.MapFragment;
 import org.altusmetrum.altoslib_14.*;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -84,11 +81,11 @@ class FragmentCallbacks extends FragmentManager.FragmentLifecycleCallbacks {
     public FragmentCallbacks(MainActivity activity) {
         this.activity = activity;
     }
-    public void onFragmentResumed(FragmentManager fm, Fragment f) {
+    public void onFragmentResumed(@NonNull FragmentManager fm, Fragment f) {
         AltosDebug.debug("onFragmentResumed 0x%x %s", f.getId(), f.getTag());
         activity.setActiveFragment(f);
     }
-    public void onFragmentPaused(FragmentManager fm, Fragment f) {
+    public void onFragmentPaused(@NonNull FragmentManager fm, Fragment f) {
         AltosDebug.debug("onFragmentPaused 0x%x %s", f.getId(), f.getTag());
     }
 }
@@ -193,11 +190,6 @@ public class MainActivity extends AppCompatActivity implements
     public static final String EXTRA_TRACKERS = "trackers";
     public static final String EXTRA_TRACKERS_TITLE = "trackers_title";
 
-    public static final String pad_name = "pad";
-    public static final String flight_name = "flight";
-    public static final String recover_name = "recover";
-    public static final String map_name = "map";
-
     // Setup result bits
     public static final int SETUP_BAUD = 1;
     public static final int SETUP_UNITS = 2;
@@ -208,8 +200,6 @@ public class MainActivity extends AppCompatActivity implements
     public AltosFragment active_fragment;
     int active_view = TelemetryState.VIEW_UNKNOWN;
     long active_view_time;
-
-    private Thread main_thread = Thread.currentThread();
 
     ActivityMainBinding binding;
     boolean idle_mode = false;
@@ -234,8 +224,6 @@ public class MainActivity extends AppCompatActivity implements
     SavedState saved_state = null;
     Timer timer = null;
 
-    private BluetoothAdapter mBluetoothAdapter = null;
-
     UsbDevice pending_usb_device = null;
     boolean start_with_usb;
 
@@ -248,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements
         try {
             Message m = Message.obtain(null, MainActivity.MSG_STATE, null);
             mMessenger.send(m);
-        } catch (RemoteException e) {
+        } catch (RemoteException ignored) {
         }
     }
 
@@ -259,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements
 
     // The Handler that gets information back from the Telemetry Service
     static class IncomingHandler extends Handler {
-        private MainActivity activity;
+        private final MainActivity activity;
 
         IncomingHandler(MainActivity in_activity) {
             activity = in_activity;
@@ -311,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements
                     Message msg = Message.obtain(null, TelemetryService.MSG_SET_VIEW, active_view);
                     try {
                         mService.send(msg);
-                    } catch (RemoteException re) {
+                    } catch (RemoteException ignored) {
                     }
                 }
 
@@ -319,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements
                     Message msg = Message.obtain(null, TelemetryService.MSG_ENABLE_LOCATION);
                     try {
                         mService.send(msg);
-                    } catch (RemoteException re) {
+                    } catch (RemoteException ignored) {
                     }
                 }
 
@@ -327,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements
                     try {
                         mService.send(Message.obtain(null, TelemetryService.MSG_OPEN_USB, pending_usb_device));
                         pending_usb_device = null;
-                    } catch (RemoteException e) {
+                    } catch (RemoteException ignored) {
                     }
                 }
                 if (perm_post_notifications.have)
@@ -404,7 +392,6 @@ public class MainActivity extends AppCompatActivity implements
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
             R.id.navigation_pad, R.id.navigation_flight, R.id.navigation_recover, R.id.navigation_map)
             .build();
-        Menu menu = binding.navView.getMenu();
 
         int verticalPadding = (int) getResources().getDimension(R.dimen.nav_bar_padding);
 
@@ -423,16 +410,15 @@ public class MainActivity extends AppCompatActivity implements
     private boolean can_bluetooth() {
         checkPermissions();
         /* Allow either old or new permission values */
-        if ((perm_bluetooth_connect.have||perm_bluetooth.have) &&
-            (perm_bluetooth_scan.have || perm_bluetooth_admin.have))
-            return true;
-        return false;
+        return (perm_bluetooth_connect.have || perm_bluetooth.have) &&
+            (perm_bluetooth_scan.have || perm_bluetooth_admin.have);
     }
 
+    @SuppressLint("MissingPermission")
     private boolean ensureBluetooth() {
         // Get local Bluetooth adapter
         if (can_bluetooth()) {
-            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
             /* if there is a BT adapter and it isn't turned on, then turn it on */
             if (mBluetoothAdapter != null && !mBluetoothAdapter.isEnabled()) {
@@ -450,17 +436,17 @@ public class MainActivity extends AppCompatActivity implements
         UsbDevice	device = AltosUsb.find_device(this, AltosLib.product_any);
 
         if (device != null) {
-            Intent		i = new Intent(this, MainActivity.class);
+            new Intent(this, MainActivity.class);
             int		flag;
 
             UsbManager	manager = (UsbManager) this.getSystemService(Context.USB_SERVICE);
 
             if (manager.hasPermission(device)) {
-                AltosDebug.debug("Already have permission for USB device " + device.toString());
+                AltosDebug.debug("Already have permission for USB device " + device);
                 connectUsb(device);
                 return true;
             } else {
-                AltosDebug.debug("request permission for USB device " + device.toString());
+                AltosDebug.debug("request permission for USB device " + device);
 
                 if (android.os.Build.VERSION.SDK_INT >= 31) // android.os.Build.VERSION_CODES.S
                     flag = 33554432; // PendingIntent.FLAG_MUTABLE
@@ -516,7 +502,7 @@ public class MainActivity extends AppCompatActivity implements
             device = null;
 
         if (device != null) {
-            AltosDebug.debug("intent has usb device " + device.toString());
+            AltosDebug.debug("intent has usb device " + device);
             connectUsb(device);
         } else {
 
@@ -603,7 +589,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         AltosDebug.debug("onOptionsItemSelected");
-        Intent serverIntent = null;
+        Intent serverIntent;
         int itemId = item.getItemId();
         if (itemId == R.id.connect_scan) {
             if (!ensureBluetooth()) {
@@ -655,12 +641,10 @@ public class MainActivity extends AppCompatActivity implements
             builder_freq.setTitle("Select Frequency");
             builder_freq.setSingleChoiceItems(frequency_strings,
                                               checkedItem,
-                                              new DialogInterface.OnClickListener() {
-                                                  public void onClick(DialogInterface dialog, int item) {
-                                                      set_selected_freq_item(item, frequencies);
-                                                      dialog.dismiss();
-                                                  }
-                                              });
+                (dialog, item1) -> {
+                    set_selected_freq_item(item1, frequencies);
+                    dialog.dismiss();
+                });
             AlertDialog alert_freq = builder_freq.create();
             alert_freq.show();
 
@@ -699,8 +683,10 @@ public class MainActivity extends AppCompatActivity implements
             if (resultCode == Activity.RESULT_OK) {
                 String name = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_NAME);
                 String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+                if (name != null && address != null) {
                 AltosDebug.debug("connect %s %s", name, address);
                 connectDevice(name, address);
+                }
             }
             break;
         case REQUEST_IDLE_MODE:
@@ -735,10 +721,11 @@ public class MainActivity extends AppCompatActivity implements
 
         if ((changes & SETUP_BAUD) != 0)
             setBaud(AltosPreferences.telemetry_rate(1));
-
+/*
         if ((changes & SETUP_UNITS) != 0) {
-            /* nothing to do here */
+            nothing to do here
         }
+        */
     }
 
     private void connectUsb(UsbDevice device) {
@@ -761,27 +748,27 @@ public class MainActivity extends AppCompatActivity implements
         super.onRequestPermissionsResult(requestCode, new_permissions, grantResults);
         if (requestCode == MY_PERMISSION_REQUEST) {
             for (int i = 0; i < grantResults.length; i++) {
-                for (int j = 0; j < permissions.length; j++) {
-                    if (new_permissions[i].equals(permissions[j].name)) {
+                for (AltosPermission permission : permissions) {
+                    if (new_permissions[i].equals(permission.name)) {
                         if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                            AltosDebug.debug("permission %s now granted\n", permissions[j].name);
-                            permissions[j].have = true;
-                            if (permissions[j] == perm_access_fine_location) {
+                            AltosDebug.debug("permission %s now granted\n", permission.name);
+                            permission.have = true;
+                            if (permission == perm_access_fine_location) {
                                 if (mService != null) {
                                     Message msg = Message.obtain(null, TelemetryService.MSG_ENABLE_LOCATION);
                                     try {
                                         mService.send(msg);
-                                    } catch (RemoteException re) {
+                                    } catch (RemoteException ignored) {
                                     }
                                 }
                                 if (map_online != null)
                                     map_online.position_permission();
-                            } else if (permissions[j] == perm_post_notifications) {
+                            } else if (permission == perm_post_notifications) {
                                 postNotification();
                             }
                         } else {
-                            AltosDebug.debug("permission %s still denied\n", permissions[j].name);
-                            permissions[j].have = false;
+                            AltosDebug.debug("permission %s still denied\n", permission.name);
+                            permission.have = false;
                         }
                     }
                 }
@@ -793,13 +780,13 @@ public class MainActivity extends AppCompatActivity implements
         if (!asked_permission) {
             asked_permission = true;
             int missing = 0;
-            for (int i = 0; i < permissions.length; i++) {
-                if (Build.VERSION.SDK_INT < 23 || checkSelfPermission(permissions[i].name) == PackageManager.PERMISSION_GRANTED) {
-                    AltosDebug.debug("permission %s already granted\n", permissions[i].name);
-                    permissions[i].have = true;
+            for (AltosPermission permission : permissions) {
+                if (Build.VERSION.SDK_INT < 23 || checkSelfPermission(permission.name) == PackageManager.PERMISSION_GRANTED) {
+                    AltosDebug.debug("permission %s already granted\n", permission.name);
+                    permission.have = true;
                 } else {
-                    AltosDebug.debug("permission %s not yet granted\n", permissions[i].name);
-                    permissions[i].have = false;
+                    AltosDebug.debug("permission %s not yet granted\n", permission.name);
+                    permission.have = false;
                     missing++;
                 }
             }
@@ -898,7 +885,7 @@ public class MainActivity extends AppCompatActivity implements
             Message msg = Message.obtain(null, TelemetryService.MSG_SET_VIEW, active_view);
             try {
                 mService.send(msg);
-            } catch (RemoteException re) {
+            } catch (RemoteException ignored) {
             }
         }
     }
@@ -928,7 +915,7 @@ public class MainActivity extends AppCompatActivity implements
                 msg = Message.obtain(null, TelemetryService.MSG_MONITOR_IDLE_START);
                 try {
                     mService.send(msg);
-                } catch (RemoteException re) {
+                } catch (RemoteException ignored) {
                 }
             }
             break;
@@ -937,7 +924,7 @@ public class MainActivity extends AppCompatActivity implements
                 msg = Message.obtain(null, TelemetryService.MSG_MONITOR_IDLE_STOP);
                 try {
                     mService.send(msg);
-                } catch (RemoteException re) {
+                } catch (RemoteException ignored) {
                 }
             }
             break;
@@ -947,7 +934,7 @@ public class MainActivity extends AppCompatActivity implements
                 msg = Message.obtain(null, TelemetryService.MSG_REBOOT);
                 try {
                     mService.send(msg);
-                } catch (RemoteException re) {
+                } catch (RemoteException ignored) {
                 }
             }
             break;
@@ -978,11 +965,7 @@ public class MainActivity extends AppCompatActivity implements
             fail.setTitle("Failed to Create Log File");
             fail.setMessage(file.getPath());
             fail.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                           new DialogInterface.OnClickListener() {
-                               public void onClick(DialogInterface dialog, int which) {
-                                   dialog.dismiss();
-                               }
-                           });
+                (dialog, which) -> dialog.dismiss());
             fail.show();
         }
     }
