@@ -25,7 +25,9 @@ Release Process
    Android release number.
 
  * Commit change and tag using version number. Build and test a signed
-   version using the emulators and real devices.
+   version using the emulators and real devices. Hamburger menu ->
+   Build -> Generate Signed Bundle or APK. The output lands
+   in app/release
 
  * Publish as a Beta Test version on the Google Play Store:
 
