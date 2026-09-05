@@ -510,8 +510,17 @@ public class TelemetryService extends Service
         state = telemetry_state.get(telem.serial());
         if (state == null)
             state = new AltosState(new AltosCalData());
+        double old_freq = state.frequency;
         telem.provide_data(state);
         telemetry_state.put(telem.serial(), state);
+        if (state.frequency != old_freq &&
+            old_freq != AltosLib.MISSING &&
+            state.received_time < telemetry_state.frequency_set_time + 100)
+        {
+            AltosDebug.debug("Frequency for %d changed from %f to %f around link freq change, ignoring\n",
+                             telem.serial(), old_freq, state.frequency);
+            state.frequency = old_freq;
+        }
         if (state != null) {
             AltosPreferences.set_state(state,telem.serial());
         }

@@ -43,6 +43,7 @@ public class TelemetryState implements AltosDroidSelectedSerialListener {
     public int		        crc_errors;
     public double		receiver_battery;
     public double		frequency;
+    public long                 frequency_set_time;
     public double               gps_ground_altitude;
     public int		        telemetry_rate;
 
@@ -92,6 +93,7 @@ public class TelemetryState implements AltosDroidSelectedSerialListener {
 
     public void set_frequency(double in_frequency) {
         frequency = in_frequency;
+        frequency_set_time = System.currentTimeMillis();
     }
 
     public void set_telemetry_rate(int in_rate) {
