@@ -53,6 +53,7 @@ import androidx.core.app.ServiceCompat;
 import org.altusmetrum.altoslib_14.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -92,6 +93,8 @@ public class TelemetryService extends Service
     static final int MSG_UPDATE_TELEM      = 25;
     static final int MSG_MONITOR_BATTERY   = 26;
     static final int MSG_DONE_SPEAKING     = 27;
+    static final int MSG_GET_FLIGHTS       = 28;
+    static final int MSG_GET_FLIGHT_DATA   = 29;
 
     static final int TELEMETRY_SERVICE_ID  = 1002;
 
@@ -335,6 +338,14 @@ public class TelemetryService extends Service
             case MSG_DONE_SPEAKING:
 //                AltosDebug.debug("MSG_DONE_SPEAKING");
                 s.speak();
+                break;
+            case MSG_GET_FLIGHTS:
+                // AltosDebug.debug("MSG_GET_FLIGHTS");
+                s.get_flights(msg.replyTo);
+                break;
+            case MSG_GET_FLIGHT_DATA:
+                // AltosDebug.debug("MSG_GET_FLIGHT_DATA");
+                s.get_flight_data(msg.replyTo, (AltosEepromList) msg.obj);
                 break;
             default:
                 super.handleMessage(msg);
@@ -852,6 +863,102 @@ public class TelemetryService extends Service
                 config_data.save(altos_link);
             } catch (InterruptedException ie) {
             } catch (TimeoutException te) {
+            }
+        } finally {
+            config_running = false;
+        }
+    }
+
+    private synchronized void get_flights(Messenger client) {
+        boolean remote = is_basestation;
+        config_running = true;
+        AltosEepromList flights = null;
+        try {
+            telemetry_stop();
+            stop_idle_monitor();
+            try {
+                if (altos_link != null)
+                    flights = new AltosEepromList(altos_link, remote);
+            } catch (InterruptedException ie) {
+//                AltosDebug.debug("get_flights interrupted");
+            } catch (TimeoutException te) {
+//                AltosDebug.debug("get_flights timeout");
+            } catch (IOException ie) {
+            }
+            Message m = Message.obtain(null, SaveDataActivity.MSG_FLIGHTS, flights);
+            try {
+                client.send(m);
+//                AltosDebug.debug("MSG_FLIGHTS sent flights is %b", flights != null);
+            } catch (RemoteException ignored) {
+            }
+        } finally {
+            config_running = false;
+        }
+    }
+
+    class MyEepromMonitor implements AltosEepromMonitor {
+        TelemetryService service;
+        Messenger client;
+
+	public void set_block(int in_block) {
+        }
+
+	public void set_max(int in_max) {
+        }
+
+	public void set_serial(int in_serial) {
+        }
+
+	public void set_flight(int in_flight) {
+        }
+
+	public void set_thread(Thread eeprom_thread) {
+        }
+
+	public void show_message(String message, String title, int message_type) {
+        }
+
+	public Boolean check_overwrite(File file) {
+        return true;
+        }
+
+	public void start() {
+        }
+
+	public void done(boolean success) {
+        }
+
+	public void reset() {
+        }
+
+        MyEepromMonitor(TelemetryService in_service, Messenger in_client) {
+            service = in_service;
+            client = in_client;
+        }
+    };
+
+    private synchronized void get_flight_data(Messenger client, AltosEepromList flights) {
+        boolean remote = is_basestation;
+        config_running = true;
+        try {
+            telemetry_stop();
+            stop_idle_monitor();
+            /* try */ {
+                if (altos_link != null) {
+                    MyEepromMonitor eeprom_monitor = new MyEepromMonitor(this, client);
+                    AltosEepromDownload download = new AltosEepromDownload(eeprom_monitor, altos_link, remote, flights);
+                }
+//            } catch (InterruptedException ie) {
+//                AltosDebug.debug("get_flight_data interrupted");
+//            } catch (TimeoutException te) {
+//                AltosDebug.debug("get_flight_data timeout");
+//            } catch (IOException ie) {
+            }
+            Message m = Message.obtain(null, SaveDataActivity.MSG_FLIGHTS, flights);
+            try {
+                client.send(m);
+//                AltosDebug.debug("MSG_FLIGHTS sent flights is %b", flights != null);
+            } catch (RemoteException ignored) {
             }
         } finally {
             config_running = false;

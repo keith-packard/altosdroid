@@ -17,11 +17,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Type"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/device_serial"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/save_data_list"
-        />
+        app:layout_constraintEnd_toStartOf="@id/device_serial"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/device_serial"
@@ -48,6 +47,28 @@
               app:layout_constraintStart_toStartOf="parent"
               app:layout_constraintEnd_toEndOf="parent"
               />
+    <TextView
+        android:id="@+id/save_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/table_padding_horizontal"
+        android:paddingVertical="@dimen/table_padding_vertical"
+        android:text="Save Info"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/save_data_list"
+        app:layout_constraintBottom_toTopOf="@id/save_progress"
+        />
+    <ProgressBar android:id="@+id/save_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/table_padding_horizontal"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:paddingVertical="@dimen/table_padding_vertical"
+        app:layout_constraintTop_toBottomOf="@id/save_info"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/one_third"
@@ -69,7 +90,7 @@
 	    android:text="@string/save"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/one_third"
-            app:layout_constraintTop_toBottomOf="@id/save_data_list"
+            app:layout_constraintTop_toBottomOf="@id/save_progress"
             app:layout_constraintBottom_toBottomOf="parent"
 	    />
 
@@ -79,7 +100,7 @@
 	    android:text="@string/reset"
             app:layout_constraintStart_toEndOf="@id/one_third"
             app:layout_constraintEnd_toStartOf="@id/two_thirds"
-            app:layout_constraintTop_toBottomOf="@id/save_data_list"
+            app:layout_constraintTop_toBottomOf="@id/save_progress"
             app:layout_constraintBottom_toBottomOf="parent"
 	    />
 
@@ -89,7 +110,7 @@
 	    android:text="@string/close"
             app:layout_constraintStart_toEndOf="@id/two_thirds"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/save_data_list"
+            app:layout_constraintTop_toBottomOf="@id/save_progress"
             app:layout_constraintBottom_toBottomOf="parent"
 	    />
     
